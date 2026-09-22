@@ -1,0 +1,2 @@
+<%@ page pageEncoding="UTF-8" %>
+<span class="badge rounded-pill ${estado == 'PENDIENTE' ? 'text-bg-warning' : estado == 'ACEPTADA' ? 'text-bg-primary' : estado == 'INACTIVO' || estado == 'INACTIVA' ? 'text-bg-secondary' : 'text-bg-success'}"><c:out value="${estado}"/></span>

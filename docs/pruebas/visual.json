@@ -1,0 +1,25 @@
+{
+  "resultado": "APROBADO",
+  "browser": "Chromium 134",
+  "checks": [
+    "Inicio escritorio 1440",
+    "Inicio 768",
+    "Inicio 390",
+    "Menú móvil Bootstrap",
+    "Login y dashboard donador móvil",
+    "Formulario donación móvil",
+    "Mis donaciones escritorio",
+    "Login y dashboard ADMIN",
+    "CRUD escritorio",
+    "Modal confirmación Bootstrap",
+    "CRUD 768",
+    "Formulario comedor 768",
+    "Formulario necesidad 768",
+    "Donaciones ADMIN 768",
+    "CRUD 390",
+    "Formulario comedor 390",
+    "Formulario necesidad 390",
+    "Donaciones ADMIN 390"
+  ],
+  "erroresJS": []
+}

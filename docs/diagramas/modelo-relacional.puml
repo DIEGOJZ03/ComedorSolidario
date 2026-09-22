@@ -1,0 +1,57 @@
+@startuml
+!pragma layout smetana
+skinparam linetype ortho
+entity usuarios {
+ * id : INT <<PK>>
+ --
+ nombre : VARCHAR(80)
+ apellido : VARCHAR(80)
+ email : VARCHAR(150) <<UNIQUE>>
+ password_hash : VARCHAR(255)
+ telefono : VARCHAR(20)
+ rol : ENUM
+ estado : ENUM
+ fecha_registro : DATETIME
+}
+entity comedores {
+ * id : INT <<PK>>
+ --
+ nombre : VARCHAR(120)
+ descripcion : VARCHAR(1500)
+ direccion : VARCHAR(200)
+ zona : VARCHAR(80)
+ distrito : VARCHAR(100)
+ provincia : VARCHAR(100)
+ responsable : VARCHAR(120)
+ telefono : VARCHAR(20)
+ estado : ENUM
+ fecha_registro : DATETIME
+}
+entity necesidades {
+ * id : INT <<PK>>
+ * comedor_id : INT <<FK>>
+ --
+ nombre : VARCHAR(100)
+ descripcion : VARCHAR(1000)
+ cantidad_necesaria : DECIMAL(12,2)
+ unidad : VARCHAR(30)
+ prioridad : ENUM
+ estado : ENUM
+}
+entity donaciones {
+ * id : INT <<PK>>
+ * donante_id : INT <<FK>>
+ * comedor_id : INT <<FK>>
+ --
+ tipo : ENUM
+ cantidad : DECIMAL(12,2)
+ unidad : VARCHAR(30)
+ descripcion : VARCHAR(1000)
+ estado : ENUM
+ fecha_registro : DATETIME
+ fecha_entrega : DATETIME <<NULL>>
+}
+usuarios ||--o{ donaciones
+comedores ||--o{ donaciones
+comedores ||--o{ necesidades
+@enduml

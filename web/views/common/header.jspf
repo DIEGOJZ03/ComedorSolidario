@@ -1,0 +1,94 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title><c:out value="${titulo}"/> | Comedor Solidario</title>
+        <link rel="icon" type="image/svg+xml" href="${ctx}/assets/img/logo.svg">
+        <link rel="stylesheet" href="${ctx}/assets/vendor/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="${ctx}/assets/css/styles.css">
+    </head>
+    <body>
+        <a class="skip-link" href="#contenido">Saltar al contenido</a>
+        <header>
+            <nav class="navbar navbar-expand-lg bg-white border-bottom" aria-label="Navegación principal">
+                <div class="container">
+                    <a class="navbar-brand d-flex align-items-center gap-2" href="${ctx}/inicio"><img src="${ctx}/assets/img/logo.svg" width="38" height="38" alt="">Comedor <strong>Solidario</strong></a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Abrir menú"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="menu">
+                        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                            <li class="nav-item">
+                                <a class="nav-link" href="${ctx}/inicio">Inicio</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${ctx}/comedores">Comedores</a>
+                            </li>
+                            <c:choose>
+                                <c:when test="${empty sessionScope.usuarioId}">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="${ctx}/inicio#como-ayudar">¿Cómo ayudar?</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="${ctx}/login">Iniciar sesión</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="btn btn-primary" href="${ctx}/registro">Registrarse</a>
+                                    </li>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:choose>
+                                        <c:when test="${sessionScope.usuarioRol == 'ADMIN'}">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${ctx}/admin/dashboard">Administración</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${ctx}/donante/dashboard">Mi panel</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${ctx}/donante/donaciones">Mis donaciones</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${ctx}/donante/perfil">Mi perfil</a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <li class="nav-item">
+                                        <form method="post" action="${ctx}/logout">
+                                            <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm">Cerrar sesión</button>
+                                        </form>
+                                    </li>
+                                </c:otherwise>
+                            </c:choose>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <c:if test="${sessionScope.usuarioRol == 'ADMIN'}">
+            <nav class="admin-nav" aria-label="Administración">
+                <div class="container d-flex flex-wrap gap-2 py-2">
+                    <a href="${ctx}/admin/dashboard">Dashboard</a>
+                    <a href="${ctx}/admin/comedores">Comedores</a>
+                    <a href="${ctx}/admin/necesidades">Necesidades</a>
+                    <a href="${ctx}/admin/donaciones">Donaciones</a>
+                    <a href="${ctx}/admin/usuarios">Usuarios</a>
+                </div>
+            </nav>
+        </c:if>
+        <main id="contenido" class="container main-content">
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger" role="alert">
+                    <c:out value="${error}"/>
+                </div>
+            </c:if>
+            <c:if test="${not empty sessionScope.exito}">
+                <div class="alert alert-success" role="status">
+                    <c:out value="${sessionScope.exito}"/>
+                </div>
+                <c:remove var="exito" scope="session"/>
+            </c:if>

@@ -1,0 +1,35 @@
+<%@ page pageEncoding="UTF-8" %>
+</main>
+<footer class="site-footer">
+    <div class="container d-flex flex-wrap justify-content-between gap-3">
+        <div>
+            <strong>Comedor Solidario</strong>
+            <p class="mb-0 small">Proyecto académico · Ingeniería de Sistemas<br>Soluciones Web y Aplicaciones Distribuidas</p>
+        </div>
+        <div>
+            <a href="${ctx}/comedores">Explorar comedores</a>
+            <br>
+            <a href="${ctx}/inicio#como-ayudar">Cómo ayudar</a>
+            <p class="small mt-2 mb-0">© 2026 Comedor Solidario. Derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+<div class="modal fade" id="confirmarModal" tabindex="-1" aria-labelledby="confirmarTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="confirmarTitulo">Confirmar cambio</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">¿Deseas cambiar el estado de este registro? Su historial se conservará.</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmarAccion">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${ctx}/assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="${ctx}/assets/js/main.js"></script>
+</body>
+</html>

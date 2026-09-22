@@ -1,0 +1,23 @@
+<%@ page pageEncoding="UTF-8" %>
+<div class="row g-4">
+    <c:forEach var="c" items="${comedores}">
+        <div class="col-md-6 col-xl-4">
+            <article class="card comedor-card h-100">
+                <div class="card-banner">
+                    <img src="${ctx}/assets/img/logo.svg" width="42" height="42" alt="">
+                    <span><c:out value="${c.zona}"/> · <c:out value="${c.provincia}"/></span>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <p class="eyebrow"><c:out value="${c.distrito}"/></p>
+                    <h3 class="h5"><c:out value="${c.nombre}"/></h3>
+                    <p class="text-secondary card-description"><c:out value="${c.descripcion}"/></p>
+                    <p class="small"><c:out value="${c.direccion}"/></p>
+                    <a class="btn btn-outline-primary mt-auto" href="${ctx}/comedores/detalle?id=${c.id}">Ver comedor y necesidades</a>
+                </div>
+            </article>
+        </div>
+    </c:forEach>
+</div>
+<c:if test="${empty comedores}">
+    <div class="empty-state">No encontramos comedores con esos filtros. Prueba otra ubicación.</div>
+</c:if>

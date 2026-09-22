@@ -1,0 +1,4 @@
+target/
+*.log
+src/resources/db.properties
+nbproject/private/
