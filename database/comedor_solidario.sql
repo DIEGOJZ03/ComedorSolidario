@@ -4,9 +4,10 @@ CREATE DATABASE IF NOT EXISTS comedor_solidario CHARACTER
 SET
     utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE USER IF NOT EXISTS 'comedor_app'@'localhost' IDENTIFIED BY '';
-GRANT ALL PRIVILEGES ON *.* TO 'comedor_app'@'localhost' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
+-- Codigo usado en linux para conectarlo con mysql 
+-- CREATE USER IF NOT EXISTS 'comedor_app'@'localhost' IDENTIFIED BY '';
+-- GRANT ALL PRIVILEGES ON *.* TO 'comedor_app'@'localhost' WITH GRANT OPTION;
+-- FLUSH PRIVILEGES;
 
 USE comedor_solidario;
 
@@ -82,15 +83,7 @@ CREATE TABLE
         INDEX idx_estado (estado)
     ) ENGINE = InnoDB;
 
-INSERT INTO
-    usuarios (
-        nombre,
-        apellido,
-        email,
-        password_hash,
-        telefono,
-        rol
-    )
+INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol)
 VALUES
     (
         'Ana',
@@ -101,15 +94,7 @@ VALUES
         'ADMIN'
     );
 
-INSERT INTO
-    usuarios (
-        nombre,
-        apellido,
-        email,
-        password_hash,
-        telefono,
-        rol
-    )
+INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol)
 VALUES
     (
         'Diego',
@@ -120,55 +105,40 @@ VALUES
         'DONADOR'
     );
 
-INSERT INTO
-    usuarios (
-        nombre,
-        apellido,
-        email,
-        password_hash,
-        telefono,
-        rol
-    )
+INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol)
+VALUES
+    (
+        'Diego',
+        'Donador',
+        'donador@comedorsolidario.pe',
+        '600000:kCWZ9dwa6dCubZxi+otiTg==:vzjoqYSPh5fu83hXQx+o0pzKafEBEDNfAvuub1cb/dc=',
+        '900000001',
+        'DONADOR'
+    );
+
+INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol) 
 VALUES
     (
         'Lucía',
         'Pérez',
-        'lucia@example.com',
+        'lucia@gmail.com',
         '600000:c2yg875TREEQBy9l40CYTA==:rzNi3+Yjxaa6TIM0GUDN2DXgqkllMczSm1xFUf6cEPs=',
         '900000002',
         'DONADOR'
     );
 
-INSERT INTO
-    usuarios (
-        nombre,
-        apellido,
-        email,
-        password_hash,
-        telefono,
-        rol
-    )
+INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol) 
 VALUES
     (
         'Carlos',
         'Ramos',
-        'carlos@example.com',
+        'carlos@gmail.com',
         '600000:Mz1ttw14Enw0yOG6jYFa+Q==:Wm2RpbHVVfqSY/CIfDmCBqnTHsJJR+sTzBHFd/ErlK8=',
         '900000003',
         'DONADOR'
     );
 
-INSERT INTO
-    comedores (
-        nombre,
-        descripcion,
-        direccion,
-        zona,
-        distrito,
-        provincia,
-        responsable,
-        telefono
-    )
+INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono)
 VALUES
     (
         'Olla Común Santa Rosa',
@@ -181,15 +151,7 @@ VALUES
         '900111001'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad)
 VALUES
     (
         1,
@@ -200,15 +162,7 @@ VALUES
         'ALTA'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
 VALUES
     (
         1,
@@ -219,17 +173,7 @@ VALUES
         'MEDIA'
     );
 
-INSERT INTO
-    comedores (
-        nombre,
-        descripcion,
-        direccion,
-        zona,
-        distrito,
-        provincia,
-        responsable,
-        telefono
-    )
+INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono)
 VALUES
     (
         'Comedor Nuevo Amanecer',
@@ -242,15 +186,7 @@ VALUES
         '900111002'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
 VALUES
     (
         2,
@@ -261,15 +197,7 @@ VALUES
         'ALTA'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
 VALUES
     (
         2,
@@ -280,17 +208,7 @@ VALUES
         'MEDIA'
     );
 
-INSERT INTO
-    comedores (
-        nombre,
-        descripcion,
-        direccion,
-        zona,
-        distrito,
-        provincia,
-        responsable,
-        telefono
-    )
+INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono) 
 VALUES
     (
         'Manos que Alimentan',
@@ -303,15 +221,7 @@ VALUES
         '900111003'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
 VALUES
     (
         3,
@@ -322,15 +232,7 @@ VALUES
         'ALTA'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
 VALUES
     (
         3,
@@ -341,17 +243,42 @@ VALUES
         'MEDIA'
     );
 
-INSERT INTO
-    comedores (
-        nombre,
-        descripcion,
-        direccion,
-        zona,
-        distrito,
-        provincia,
-        responsable,
-        telefono
-    )
+INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono) 
+VALUES
+    (
+        'Manos que Alimentan',
+        'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
+        'Av. Solidaridad 300 (dirección ficticia)',
+        'Sur',
+        'Villa El Salvador',
+        'Lima',
+        'María Rojas',
+        '900111003'
+    );
+
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
+VALUES
+    (
+        3,
+        'Arroz',
+        'Productos cerrados y dentro de su fecha de consumo.',
+        50,
+        'kg',
+        'ALTA'
+    );
+
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
+VALUES
+    (
+        3,
+        'Aceite',
+        'Productos cerrados y dentro de su fecha de consumo.',
+        20,
+        'litros',
+        'MEDIA'
+    );
+
+INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono) 
 VALUES
     (
         'Comedor Esperanza',
@@ -364,15 +291,7 @@ VALUES
         '900111004'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
 VALUES
     (
         4,
@@ -383,15 +302,7 @@ VALUES
         'ALTA'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
 VALUES
     (
         4,
@@ -402,18 +313,42 @@ VALUES
         'MEDIA'
     );
 
-INSERT INTO
-    comedores (
-        nombre,
-        descripcion,
-        direccion,
-        zona,
-        distrito,
-        provincia,
-        responsable,
-        telefono
-    )
+INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono) 
 VALUES
+    (
+        'Comedor Esperanza',
+        'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
+        'Av. Solidaridad 400 (dirección ficticia)',
+        'Centro',
+        'Cercado de Lima',
+        'Lima',
+        'José Medina',
+        '900111004'
+    );
+
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad)
+VALUES
+    (
+        4,
+        'Arroz',
+        'Productos cerrados y dentro de su fecha de consumo.',
+        50,
+        'kg',
+        'ALTA'
+    );
+
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad)
+VALUES
+    (
+        4,
+        'Aceite',
+        'Productos cerrados y dentro de su fecha de consumo.',
+        20,
+        'litros',
+        'MEDIA'
+    );
+
+INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono) VALUES
     (
         'Unidos por el Callao',
         'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
@@ -425,15 +360,7 @@ VALUES
         '900111005'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad)
 VALUES
     (
         5,
@@ -444,15 +371,7 @@ VALUES
         'ALTA'
     );
 
-INSERT INTO
-    necesidades (
-        comedor_id,
-        nombre,
-        descripcion,
-        cantidad_necesaria,
-        unidad,
-        prioridad
-    )
+INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad)
 VALUES
     (
         5,
@@ -463,17 +382,7 @@ VALUES
         'MEDIA'
     );
 
-INSERT INTO
-    donaciones (
-        donante_id,
-        comedor_id,
-        tipo,
-        cantidad,
-        unidad,
-        descripcion,
-        estado,
-        fecha_entrega
-    )
+INSERT INTO donaciones (donante_id, comedor_id, tipo, cantidad, unidad, descripcion, estado, fecha_entrega)
 VALUES
     (
         2,

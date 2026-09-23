@@ -1,5 +1,5 @@
 # Copiar como db.properties y completar. Alternativa: variables de entorno.
-db.url=jdbc:mysql://localhost:8080/comedor_solidario
+db.url=jdbc:mysql://localhost:3306/comedor_solidario
 db.user=admin
 db.password=UPENINOS
 
