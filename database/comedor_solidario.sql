@@ -98,23 +98,13 @@ INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol)
 VALUES
     (
         'Diego',
-        'Donador',
-        'donador@comedorsolidario.pe',
+        'Juarez',
+        'diego@gmail.com',
         '600000:kCWZ9dwa6dCubZxi+otiTg==:vzjoqYSPh5fu83hXQx+o0pzKafEBEDNfAvuub1cb/dc=',
         '900000001',
         'DONADOR'
     );
 
-INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol)
-VALUES
-    (
-        'Diego',
-        'Donador',
-        'donador@comedorsolidario.pe',
-        '600000:kCWZ9dwa6dCubZxi+otiTg==:vzjoqYSPh5fu83hXQx+o0pzKafEBEDNfAvuub1cb/dc=',
-        '900000001',
-        'DONADOR'
-    );
 
 INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono, rol) 
 VALUES
@@ -143,7 +133,7 @@ VALUES
     (
         'Olla Común Santa Rosa',
         'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
-        'Av. Solidaridad 100 (dirección ficticia)',
+        'Av. Próceres de la Independencia 2450',
         'Este',
         'San Juan de Lurigancho',
         'Lima',
@@ -178,7 +168,7 @@ VALUES
     (
         'Comedor Nuevo Amanecer',
         'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
-        'Av. Solidaridad 200 (dirección ficticia)',
+        'Av. Túpac Amaru 3850',
         'Norte',
         'Comas',
         'Lima',
@@ -213,42 +203,7 @@ VALUES
     (
         'Manos que Alimentan',
         'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
-        'Av. Solidaridad 300 (dirección ficticia)',
-        'Sur',
-        'Villa El Salvador',
-        'Lima',
-        'María Rojas',
-        '900111003'
-    );
-
-INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
-VALUES
-    (
-        3,
-        'Arroz',
-        'Productos cerrados y dentro de su fecha de consumo.',
-        50,
-        'kg',
-        'ALTA'
-    );
-
-INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
-VALUES
-    (
-        3,
-        'Aceite',
-        'Productos cerrados y dentro de su fecha de consumo.',
-        20,
-        'litros',
-        'MEDIA'
-    );
-
-INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono) 
-VALUES
-    (
-        'Manos que Alimentan',
-        'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
-        'Av. Solidaridad 300 (dirección ficticia)',
+        'Av. Revolución 840',
         'Sur',
         'Villa El Salvador',
         'Lima',
@@ -283,7 +238,7 @@ VALUES
     (
         'Comedor Esperanza',
         'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
-        'Av. Solidaridad 400 (dirección ficticia)',
+        'Jr. Huancavelica 742',
         'Centro',
         'Cercado de Lima',
         'Lima',
@@ -303,41 +258,6 @@ VALUES
     );
 
 INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad) 
-VALUES
-    (
-        4,
-        'Aceite',
-        'Productos cerrados y dentro de su fecha de consumo.',
-        20,
-        'litros',
-        'MEDIA'
-    );
-
-INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia, responsable, telefono) 
-VALUES
-    (
-        'Comedor Esperanza',
-        'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
-        'Av. Solidaridad 400 (dirección ficticia)',
-        'Centro',
-        'Cercado de Lima',
-        'Lima',
-        'José Medina',
-        '900111004'
-    );
-
-INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad)
-VALUES
-    (
-        4,
-        'Arroz',
-        'Productos cerrados y dentro de su fecha de consumo.',
-        50,
-        'kg',
-        'ALTA'
-    );
-
-INSERT INTO necesidades (comedor_id, nombre, descripcion, cantidad_necesaria, unidad, prioridad)
 VALUES
     (
         4,
@@ -352,7 +272,7 @@ INSERT INTO comedores (nombre, descripcion, direccion, zona, distrito, provincia
     (
         'Unidos por el Callao',
         'Espacio comunitario de demostración que organiza alimentos para familias de la zona. Tu aporte ayuda a mantener las comidas diarias.',
-        'Av. Solidaridad 500 (dirección ficticia)',
+        'Av. Sáenz Peña 680',
         'Oeste',
         'Callao',
         'Callao',

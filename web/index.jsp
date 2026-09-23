@@ -18,7 +18,7 @@
             <p class="small text-secondary mt-4">Una comunidad que comparte, una mesa que crece.</p>
         </div>
         <div class="col-lg-5">
-            <img class="hero-image" src="${ctx}/assets/img/comunidad.svg" alt="Ilustración de una mesa con alimentos compartidos">
+            <img class="hero-image" src="${ctx}/assets/img/comunidad.png" alt="Ilustración de una mesa con alimentos compartidos">
         </div>
     </div>
 </section>
