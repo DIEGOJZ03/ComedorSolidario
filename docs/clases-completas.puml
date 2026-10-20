@@ -1,0 +1,481 @@
+@startuml ClasesCompletas
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+hide empty members
+title Comedor Solidario - Clases, DAO, controladores y utilidades
+package "com.comedorsolidario.model" {
+class Campania {
+  - id : int
+  - comedorId : int
+  - nombre : String
+  - descripcion : String
+  - fechaInicio : LocalDate
+  - fechaFin : LocalDate
+  - estado : String
+  + Campania()
+  + getId() : int
+  + setId(id : int) : void
+  + getComedorId() : int
+  + setComedorId(comedorId : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getFechaInicio() : LocalDate
+  + setFechaInicio(fechaInicio : LocalDate) : void
+  + getFechaFin() : LocalDate
+  + setFechaFin(fechaFin : LocalDate) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+}
+class Comedor {
+  - id : int
+  - nombre : String
+  - descripcion : String
+  - direccion : String
+  - zona : String
+  - distrito : String
+  - provincia : String
+  - responsable : String
+  - telefono : String
+  - estado : String
+  - fechaRegistro : LocalDateTime
+  + Comedor()
+  + Comedor(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getDireccion() : String
+  + setDireccion(direccion : String) : void
+  + getZona() : String
+  + setZona(zona : String) : void
+  + getDistrito() : String
+  + setDistrito(distrito : String) : void
+  + getProvincia() : String
+  + setProvincia(provincia : String) : void
+  + getResponsable() : String
+  + setResponsable(responsable : String) : void
+  + getTelefono() : String
+  + setTelefono(telefono : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getFechaRegistro() : LocalDateTime
+  + setFechaRegistro(fechaRegistro : LocalDateTime) : void
+}
+class Donacion {
+  - activo : boolean
+  - id : int
+  - donanteId : int
+  - comedorId : int
+  - tipo : String
+  - cantidad : BigDecimal
+  - unidad : String
+  - descripcion : String
+  - estado : String
+  - fechaRegistro : LocalDateTime
+  - fechaEntrega : LocalDateTime
+  - comedorNombre : String
+  - donanteNombre : String
+  + isActivo() : boolean
+  + setActivo(activo : boolean) : void
+  + Donacion()
+  + Donacion(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getDonanteId() : int
+  + setDonanteId(donanteId : int) : void
+  + getComedorId() : int
+  + setComedorId(comedorId : int) : void
+  + getTipo() : String
+  + setTipo(tipo : String) : void
+  + getCantidad() : BigDecimal
+  + setCantidad(cantidad : BigDecimal) : void
+  + getUnidad() : String
+  + setUnidad(unidad : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getFechaRegistro() : LocalDateTime
+  + setFechaRegistro(fechaRegistro : LocalDateTime) : void
+  + getFechaEntrega() : LocalDateTime
+  + setFechaEntrega(fechaEntrega : LocalDateTime) : void
+  + getComedorNombre() : String
+  + setComedorNombre(comedorNombre : String) : void
+  + getDonanteNombre() : String
+  + setDonanteNombre(donanteNombre : String) : void
+}
+class Necesidad {
+  - productoId : Integer
+  - id : int
+  - comedorId : int
+  - nombre : String
+  - descripcion : String
+  - cantidadNecesaria : BigDecimal
+  - unidad : String
+  - prioridad : String
+  - estado : String
+  - comedorNombre : String
+  + getProductoId() : Integer
+  + setProductoId(productoId : Integer) : void
+  + Necesidad()
+  + Necesidad(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getComedorId() : int
+  + setComedorId(comedorId : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getCantidadNecesaria() : BigDecimal
+  + setCantidadNecesaria(cantidadNecesaria : BigDecimal) : void
+  + getUnidad() : String
+  + setUnidad(unidad : String) : void
+  + getPrioridad() : String
+  + setPrioridad(prioridad : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getComedorNombre() : String
+  + setComedorNombre(comedorNombre : String) : void
+}
+class Producto {
+  - id : int
+  - nombre : String
+  - descripcion : String
+  - unidad : String
+  - estado : String
+  + Producto()
+  + getId() : int
+  + setId(id : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getUnidad() : String
+  + setUnidad(unidad : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+}
+class Usuario {
+  - id : int
+  - nombre : String
+  - apellido : String
+  - email : String
+  - passwordHash : String
+  - telefono : String
+  - rol : String
+  - estado : String
+  - fechaRegistro : LocalDateTime
+  + Usuario()
+  + Usuario(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getApellido() : String
+  + setApellido(apellido : String) : void
+  + getEmail() : String
+  + setEmail(email : String) : void
+  + getPasswordHash() : String
+  + setPasswordHash(passwordHash : String) : void
+  + getTelefono() : String
+  + setTelefono(telefono : String) : void
+  + getRol() : String
+  + setRol(rol : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getFechaRegistro() : LocalDateTime
+  + setFechaRegistro(fechaRegistro : LocalDateTime) : void
+}
+}
+package "com.comedorsolidario.dao" {
+class CampaniaDAO {
+  + listar() : List<Campania>
+  + buscar(id : int) : Campania
+  + guardar(o : Campania) : void
+  + cambiarEstado(id : int, estado : String) : void
+  + listarPublicas(comedorId : int) : List<Campania>
+  - map(rs : ResultSet) : Campania
+}
+class ComedorDAO {
+  + listar(soloActivos : boolean, zona : String, distrito : String, provincia : String) : List<Comedor>
+  + buscar(id : int) : Comedor
+  + guardar(c : Comedor) : void
+  + cambiarEstado(id : int, estado : String) : void
+  + total(activos : boolean) : long
+  - map(rs : ResultSet) : Comedor
+}
+class DonacionDAO {
+  - {static} SELECT : String
+  + listar(donanteId : Integer, estado : String) : List<Donacion>
+  + buscar(id : int) : Donacion
+  + registrar(d : Donacion) : void
+  + actualizar(d : Donacion) : void
+  + darBaja(id : int) : void
+  + avanzar(id : int, estadoActual : String) : boolean
+  + resumen(donanteId : Integer) : Map<String, Long>
+  - map(rs : ResultSet) : Donacion
+}
+abstract class JdbcDAO {
+  # consultar(sql : String, mapper : Mapper<T>, parametros : Object...) : List<T>
+  # ejecutar(sql : String, parametros : Object...) : int
+  # contar(sql : String, parametros : Object...) : long
+  - asignar(ps : PreparedStatement, parametros : Object[]) : void
+}
+class NecesidadDAO {
+  - {static} SELECT : String
+  + listar(comedorId : Integer, activas : boolean) : List<Necesidad>
+  + buscar(id : int) : Necesidad
+  + guardar(n : Necesidad) : void
+  + cambiarEstado(id : int, estado : String) : void
+  - map(rs : ResultSet) : Necesidad
+}
+class ProductoDAO {
+  + listar() : List<Producto>
+  + buscar(id : int) : Producto
+  + guardar(o : Producto) : void
+  + cambiarEstado(id : int, estado : String) : void
+  - map(rs : ResultSet) : Producto
+}
+class UsuarioDAO {
+  + buscarEmail(email : String) : Usuario
+  + buscar(id : int) : Usuario
+  + listar() : List<Usuario>
+  + registrar(u : Usuario) : void
+  + actualizarPerfil(u : Usuario) : void
+  + guardarAdministrado(u : Usuario) : void
+  + cambiarEstado(id : int, estado : String) : void
+  + totalDonadores() : long
+  - map(rs : ResultSet) : Usuario
+}
+}
+package "com.comedorsolidario.controller" {
+class AdminCampaniaServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  - formulario(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class AdminComedorServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class AdminDashboardServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class AdminDonacionServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  - formulario(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class AdminProductoServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  - formulario(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class AdminUsuarioServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+abstract class BaseServlet {
+  # doGet(r : HttpServletRequest, s : HttpServletResponse) : void
+  # doPost(r : HttpServletRequest, s : HttpServletResponse) : void
+  - ejecutar(r : HttpServletRequest, s : HttpServletResponse, post : boolean) : void
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+  # vista(r : HttpServletRequest, s : HttpServletResponse, ruta : String) : void
+  # ir(r : HttpServletRequest, s : HttpServletResponse, ruta : String, mensaje : String) : void
+  # usuarioId(r : HttpServletRequest) : int
+}
+class ComedorServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class DonacionServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  - formulario(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class DonadorDashboardServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class InicioServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class LoginServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+  - destino(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class LogoutServlet {
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class NecesidadServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  - formulario(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class PerfilServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class RegistroServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
+  # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+}
+package "com.comedorsolidario.filter" {
+class SeguridadFilter {
+  + doFilter(request : ServletRequest, response : ServletResponse, chain : FilterChain) : void
+}
+}
+package "com.comedorsolidario.util" {
+class ConexionBD {
+  - {static} CONFIG : Properties
+  - ConexionBD()
+  - {static} valor(entorno : String, clave : String, defecto : String) : String
+  + {static} getConnection() : Connection
+}
+class PasswordUtil {
+  - {static} ITERACIONES : int
+  - PasswordUtil()
+  + {static} hash(password : String) : String
+  + {static} verificar(password : String, almacenado : String) : boolean
+  - {static} derivar(password : String, sal : byte[], iteraciones : int) : byte[]
+}
+class ValidacionUtil {
+  - ValidacionUtil()
+  + {static} texto(r : HttpServletRequest, campo : String, max : int, obligatorio : boolean) : String
+  + {static} fecha(valor : String) : java.time.LocalDate
+  + {static} id(valor : String) : int
+  + {static} email(r : HttpServletRequest) : String
+  + {static} password(r : HttpServletRequest) : String
+  + {static} cantidad(valor : String) : BigDecimal
+  + {static} opcion(valor : String, permitidas : String...) : String
+}
+}
+interface "JdbcDAO.Mapper<T>" as Mapper {
+  + map(rs : ResultSet) : T
+}
+JdbcDAO ..> Mapper : mapeo de filas
+class HttpServlet <<Jakarta externo>>
+interface Filter <<Jakarta externo>>
+SeguridadFilter ..|> Filter
+JdbcDAO <|-- CampaniaDAO
+CampaniaDAO ..> Campania
+JdbcDAO <|-- ComedorDAO
+ComedorDAO ..> Comedor
+JdbcDAO <|-- DonacionDAO
+DonacionDAO ..> Donacion
+JdbcDAO ..> ConexionBD
+JdbcDAO <|-- NecesidadDAO
+NecesidadDAO ..> Necesidad
+JdbcDAO <|-- ProductoDAO
+ProductoDAO ..> Producto
+JdbcDAO <|-- UsuarioDAO
+UsuarioDAO ..> Usuario
+BaseServlet <|-- AdminCampaniaServlet
+AdminCampaniaServlet ..> Campania
+AdminCampaniaServlet ..> CampaniaDAO
+AdminCampaniaServlet ..> ComedorDAO
+AdminCampaniaServlet ..> ValidacionUtil
+BaseServlet <|-- AdminComedorServlet
+AdminComedorServlet ..> Comedor
+AdminComedorServlet ..> ComedorDAO
+AdminComedorServlet ..> NecesidadDAO
+AdminComedorServlet ..> ValidacionUtil
+BaseServlet <|-- AdminDashboardServlet
+AdminDashboardServlet ..> ComedorDAO
+AdminDashboardServlet ..> DonacionDAO
+AdminDashboardServlet ..> UsuarioDAO
+AdminDashboardServlet ..> ValidacionUtil
+BaseServlet <|-- AdminDonacionServlet
+AdminDonacionServlet ..> Donacion
+AdminDonacionServlet ..> ComedorDAO
+AdminDonacionServlet ..> DonacionDAO
+AdminDonacionServlet ..> UsuarioDAO
+AdminDonacionServlet ..> ValidacionUtil
+BaseServlet <|-- AdminProductoServlet
+AdminProductoServlet ..> Producto
+AdminProductoServlet ..> ProductoDAO
+AdminProductoServlet ..> ValidacionUtil
+BaseServlet <|-- AdminUsuarioServlet
+AdminUsuarioServlet ..> Usuario
+AdminUsuarioServlet ..> UsuarioDAO
+AdminUsuarioServlet ..> PasswordUtil
+AdminUsuarioServlet ..> ValidacionUtil
+HttpServlet <|-- BaseServlet
+BaseServlet <|-- ComedorServlet
+ComedorServlet ..> Comedor
+ComedorServlet ..> CampaniaDAO
+ComedorServlet ..> ComedorDAO
+ComedorServlet ..> NecesidadDAO
+ComedorServlet ..> ValidacionUtil
+BaseServlet <|-- DonacionServlet
+DonacionServlet ..> Donacion
+DonacionServlet ..> ComedorDAO
+DonacionServlet ..> DonacionDAO
+DonacionServlet ..> ValidacionUtil
+BaseServlet <|-- DonadorDashboardServlet
+DonadorDashboardServlet ..> DonacionDAO
+DonadorDashboardServlet ..> ValidacionUtil
+BaseServlet <|-- InicioServlet
+InicioServlet ..> ComedorDAO
+InicioServlet ..> DonacionDAO
+InicioServlet ..> UsuarioDAO
+InicioServlet ..> ValidacionUtil
+BaseServlet <|-- LoginServlet
+LoginServlet ..> Usuario
+LoginServlet ..> UsuarioDAO
+LoginServlet ..> PasswordUtil
+LoginServlet ..> ValidacionUtil
+BaseServlet <|-- LogoutServlet
+LogoutServlet ..> ValidacionUtil
+BaseServlet <|-- NecesidadServlet
+NecesidadServlet ..> Necesidad
+NecesidadServlet ..> Producto
+NecesidadServlet ..> ComedorDAO
+NecesidadServlet ..> NecesidadDAO
+NecesidadServlet ..> ProductoDAO
+NecesidadServlet ..> ValidacionUtil
+BaseServlet <|-- PerfilServlet
+PerfilServlet ..> Usuario
+PerfilServlet ..> UsuarioDAO
+PerfilServlet ..> ValidacionUtil
+BaseServlet <|-- RegistroServlet
+RegistroServlet ..> Usuario
+RegistroServlet ..> UsuarioDAO
+RegistroServlet ..> PasswordUtil
+RegistroServlet ..> ValidacionUtil
+SeguridadFilter ..> Usuario
+SeguridadFilter ..> UsuarioDAO
+Usuario "1" <-- "0..*" Donacion : donanteId / donante_id
+Comedor "1" <-- "0..*" Donacion : comedorId / comedor_id
+Comedor "1" <-- "0..*" Necesidad : comedorId / comedor_id
+Producto "0..1" <-- "0..*" Necesidad : productoId / producto_id nullable
+Comedor "1" <-- "0..*" Campania : comedorId / comedor_id
+note as N1
+  Las asociaciones están implementadas mediante identificadores FK.
+  No se inventan listas ni referencias de objetos en los JavaBeans.
+  Cada FK obligatoria apunta a exactamente una entidad existente.
+  Baja lógica: no hay composición ni eliminación en cascada.
+  Donacion.activo es independiente de su estado de entrega.
+  String representa los ENUM SQL; los controladores validan sus valores.
+end note
+note right of Necesidad
+  comedorNombre: proyección JOIN; no es columna propia.
+  productoId: Integer permite SQL NULL.
+end note
+note right of Donacion
+  comedorNombre y donanteNombre: proyecciones JOIN.
+  cantidad: BigDecimal / DECIMAL(12,2).
+  fechaEntrega: LocalDateTime, permite NULL.
+  PENDIENTE -> ACEPTADA -> ENTREGADA.
+end note
+note right of Campania
+  Tabla campanias. Fechas LocalDate / DATE.
+  fechaFin >= fechaInicio.
+end note
+@enduml

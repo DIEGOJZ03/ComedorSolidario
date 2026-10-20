@@ -1,0 +1,337 @@
+/* Personalización sobre Bootstrap 5. Todos los estilos de la aplicación están aquí. */
+:root {
+    --brand:#17624d;
+    --brand-dark:#114b3c;
+    --mint:#edf5ef;
+    --ink:#16382d;
+    --muted:#5d6e66;
+    --paper:#f7f9f6;
+    --line:#dce7df
+}
+body {
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6
+}
+a {
+    color:var(--brand)
+}
+a:hover {
+    color:var(--brand-dark)
+}
+h1,h2,h3 {
+    font-weight:750;
+    letter-spacing:-.035em;
+    line-height:1.16
+}
+h1 {
+    font-size:clamp(2rem,4vw,3rem)
+}
+h2 {
+    font-size:clamp(1.65rem,3vw,2.3rem)
+}
+.navbar {
+    padding:1rem 0
+}
+.navbar-brand {
+    font-size:1.05rem;
+    color:var(--ink)
+}
+.navbar-brand strong {
+    font-weight:750
+}
+.nav-link {
+    font-size:.92rem
+}
+.main-content {
+    min-height:65vh;
+    padding-top:2rem;
+    padding-bottom:4rem
+}
+.btn {
+    font-weight:600;
+    border-radius:.6rem;
+    padding:.65rem 1.1rem
+}
+.btn-sm {
+    padding:.35rem .65rem;
+    font-size:.8rem
+}
+.btn-primary {
+    --bs-btn-bg:var(--brand);
+    --bs-btn-border-color:var(--brand);
+    --bs-btn-hover-bg:var(--brand-dark);
+    --bs-btn-hover-border-color:var(--brand-dark);
+    --bs-btn-active-bg:var(--brand-dark);
+    --bs-btn-active-border-color:var(--brand-dark)
+}
+.btn-outline-primary {
+    --bs-btn-color:var(--brand);
+    --bs-btn-border-color:var(--brand);
+    --bs-btn-hover-bg:var(--brand);
+    --bs-btn-hover-border-color:var(--brand);
+    --bs-btn-active-bg:var(--brand);
+    --bs-btn-active-border-color:var(--brand)
+}
+.hero {
+    padding:2.5rem 0 3rem
+}
+.hero h1 {
+    font-size:clamp(2.6rem,4.8vw,4.1rem);
+    max-width:760px
+}
+.hero .lead {
+    font-size:1.12rem;
+    max-width:600px;
+    color:var(--muted);
+    margin:1.5rem 0
+}
+.hero-image {
+    width:100%;
+    height:auto
+}
+.eyebrow {
+    font-size:.74rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-weight:750;
+    color:var(--brand);
+    margin-bottom:.85rem
+}
+.stats-strip {
+    border-block:1px solid var(--line);
+    padding:1.5rem 0
+}
+.stats-strip strong {
+    display:block;
+    font-size:2.2rem
+}
+.stats-strip span {
+    font-size:.85rem;
+    color:var(--muted)
+}
+.section-space {
+    margin-top:4.5rem
+}
+.step-card {
+    padding:1.35rem 0
+}
+.step-number {
+    display:inline-grid;
+    place-items:center;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#e2eee5;
+    margin-bottom:1.2rem;
+    font-weight:750
+}
+.step-card p {
+    font-size:.95rem;
+    color:var(--muted)
+}
+.card {
+    border:1px solid var(--line);
+    border-radius:1rem;
+    overflow:hidden
+}
+.card-body {
+    padding:1.5rem
+}
+.card-banner {
+    background:#e5eee2;
+    min-height:105px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.5rem;
+    gap:1rem;
+    font-size:.8rem;
+    font-weight:650
+}
+.card-description {
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden
+}
+.why-section {
+    background:var(--mint);
+    border-radius:1rem;
+    padding:2.5rem
+}
+.text-link {
+    font-weight:650;
+    text-underline-offset:4px
+}
+.page-heading {
+    margin:1rem 0 2rem
+}
+.page-heading h1 {
+    margin-bottom:1rem
+}
+.panel,.stat-card {
+    background:white;
+    border:1px solid var(--line);
+    border-radius:1rem;
+    padding:1.7rem
+}
+.panel.row {
+    margin-left:0;
+    margin-right:0
+}
+.stat-card p {
+    color:var(--muted);
+    margin:0;
+    font-size:.9rem
+}
+.stat-card strong {
+    font-size:2.4rem
+}
+.auth-shell {
+    max-width:760px;
+    margin:2rem auto
+}
+.form-label {
+    font-weight:600;
+    font-size:.9rem
+}
+.form-control,.form-select {
+    padding:.75rem;
+    border-color:#bacbc1
+}
+.form-control:focus,.form-select:focus {
+    border-color:var(--brand);
+    box-shadow:0 0 0 .2rem #17624d22
+}
+.table {
+    font-size:.9rem;
+    --bs-table-bg:transparent
+}
+.table th {
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:#567061;
+    padding-block:1rem;
+    white-space:nowrap
+}
+.table td {
+    padding-block:1rem
+}
+.action-group {
+    display:flex;
+    flex-wrap:wrap;
+    gap:.4rem;
+    min-width:150px
+}
+.badge {
+    letter-spacing:.025em;
+    font-size:.7rem
+}
+.admin-nav {
+    background:#183f32
+}
+.admin-nav a {
+    color:#fff;
+    padding:.4rem .75rem;
+    text-decoration:none;
+    font-size:.86rem;
+    border-radius:.4rem
+}
+.admin-nav a:hover {
+    background:#ffffff22
+}
+.empty-state {
+    text-align:center;
+    padding:3rem;
+    background:white;
+    border:1px dashed var(--line);
+    border-radius:1rem
+}
+.status-steps {
+    display:flex;
+    gap:1rem;
+    list-style:none;
+    padding:0;
+    flex-wrap:wrap;
+    margin:2rem 0
+}
+.status-steps li {
+    padding:.6rem 1rem;
+    background:#eef0ee;
+    border-radius:.5rem;
+    color:#5b635e
+}
+.status-steps .complete {
+    background:#d9eee0;
+    color:#16432b;
+    font-weight:650
+}
+.preserve-lines {
+    white-space:pre-line;
+    overflow-wrap:anywhere
+}
+dd {
+    overflow-wrap:anywhere
+}
+.site-footer {
+    background:#153b2e;
+    color:#eef5ef;
+    padding:2.5rem 0
+}
+.site-footer a {
+    color:#e3eee6;
+    font-size:.85rem
+}
+.site-footer p {
+    color:#c6d9cd
+}
+.skip-link {
+    position:absolute;
+    left:1rem;
+    top:-100px;
+    background:white;
+    padding:1rem;
+    z-index:10000
+}
+.skip-link:focus {
+    top:1rem
+}
+:focus-visible {
+    outline:3px solid #d69021;
+    outline-offset:3px
+}
+@media(max-width:767px) {
+    .main-content {
+        padding-top:1rem
+    }
+    .hero {
+        padding:1rem 0 2rem
+    }
+    .hero-image {
+        max-height:320px
+    }
+    .section-space {
+        margin-top:3rem
+    }
+    .why-section,.panel {
+        padding:1.25rem
+    }
+    .navbar-brand {
+        font-size:.95rem
+    }
+    .stats-strip>div {
+        padding:.5rem
+    }
+    .table-responsive {
+        padding:.7rem
+    }
+    .hero .btn {
+        width:100%
+    }
+    .page-heading {
+        margin-bottom:1.5rem
+    }
+}
