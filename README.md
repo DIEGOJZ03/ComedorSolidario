@@ -1,5 +1,49 @@
 # LEEME - Comedor Solidario: rúbrica y funcionamiento
 
+## Actualización visual del 21/10/2026
+
+Se mejoraron las plantillas existentes del inicio y de los dashboards administrativo y del donador. Se conserva Bootstrap, la navegación por roles, los formularios CRUD, la conexión JDBC y los datos reales del sistema.
+
+- Inicio: portada con la imagen de comunidad existente, nueva composición, indicadores de MySQL, tarjetas con fotografía, pasos para donar y llamada a la acción.
+- Administración: resumen de comedores, donadores y donaciones vigentes; barras proporcionales por estado; acceso a pendientes y a los seis módulos. No se muestran tendencias ni porcentajes inventados.
+- Donador: resumen de sus aportes vigentes, seguimiento por estado y accesos a donar, buscar comedores y perfil.
+- Fotos: una imagen por ID de comedor, compartida entre inicio, catálogo y detalle público. Sin imagen, se usa una ilustración genérica de respaldo.
+- Diseño adaptable: ajustes para móvil y escritorio, foco de teclado, etiquetas de accesibilidad y respeto de la preferencia de movimiento reducido.
+
+### Dónde guardar las fotos
+
+Dentro del proyecto: **web/assets/img/comedores/**.
+
+1. Entra a Administración > Comedores y consulta el ID del registro.
+2. Guarda una fotografía horizontal con ese ID: por ejemplo, **3.jpg** para el comedor 3.
+3. Se admiten extensiones minúsculas **jpg, jpeg, png y webp**, en ese orden de prioridad. Mantén una sola foto por ID. No basta con renombrar una extensión: exporta la imagen en el formato correcto.
+4. Se recomienda 1200 x 750 píxeles y menos de 1 MB. Las tarjetas recortan el encuadre para mantener el mismo tamaño.
+5. Detén Tomcat, ejecuta **Clean and Build**, después **Run** y recarga con **Ctrl+F5**.
+
+La misma imagen aparecerá en el catálogo, en el detalle del comedor y en los destacados cuando el registro forme parte de esa selección. No edites imágenes dentro de target ni de la carpeta desplegada de Tomcat; se regeneran al compilar. No hace falta modificar SQL.
+
+La foto principal del inicio es **web/assets/img/comunidad.png**. Puedes reemplazarla por otro PNG y volver a desplegar. Las instrucciones también están junto a las imágenes, en **web/assets/img/comedores/LEEME.md**.
+
+### Archivos del rediseño
+
+- web/index.jsp; web/views/admin/dashboard.jsp; web/views/donante/dashboard.jsp.
+- web/views/common/cards-comedores.jspf y web/views/public/detalle-comedor.jsp.
+- web/views/common/header.jspf: carga la nueva hoja de estilos.
+- web/assets/css/refresh.css: amplía los estilos existentes.
+- web/assets/js/main.js: respaldo de imágenes y señalización de la navegación actual; conserva la confirmación de acciones.
+- web/WEB-INF/tags/fotoComedor.tag e icono.tag: componentes de presentación reutilizables.
+- web/assets/img/iconos.svg y web/assets/img/comedores/sin-foto.svg: recursos locales.
+
+### Verificación del rediseño
+
+Maven package finalizó con BUILD SUCCESS. Las JSP y sus etiquetas se compilaron con Jasper de Tomcat: 0 errores. main.js pasó node --check. Los cambios de presentación no añaden columnas ni modifican las consultas JDBC.
+
+No se pudo realizar la inspección visual en navegador ni ejecutar HTTP contra el Tomcat local desde la sesión de asistencia (acceso a socket bloqueado). Al desplegar, revisar inicio, ambos dashboards, menú móvil, tarjetas con y sin foto y detalle del comedor. Comprobar también el caso de cero donaciones: las barras deben permanecer vacías, sin división por cero.
+
+Los cambios de configuración que ya existían en nbactions.xml y web/META-INF/context.xml no forman parte de este rediseño.
+
+---
+
 Actualizado el 20/10/2026. Esta guía reemplaza las instrucciones anteriores que llamaban "Eliminar" a una desactivación. El archivo leeme.md original se conserva.
 
 ## 1. Eliminar, desactivar y reactivar

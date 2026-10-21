@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <c:set var="titulo" value="Detalle del comedor"/>
 <%@ include file="/views/common/header.jspf" %>
 <a class="text-link" href="${ctx}/comedores">← Volver a comedores</a>
@@ -7,6 +8,7 @@
     <p class="eyebrow"><c:out value="${comedor.distrito}"/> · <c:out value="${comedor.provincia}"/></p>
     <h1><c:out value="${comedor.nombre}"/></h1>
 </div>
+<div class="detail-comedor-photo"><ui:fotoComedor id="${comedor.id}" nombre="${comedor.nombre}"/></div>
 <div class="row g-4">
     <div class="col-lg-8">
         <section class="panel">

@@ -38,7 +38,7 @@ public class ComedorDAO extends JdbcDAO {
 
     public void guardar(Comedor c) throws SQLException {
         if (c.getId() == 0) {
-            ejecutar(
+            c.setId(insertar(
                     "INSERT INTO comedores(nombre,descripcion,direccion,zona,distrito,provincia,responsable,telefono,estado) VALUES (?,?,?,?,?,?,?,?,?)",
                     c.getNombre(),
                     c.getDescripcion(),
@@ -48,7 +48,7 @@ public class ComedorDAO extends JdbcDAO {
                     c.getProvincia(),
                     c.getResponsable(),
                     c.getTelefono(),
-                    c.getEstado());
+                    c.getEstado()));
         } else {
             if (ejecutar(
                             "UPDATE comedores SET nombre=?,descripcion=?,direccion=?,zona=?,distrito=?,provincia=?,responsable=?,telefono=?,estado=? WHERE id=?",

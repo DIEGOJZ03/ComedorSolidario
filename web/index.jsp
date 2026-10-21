@@ -1,102 +1,49 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<c:if test="${empty inicioCargado}">
-    <c:redirect url="/inicio"/>
-</c:if>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
+<c:if test="${empty inicioCargado}"><c:redirect url="/inicio"/></c:if>
 <c:set var="titulo" value="Inicio"/>
 <%@ include file="/views/common/header.jspf" %>
-<section class="hero">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-7">
-            <p class="eyebrow">Pequeños aportes. Grandes cambios.</p>
-            <h1>Tu ayuda puede llegar a quienes más la necesitan</h1>
-            <p class="lead">Conecta con comedores comunitarios, conoce sus necesidades y acompaña el recorrido de tu donación.</p>
-            <div class="d-flex flex-wrap gap-3">
-                <a class="btn btn-primary btn-lg" href="${ctx}/comedores">Ver comedores</a>
-                <a class="btn btn-outline-primary btn-lg" href="${ctx}/donante/donaciones/nueva">Quiero donar</a>
+<div class="home-page">
+    <section class="welcome-hero" aria-labelledby="inicio-titulo">
+        <div class="hero-copy">
+            <p class="eyebrow"><span class="live-dot"></span> Una comunidad que comparte</p>
+            <h1 id="inicio-titulo">Una mesa más grande.<br><em>Un futuro más solidario.</em></h1>
+            <p class="hero-intro">Detrás de cada comedor hay personas que cuidan de su comunidad. Encuentra uno cerca de ti y transforma tu ayuda en un aporte concreto.</p>
+            <div class="hero-actions">
+                <a class="btn btn-primary btn-lg" href="${ctx}/comedores">Encuentra dónde ayudar <ui:icono nombre="arrow"/></a>
+                <a class="text-link" href="#como-ayudar">Así funciona</a>
             </div>
-            <p class="small text-secondary mt-4">Una comunidad que comparte, una mesa que crece.</p>
+            <div class="hero-footnote"><ui:icono nombre="heart"/><span>Conoce sus necesidades. Comparte lo que puedas.</span></div>
         </div>
-        <div class="col-lg-5">
-            <img class="hero-image" src="${ctx}/assets/img/comunidad.png" alt="Ilustración de una mesa con alimentos compartidos">
-        </div>
-    </div>
-</section>
-<section class="stats-strip row g-0 text-center" aria-label="Actividad de la plataforma">
-    <div class="col-sm-4">
-        <strong>${totalComedores}</strong>
-        <span>Comedores activos</span>
-    </div>
-    <div class="col-sm-4">
-        <strong>${totalDonadores}</strong>
-        <span>Donadores registrados</span>
-    </div>
-    <div class="col-sm-4">
-        <strong>${resumen.ENTREGADA}</strong>
-        <span>Donaciones entregadas</span>
-    </div>
-</section>
-<section id="como-ayudar" class="section-space">
-    <p class="eyebrow">Ayudar es sencillo</p>
-    <h2>¿Cómo funciona?</h2>
-    <div class="row g-4 mt-1">
-        <div class="col-md-6 col-xl-3">
-            <div class="step-card">
-                <span class="step-number">01</span>
-                <h3 class="h5">Busca un comedor</h3>
-                <p>Encuentra una comunidad por zona, distrito o provincia.</p>
+        <div class="hero-visual">
+            <div class="hero-photo-frame">
+            <img src="${ctx}/assets/img/comunidad.png" class="community-cover" alt="Personas reunidas frente a un comedor comunitario" width="1235" height="755" fetchpriority="high">
+            <div class="photo-caption"><span class="caption-label">El corazón de la comunidad</span><strong>Juntos, alimentamos<br>nuevas posibilidades.</strong></div>
             </div>
+            <a class="floating-note" href="${ctx}/comedores"><span class="icon-tile"><ui:icono nombre="home"/></span><span><strong>${totalComedores} comedores activos</strong><small>Encuentra tu próxima causa</small></span><ui:icono nombre="arrow"/></a>
         </div>
-        <div class="col-md-6 col-xl-3">
-            <div class="step-card">
-                <span class="step-number">02</span>
-                <h3 class="h5">Consulta sus necesidades</h3>
-                <p>Conoce qué productos y cantidades se necesitan.</p>
-            </div>
+    </section>
+    <section class="community-stats" aria-label="Actividad de la plataforma">
+        <div class="stats-intro"><span class="eyebrow">Cada aporte cuenta</span><h2>Una red que se construye contigo.</h2></div>
+        <div class="community-stat"><strong>${totalComedores}</strong><span>Comedores activos</span></div>
+        <div class="community-stat"><strong>${totalDonadores}</strong><span>Donadores registrados</span></div>
+        <div class="community-stat"><strong>${resumen.ENTREGADA}</strong><span>Donaciones entregadas</span></div>
+    </section>
+    <section class="section-space" aria-labelledby="destacados-titulo">
+        <div class="section-heading"><div><p class="eyebrow">Encuentra tu próxima causa</p><h2 id="destacados-titulo">Comedores destacados</h2><p>Conoce sus historias y descubre cómo puedes sumar.</p></div><a href="${ctx}/comedores" class="text-link">Explorar todos <ui:icono nombre="arrow"/></a></div>
+        <c:set var="comedores" value="${destacados}"/>
+        <%@ include file="/views/common/cards-comedores.jspf" %>
+    </section>
+    <section id="como-ayudar" class="section-space help-section" aria-labelledby="ayuda-titulo">
+        <div class="section-heading"><div><p class="eyebrow">De la intención a la acción</p><h2 id="ayuda-titulo">Ayudar empieza con un paso.</h2></div><p>Elige una comunidad y acompaña<br class="d-none d-md-block"> el recorrido de tu aporte.</p></div>
+        <div class="help-grid">
+            <article class="help-step"><span class="step-number">01</span><ui:icono nombre="pin"/><h3>Encuentra un comedor</h3><p>Explora por zona, distrito o provincia y conoce a la comunidad.</p></article>
+            <article class="help-step"><span class="step-number">02</span><ui:icono nombre="list"/><h3>Conoce lo que necesita</h3><p>Revisa los productos, cantidades y prioridades publicados.</p></article>
+            <article class="help-step"><span class="step-number">03</span><ui:icono nombre="heart"/><h3>Comparte tu aporte</h3><p>Registra qué vas a donar y a qué comedor quieres apoyar.</p></article>
+            <article class="help-step"><span class="step-number">04</span><ui:icono nombre="check"/><h3>Sigue su recorrido</h3><p>Consulta cuándo tu donación es aceptada y entregada.</p></article>
         </div>
-        <div class="col-md-6 col-xl-3">
-            <div class="step-card">
-                <span class="step-number">03</span>
-                <h3 class="h5">Registra tu donación</h3>
-                <p>Elige el comedor y describe lo que vas a aportar.</p>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-3">
-            <div class="step-card">
-                <span class="step-number">04</span>
-                <h3 class="h5">Realiza seguimiento</h3>
-                <p>Consulta si tu aporte fue aceptado y entregado.</p>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="section-space">
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
-        <div>
-            <p class="eyebrow">Cerca de ti</p>
-            <h2 class="mb-0">Comedores destacados</h2>
-        </div>
-        <a href="${ctx}/comedores" class="text-link">Explorar todos →</a>
-    </div>
-    <c:set var="comedores" value="${destacados}"/>
-    <%@ include file="/views/common/cards-comedores.jspf" %>
-</section>
-<section class="why-section section-space">
-    <p class="eyebrow">Solidaridad con seguimiento</p>
-    <h2>¿Por qué Comedor Solidario?</h2>
-    <div class="row g-4 mt-2">
-        <div class="col-md-4">
-            <h3 class="h5">Información en un lugar</h3>
-            <p>Comedores, necesidades y aportes organizados para facilitar la coordinación.</p>
-        </div>
-        <div class="col-md-4">
-            <h3 class="h5">Ayuda que responde</h3>
-            <p>Conoce las prioridades de cada comedor antes de registrar tu donación.</p>
-        </div>
-        <div class="col-md-4">
-            <h3 class="h5">Estados claros</h3>
-            <p>Sigue tu aporte desde el registro hasta la confirmación de entrega.</p>
-        </div>
-    </div>
-</section>
+    </section>
+    <section class="join-banner section-space"><div><p class="eyebrow">Siempre hay una forma de sumar</p><h2>Tu próximo gesto puede<br>empezar aquí.</h2><p>Una comunidad que comparte, una mesa que crece.</p></div><a class="btn btn-lime btn-lg" href="${ctx}/comedores">Quiero ayudar <ui:icono nombre="arrow"/></a></section>
+</div>
 <%@ include file="/views/common/footer.jspf" %>

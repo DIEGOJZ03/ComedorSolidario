@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <c:set var="titulo" value="Formulario de comedor"/>
 <%@ include file="/views/common/header.jspf" %>
 <div class="page-heading">
@@ -7,7 +8,7 @@
     <h1>${comedor.id == 0 ? "Registrar comedor" : "Editar comedor"}</h1>
     <p class="text-secondary">Completa la información que verán los donadores.</p>
 </div>
-<form method="post" action="${ctx}/admin/comedores" class="panel row g-3" >
+<form method="post" action="${ctx}/admin/comedores" enctype="multipart/form-data" class="panel row g-3">
     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
     <input type="hidden" name="accion" value="guardar">
     <input type="hidden" name="id" value="${comedor.id}">
@@ -49,6 +50,25 @@
     <div class="col-12">
         <label class="form-label" for="descripcion">Descripción</label>
         <textarea class="form-control" id="descripcion" name="descripcion" rows="3" maxlength="1500" required><c:out value="${pageContext.request.method eq 'POST' ? param.descripcion : comedor.descripcion}"/></textarea>
+    </div>
+    <div class="col-12">
+        <fieldset class="photo-editor" data-photo-editor>
+            <legend class="h5">Fotografía del comedor</legend>
+            <div class="photo-editor-grid">
+                <div class="photo-preview"><ui:fotoComedor id="${comedor.id}" nombre="${empty comedor.nombre ? 'Nuevo comedor' : comedor.nombre}"/></div>
+                <div>
+                    <label class="form-label" for="foto">Subir o reemplazar fotografía (opcional)</label>
+                    <input class="form-control" type="file" id="foto" name="foto" accept="image/jpeg,image/png" aria-describedby="foto-ayuda foto-error">
+                    <p id="foto-ayuda" class="form-text">JPG o PNG, máximo 5 MB. Recomendado: horizontal, 1200 × 750 píxeles. Si no seleccionas otra foto, se conserva la actual.</p>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="fotoPredeterminada" name="fotoPredeterminada" value="true">
+                        <label class="form-check-label" for="fotoPredeterminada">Usar la imagen predeterminada</label>
+                    </div>
+                    <p id="foto-error" class="small text-danger mt-2" role="status"></p>
+                    <p class="form-text mb-0">La fotografía se aplica al pulsar Guardar comedor. Si hay errores en el formulario, vuelve a seleccionar el archivo.</p>
+                </div>
+            </div>
+        </fieldset>
     </div>
     <div class="col-12 d-flex gap-2 mt-4">
         <button class="btn btn-primary" type="submit">Guardar comedor</button>

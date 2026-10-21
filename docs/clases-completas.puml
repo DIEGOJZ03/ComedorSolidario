@@ -226,6 +226,7 @@ class DonacionDAO {
   - map(rs : ResultSet) : Donacion
 }
 abstract class JdbcDAO {
+  # insertar(sql : String, parametros : Object...) : int
   # eliminarRegistro(sql : String, id : int, mensajeRelacionado : String) : void
   # consultar(sql : String, mapper : Mapper<T>, parametros : Object...) : List<T>
   # ejecutar(sql : String, parametros : Object...) : int
@@ -271,6 +272,9 @@ class AdminCampaniaServlet {
 class AdminComedorServlet {
   # get(r : HttpServletRequest, s : HttpServletResponse) : void
   # post(r : HttpServletRequest, s : HttpServletResponse) : void
+}
+class FotoComedorServlet {
+  # get(r : HttpServletRequest, s : HttpServletResponse) : void
 }
 class AdminDashboardServlet {
   # get(r : HttpServletRequest, s : HttpServletResponse) : void
@@ -353,6 +357,15 @@ class PasswordUtil {
   + {static} hash(password : String) : String
   + {static} verificar(password : String, almacenado : String) : boolean
   - {static} derivar(password : String, sal : byte[], iteraciones : int) : byte[]
+}
+class ImagenComedor {
+  + {static} MAX_BYTES : long
+  - directorio : Path
+  + ImagenComedor()
+  + buscar(id : int) : Path
+  + preparar(foto : Part, predeterminada : boolean) : Path
+  - validar(foto : Part) : BufferedImage
+  + guardar(temporal : Path, id : int) : void
 }
 class ValidacionUtil {
   - ValidacionUtil()
@@ -487,4 +500,8 @@ note right of Campania
   Tabla campanias. Fechas LocalDate / DATE.
   fechaFin >= fechaInicio.
 end note
+BaseServlet <|-- FotoComedorServlet
+FotoComedorServlet ..> ComedorDAO
+FotoComedorServlet ..> ImagenComedor
+AdminComedorServlet ..> ImagenComedor
 @enduml

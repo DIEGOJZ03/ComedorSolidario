@@ -32,6 +32,18 @@ public abstract class JdbcDAO {
         }
     }
 
+    protected int insertar(String sql, Object... parametros) throws SQLException {
+        try (Connection cn = ConexionBD.getConnection();
+                PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            asignar(ps, parametros);
+            if (ps.executeUpdate() != 1) throw new SQLException("No se pudo crear el registro.");
+            try (ResultSet claves = ps.getGeneratedKeys()) {
+                if (!claves.next()) throw new SQLException("No se obtuvo el ID del registro.");
+                return claves.getInt(1);
+            }
+        }
+    }
+
     protected void eliminarRegistro(String sql, int id, String mensajeRelacionado)
             throws SQLException {
         if (id <= 0) throw new IllegalArgumentException("Identificador inválido.");
