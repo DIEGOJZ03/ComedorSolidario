@@ -92,3 +92,4 @@
     </div>
 </form>
 <%@ include file="/views/common/footer.jspf" %>
+message.txt

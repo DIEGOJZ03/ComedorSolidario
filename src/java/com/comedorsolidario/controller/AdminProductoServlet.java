@@ -7,13 +7,30 @@ import java.sql.SQLException;
 import com.comedorsolidario.dao.*;
 import com.comedorsolidario.model.*;
 import com.comedorsolidario.util.*;
+import com.comedorsolidario.service.ResumenProductosService;
+import java.util.List;
 import static com.comedorsolidario.util.ValidacionUtil.*;
 
-@WebServlet({"/admin/productos","/admin/productos/formulario","/admin/productos/detalle"})
+@WebServlet({"/admin/productos","/admin/productos/formulario","/admin/productos/detalle","/admin/productos/distribucion"})
 public class AdminProductoServlet extends BaseServlet {
     protected void get(HttpServletRequest r,HttpServletResponse s) throws ServletException,IOException,SQLException {
         ProductoDAO dao=new ProductoDAO();
-        if(r.getServletPath().equals("/admin/productos")) {r.setAttribute("items",dao.listar());vista(r,s,"admin/productos/listar.jsp");return;}
+        if(r.getServletPath().equals("/admin/productos/distribucion")) {
+            String nombre = texto(r, "nombre", 100, true);
+            String unidad = texto(r, "unidad", 30, true);
+            ResumenProducto producto = new ResumenProductosService().buscar(
+                    new NecesidadDAO().listar(null, true), nombre, unidad);
+            if (producto == null) { s.sendError(404); return; }
+            r.setAttribute("producto", producto);
+            vista(r,s,"admin/productos/distribucion.jsp");
+            return;
+        }
+        if(r.getServletPath().equals("/admin/productos")) {
+            List<Necesidad> necesidades = new NecesidadDAO().listar(null, true);
+            r.setAttribute("catalogo", new ResumenProductosService().resumir(necesidades));
+            vista(r,s,"admin/productos/listar.jsp");
+            return;
+        }
         Producto o=new Producto();o.setEstado("ACTIVO");
         if(r.getParameter("id")!=null)o=dao.buscar(id(r.getParameter("id")));
         if(o==null || (r.getServletPath().endsWith("/detalle") && o.getId()==0)){s.sendError(404);return;}

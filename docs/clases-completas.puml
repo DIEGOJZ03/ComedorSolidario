@@ -516,4 +516,40 @@ FotoComedorServlet ..> ComedorDAO
 FotoComedorServlet ..> ImagenComedor
 AdminComedorServlet ..> ImagenComedor
 AdminComedorServlet ..> UbicacionComedor
+package "com.comedorsolidario.model" {
+class ResumenProducto <<proyección de lectura>> {
+  - {static} LITROS_POR_ENVASE : BigDecimal
+  - nombre : String
+  - unidad : String
+  - cantidadTotal : BigDecimal
+  - necesidades : List<Necesidad>
+  + ResumenProducto(nombre : String, unidad : String, necesidades : List<Necesidad>)
+  + getNombre() : String
+  + getUnidad() : String
+  + getCantidadTotal() : BigDecimal
+  + getNecesidades() : List<Necesidad>
+  + getEnvases20Litros() : BigDecimal
+  + getLitrosRestantes() : BigDecimal
+}
+}
+package "com.comedorsolidario.service" {
+class ResumenProductosService {
+  + ResumenProductosService()
+  + buscar(necesidades : List<Necesidad>, nombre : String, unidad : String) : ResumenProducto
+  + resumir(necesidades : List<Necesidad>) : List<ResumenProducto>
+  - normalizar(valor : String) : String
+  - unidad(valor : String) : String
+}
+}
+AdminProductoServlet ..> ResumenProductosService
+AdminProductoServlet ..> NecesidadDAO
+ResumenProductosService ..> Necesidad
+ResumenProductosService ..> ResumenProducto : crea
+ResumenProducto "0..*" o-- "1..*" Necesidad : solicitudes de origen
+note right of ResumenProducto
+  No tiene tabla propia ni modifica existencias.
+  Total calculado con BigDecimal para un producto y unidad.
+  Envases de 20 L: equivalencia de volumen, no botellas registradas.
+  Getters sin setters para datos derivados.
+end note
 @enduml

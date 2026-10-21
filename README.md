@@ -1,5 +1,32 @@
 # LEEME - Comedor Solidario: rúbrica y funcionamiento
 
+## Productos: catálogo sencillo desde Necesidades (21/10/2026)
+
+La pantalla **Admin > Productos** es una sola tabla con **Producto, Cantidad total, Presentación y Acciones**. Muestra los nombres registrados en Necesidades y suma sus cantidades por producto y unidad. Si solo se han registrado arroz y aceite, aparecerán esos productos. No usa nombres alternativos del catálogo de referencia.
+
+Se retiraron de esta vista el botón Crear producto de catálogo, Registrar necesidad, el bloque de necesidades activas, las categorías automáticas y la segunda tabla de catálogo. No se borraron productos ni necesidades de la base. Los formularios y controladores anteriores de productos se conservan, pero sus acciones no se presentan en esta pantalla de consulta.
+
+**Acciones > Ver:** abre una página independiente en /admin/productos/distribucion. Se eliminó el detalle desplegable que alargaba las filas del listado. La nueva página muestra el nombre del producto, total y presentación, seguidos de una tabla con comedor destinatario, cantidad y unidad original, prioridad y botón Ver solicitud. El nombre del comedor abre sus datos y Volver a productos regresa al catálogo. Si un comedor tiene varias solicitudes, cada una aparece identificada por su número.
+
+El enlace identifica el producto por nombre y unidad, con parámetros codificados; no usa posiciones de fila ni IDs de un catálogo distinto. El servidor vuelve a consultar las necesidades vigentes y calcula el total y su detalle con las mismas solicitudes. Si el producto ya no tiene solicitudes activas en comedores activos, devuelve 404. No se agregaron botones de creación ni categorías.
+
+El origen es la solicitud registrada en Necesidades y el destino es el comedor que requiere esa cantidad. Esto no identifica a un donante/proveedor ni confirma entregas: esa información no se deduce de las necesidades.
+
+- Arroz y azúcar se suman por separado, aunque ambos estén en kg. Tampoco se mezclan kg con litros o cajas. Se reconocen variantes de escritura como kg/kilos y litro/litros.
+- Para líquidos, la presentación muestra la **equivalencia en envases de 20 L**: 100 L equivalen a 5 envases; 105 L equivalen a 5 envases más 5 L restantes. Menos de 20 L muestra cero envases completos y el volumen restante. No se redondea hacia arriba.
+- Los envases de 20 L son una referencia de presentación solicitada, no una capacidad real registrada: las necesidades actuales guardan cantidad y unidad, pero no número de botellas ni capacidad de cada una. No se presenta esta equivalencia como inventario.
+- Las cantidades son las solicitadas en necesidades ACTIVA de comedores ACTIVO. Quitar el bloque visual de necesidades activas no cambia ese criterio. Para cambiar el producto o la cantidad, se edita la necesidad en su propia sección. Al volver a abrir Productos, JDBC consulta los datos y recalcula el catálogo.
+
+**Para verlo:** detener la aplicación, Clean and Build, Run y Ctrl+F5. Abrir Admin > Productos y pulsar Ver en la columna Acciones junto a Arroz o Aceite. Comprobar que se abre una página independiente, que las cantidades detalladas suman su total y que funcionan Ver solicitud, el enlace al comedor y Volver a productos. No se requieren migraciones SQL ni volver a registrar datos.
+
+Implementación: AdminProductoServlet consulta NecesidadDAO.listar(null, true); ResumenProductosService agrupa por nombre y unidad; ResumenProducto calcula la equivalencia de líquidos. No se guardan totales duplicados en MySQL. El diagrama técnico existente refleja las clases actuales.
+
+La verificación local utiliza datos en memoria y no modifica MySQL. Después de compilar se puede repetir desde la raíz del proyecto:
+
+```powershell
+java --class-path target/classes verificacion/VerificarResumenProductos.java
+```
+
 ## Buscador público: provincia, distrito y zona (21/10/2026)
 
 Desde Inicio > Comedores destacados > Explorar todos, el catálogo público presenta Provincia antes de Distrito, ambos como desplegables. Utiliza el mismo catálogo de ubicaciones que el administrador. La búsqueda inicial muestra todas las provincias; al elegir Lima o Callao se habilitan sus distritos. Se puede dejar Todos los distritos para consultar la provincia completa. Cambiar de provincia limpia el distrito anterior y Limpiar restablece todos los filtros.
