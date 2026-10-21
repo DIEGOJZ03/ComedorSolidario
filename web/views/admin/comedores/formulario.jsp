@@ -50,7 +50,7 @@
     </div>
     <div class="col-md-6">
         <label class="form-label" for="responsable">Responsable</label>
-        <input class="form-control" id="responsable" name="responsable" type="text" maxlength="120" required value='<c:out value="${pageContext.request.method eq \'POST\' ? param.responsable : comedor.responsable}"/>'>
+        <input class="form-control" id="responsable" name="responsable" type="text" maxlength="120" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.responsable : comedor.responsable}"/>'>
     </div>
     <div class="col-md-6">
         <label class="form-label" for="telefono">Teléfono</label>
