@@ -83,3 +83,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.addEventListener('pagehide', release);
 });
+
+// Las opciones provienen del catálogo del servidor; al cambiar provincia se limpia el distrito.
+document.addEventListener('DOMContentLoaded', () => {
+    const provincia = document.querySelector('[data-provincia-comedor]');
+    const distrito = document.querySelector('[data-distrito-comedor]');
+    if (!provincia || !distrito) return;
+    const opciones = new Map(Array.from(distrito.querySelectorAll('optgroup'), group => [
+        group.dataset.provincia,
+        Array.from(group.querySelectorAll('option'), option => ({ value: option.value, text: option.textContent }))
+    ]));
+    const actualizar = (seleccion = '') => {
+        const disponibles = opciones.get(provincia.value) || [];
+        distrito.replaceChildren(new Option(disponibles.length ? (distrito.dataset.placeholder || 'Selecciona un distrito') : 'Selecciona primero una provincia', ''));
+        disponibles.forEach(option => distrito.add(new Option(option.text, option.value)));
+        distrito.disabled = disponibles.length === 0;
+        distrito.value = disponibles.some(option => option.value === seleccion) ? seleccion : '';
+    };
+    actualizar(distrito.value);
+    provincia.addEventListener('change', () => actualizar());
+});

@@ -1,5 +1,15 @@
 # Fotos de los comedores
 
+## Opción recomendada: cargar desde la web
+
+Entra como ADMIN a Comedores > Crear o Editar > Fotografía del comedor. Selecciona un JPG/PNG de hasta 5 MB y guarda. No debes renombrar ni copiar el archivo: el sistema lo asocia al ID y lo muestra al recargar. Puedes conservar la foto actual o marcar Usar la imagen predeterminada.
+
+Las cargas se guardan fuera del proyecto, en [usuario que ejecuta Tomcat]/ComedorSolidarioDatos/comedores; normalmente C:\Users\diego\ComedorSolidarioDatos\comedores. Así sobreviven a Clean and Build. CS_UPLOAD_DIR permite configurar otro directorio. Respalda esa carpeta junto con la base de datos; Git no sube esas fotografías automáticamente.
+
+Una fotografía subida o la elección explícita de predeterminada tiene prioridad sobre las imágenes de esta carpeta. Las fotos 1.jpg a 5.jpg se conservan y siguen funcionando mientras no se haya guardado otra elección para ese ID.
+
+## Opción manual: incluir fotos en el proyecto
+
 Guarda aquí las fotografías reales de cada comedor. El nombre debe ser su ID numérico, tal como aparece en Administración > Comedores.
 
 Ejemplos:

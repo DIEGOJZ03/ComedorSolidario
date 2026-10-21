@@ -24,6 +24,7 @@ public class AdminComedorServlet extends BaseServlet {
         if (ruta.endsWith("/formulario") || ruta.endsWith("/detalle")) {
             Comedor c = new Comedor();
             c.setEstado("ACTIVO");
+            c.setProvincia("Lima");
             if (r.getParameter("id") != null) c = dao.buscar(id(r.getParameter("id")));
             if (c == null || (ruta.endsWith("/detalle") && c.getId() == 0)) {
                 s.sendError(404);
@@ -32,6 +33,7 @@ public class AdminComedorServlet extends BaseServlet {
             r.setAttribute("comedor", c);
             if (ruta.endsWith("/detalle"))
                 r.setAttribute("necesidades", new NecesidadDAO().listar(c.getId(), false));
+            else cargarOpciones(r, c);
             vista(
                     r,
                     s,
@@ -75,9 +77,11 @@ public class AdminComedorServlet extends BaseServlet {
             c.setDescripcion(texto(r, "descripcion", 1500, true));
             c.setDireccion(texto(r, "direccion", 200, true));
             c.setZona(texto(r, "zona", 80, true));
-            c.setDistrito(texto(r, "distrito", 100, true));
-            c.setProvincia(texto(r, "provincia", 100, true));
+            c.setProvincia(UbicacionComedor.provincia(texto(r, "provincia", 100, true)));
+            c.setDistrito(UbicacionComedor.distrito(c.getProvincia(), texto(r, "distrito", 100, true)));
             c.setResponsable(texto(r, "responsable", 120, true));
+            if (!dao.listarResponsables().contains(c.getResponsable()))
+                throw new IllegalArgumentException("Selecciona un responsable ya registrado en los comedores. Si la lista cambió, vuelve a elegirlo.");
             c.setTelefono(texto(r, "telefono", 20, true));
             c.setEstado(opcion(r.getParameter("estado"), "ACTIVO", "INACTIVO"));
             Part foto = r.getContentType() != null && r.getContentType().startsWith("multipart/form-data")
@@ -102,6 +106,7 @@ public class AdminComedorServlet extends BaseServlet {
             s.setStatus(400);
             r.setAttribute("error", e.getMessage());
             r.setAttribute("comedor", c);
+            cargarOpciones(r, c);
             vista(r, s, "admin/comedores/formulario.jsp");
         } finally {
             if (temporal != null) {
@@ -109,5 +114,25 @@ public class AdminComedorServlet extends BaseServlet {
                 catch (IOException e) { getServletContext().log("No se pudo limpiar el archivo temporal de imagen", e); }
             }
         }
+    }
+
+    private void cargarOpciones(HttpServletRequest r, Comedor c) throws SQLException {
+        r.setAttribute("ubicaciones", UbicacionComedor.distritos());
+        r.setAttribute("responsables", new ComedorDAO().listarResponsables());
+        boolean enviado = "POST".equals(r.getMethod());
+        String provincia = enviado ? r.getParameter("provincia") : c.getProvincia();
+        String distrito = enviado ? r.getParameter("distrito") : c.getDistrito();
+        String seleccionProvincia = "", seleccionDistrito = "";
+        try {
+            seleccionProvincia = UbicacionComedor.provincia(provincia);
+            if (distrito != null && !distrito.isBlank())
+                seleccionDistrito = UbicacionComedor.distrito(seleccionProvincia, distrito);
+        } catch (IllegalArgumentException e) {
+            r.setAttribute("avisoUbicacion", "Revisa la ubicación: selecciona una provincia y un distrito de las listas.");
+        }
+        r.setAttribute("provinciaSeleccionada", seleccionProvincia);
+        r.setAttribute("distritoSeleccionado", seleccionDistrito);
+        String responsable = enviado ? r.getParameter("responsable") : c.getResponsable();
+        r.setAttribute("responsableSeleccionado", responsable == null ? "" : responsable.trim());
     }
 }

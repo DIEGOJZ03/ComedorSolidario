@@ -203,6 +203,7 @@ class CampaniaDAO {
   - map(rs : ResultSet) : Campania
 }
 class ComedorDAO {
+  + listarResponsables() : List<String>
   + eliminar(id : int) : void
   + listar(soloActivos : boolean, zona : String, distrito : String, provincia : String) : List<Comedor>
   + buscar(id : int) : Comedor
@@ -270,6 +271,7 @@ class AdminCampaniaServlet {
   # post(r : HttpServletRequest, s : HttpServletResponse) : void
 }
 class AdminComedorServlet {
+  - cargarOpciones(r : HttpServletRequest, c : Comedor) : void
   # get(r : HttpServletRequest, s : HttpServletResponse) : void
   # post(r : HttpServletRequest, s : HttpServletResponse) : void
 }
@@ -367,6 +369,14 @@ class ImagenComedor {
   - validar(foto : Part) : BufferedImage
   + guardar(temporal : Path, id : int) : void
 }
+class UbicacionComedor {
+  - {static} DISTRITOS : Map<String, List<String>>
+  - UbicacionComedor()
+  + {static} distritos() : Map<String, List<String>>
+  + {static} provincia(valor : String) : String
+  + {static} distrito(provincia : String, valor : String) : String
+  - {static} clave(valor : String) : String
+}
 class ValidacionUtil {
   - ValidacionUtil()
   + {static} texto(r : HttpServletRequest, campo : String, max : int, obligatorio : boolean) : String
@@ -435,6 +445,7 @@ ComedorServlet ..> CampaniaDAO
 ComedorServlet ..> ComedorDAO
 ComedorServlet ..> NecesidadDAO
 ComedorServlet ..> ValidacionUtil
+ComedorServlet ..> UbicacionComedor
 BaseServlet <|-- DonacionServlet
 DonacionServlet ..> Donacion
 DonacionServlet ..> ComedorDAO
@@ -504,4 +515,5 @@ BaseServlet <|-- FotoComedorServlet
 FotoComedorServlet ..> ComedorDAO
 FotoComedorServlet ..> ImagenComedor
 AdminComedorServlet ..> ImagenComedor
+AdminComedorServlet ..> UbicacionComedor
 @enduml

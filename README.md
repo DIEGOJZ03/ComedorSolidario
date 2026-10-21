@@ -1,5 +1,79 @@
 # LEEME - Comedor Solidario: rúbrica y funcionamiento
 
+## Buscador público: provincia, distrito y zona (21/10/2026)
+
+Desde Inicio > Comedores destacados > Explorar todos, el catálogo público presenta Provincia antes de Distrito, ambos como desplegables. Utiliza el mismo catálogo de ubicaciones que el administrador. La búsqueda inicial muestra todas las provincias; al elegir Lima o Callao se habilitan sus distritos. Se puede dejar Todos los distritos para consultar la provincia completa. Cambiar de provincia limpia el distrito anterior y Limpiar restablece todos los filtros.
+
+Zona es el sector general guardado en cada comedor (por ejemplo, Norte, Sur, Este, Centro u Oeste). Es un filtro opcional de texto y ahora tiene una explicación visible. No se calcula automáticamente a partir del distrito.
+
+Los resultados siguen consultándose por JDBC y solo incluyen comedores activos. Provincia y distrito se validan en el servidor; las consultas parametrizadas comparan la ubicación completa para evitar que buscar Lurigancho también incluya San Juan de Lurigancho. Se reconocen las denominaciones anteriores Lima/Cercado de Lima y Chosica/Lurigancho. Los filtros elegidos se conservan al mostrar los resultados.
+
+Para comprobarlo: Clean and Build, Run y Ctrl+F5. Abrir Comedores, elegir Lima y Comas, buscar y revisar las selecciones; cambiar a Callao para comprobar que se limpia el distrito; pulsar Limpiar para volver al listado completo. No se necesita ejecutar SQL ni cambiar los datos existentes.
+
+## Selección de provincia, distrito y responsable (21/10/2026)
+
+El formulario Crear/Editar comedor ahora presenta **Provincia antes de Distrito**. En registros nuevos se preselecciona Lima. El distrito es un desplegable con los 43 distritos de la provincia de Lima. Callao se mantiene como provincia independiente, con sus siete distritos, porque el proyecto ya incluye el comedor Unidos por el Callao.
+
+Al cambiar la provincia se actualizan los distritos y se limpia la selección anterior. Java vuelve a comprobar la combinación antes de guardar: no acepta, por ejemplo, Miraflores con provincia Callao, aunque se altere el formulario. Las ubicaciones existentes se conservan al editar si pertenecen al catálogo. Se admiten diferencias de mayúsculas/acentos, Lima como alias de Cercado de Lima y Chosica/Lurigancho-Chosica como alias de Lurigancho. Si una ubicación anterior queda fuera del alcance, el formulario solicita elegir una válida; no migra ni sobrescribe registros automáticamente.
+
+**Responsable** también es un desplegable. Sus opciones se consultan mediante JDBC desde los nombres que ya figuran en la columna comedores.responsable, sin duplicados ni nombres vacíos, incluyendo comedores inactivos. El servidor rechaza un nombre que no esté en esa lista. Se conserva el responsable al editar y se permite reutilizarlo en otro comedor.
+
+Los responsables actuales son contactos de comedores, no cuentas ADMIN/DONADOR. Esta actualización conserva responsable como String/VARCHAR y no crea una relación con usuarios ni asigna permisos nuevos. La selección guarda el nombre elegido; no sincroniza cambios de nombre entre distintos comedores. Si no existen responsables en la base, se muestra un aviso y se impide guardar sin una asignación válida. No se inventan responsables ni se utiliza automáticamente a un donador.
+
+**Activación:** detener Tomcat, Clean and Build, Run y Ctrl+F5. No ejecutar migraciones SQL. La carga de fotografías sigue funcionando como antes.
+
+**Comprobación manual:** crear un comedor seleccionando Lima y un distrito; elegir un responsable existente; guardar y abrir Editar para comprobar las selecciones. Cambiar a Callao y verificar que el distrito anterior se limpia. Probar también el comedor existente de Callao y un error en otro campo: el formulario debe volver a cargar sus listas.
+
+Archivos afectados: AdminComedorServlet, ComedorDAO, nueva utilidad UbicacionComedor, formulario.jsp de comedores, main.js y versión del script en footer.jspf. La vista técnica existente del diagrama se actualiza; las entidades del negocio y el esquema SQL no cambian.
+
+Fuentes del catálogo geográfico (consultadas el 21/10/2026): [lista de distritos publicada por la Embajada del Perú](https://www.peru-embajada.cz/files/lima-metropolitana.pdf) y [Municipalidad de Ventanilla, Plan de Acción de Seguridad Ciudadana 2023, sección de distritos de Callao](https://www.muniventanilla.gob.pe/contenidos-nfs/files/otrosEnlaces/codisec/PROPUESTA_DEL_PLAN_DE_ACCION_DISTRITAL_DE_SEGURIDAD_CIUDADANA_2023.pdf). El catálogo es local y no requiere Internet para funcionar.
+
+## Últimos ajustes: fotos desde administración y portada (21/10/2026)
+
+### Crear o editar un comedor con fotografía
+
+1. Inicia sesión como ADMIN y entra a **Comedores > Crear comedor** o **Editar**.
+2. Completa los datos y busca **Fotografía del comedor**, al final del formulario.
+3. Selecciona un **JPG o PNG de hasta 5 MB**. Verás una vista previa antes de guardar.
+4. Pulsa **Guardar comedor**. El sistema obtiene el ID asignado por MySQL y asocia la foto automáticamente: no tienes que renombrarla.
+5. Consulta el catálogo o el detalle público. Si ese comedor está entre los tres destacados, también aparecerá en el inicio.
+
+Si no eliges archivo, al editar se conserva la foto actual. Un comedor nuevo sin foto utiliza la ilustración predeterminada. Para quitar la foto visible, marca **Usar la imagen predeterminada** y guarda. Para reemplazarla después, selecciona otra fotografía.
+
+Se conserva la protección ADMIN y CSRF. El servidor comprueba el contenido real de la imagen, limita sus dimensiones a 6000 píxeles por lado y 16 millones de píxeles en total, y la vuelve a guardar como PNG. No usa el nombre original como ruta. Si el formulario tiene errores, vuelve a seleccionar el archivo antes de reenviar.
+
+### Carpeta de las imágenes subidas
+
+Las nuevas fotos se guardan fuera del WAR, en **[carpeta del usuario que ejecuta Tomcat]/ComedorSolidarioDatos/comedores**. Si ejecutas NetBeans/Tomcat con tu usuario Diego, la ruta habitual es:
+
+```text
+C:\Users\diego\ComedorSolidarioDatos\comedores
+```
+
+La carpeta se crea al guardar la primera foto o al elegir explícitamente la predeterminada. El archivo usa el ID: por ejemplo, **7.png**. La variable de entorno opcional **CS_UPLOAD_DIR** permite elegir otra carpeta; debe establecerse antes de iniciar NetBeans/Tomcat. La cuenta que ejecuta Tomcat necesita permiso de escritura en ella.
+
+Guardar una fotografía desde la web tiene efecto al recargar; **no necesita recompilar**. Las fotos sobreviven a Clean and Build porque están fuera de target y del despliegue. Un archivo PNG de cero bytes es la marca interna de elección de imagen predeterminada: no lo interpretes como una carga fallida ni lo reemplaces manualmente.
+
+Las cinco fotos existentes **1.jpg a 5.jpg** de web/assets/img/comedores se siguen usando mientras no exista una elección guardada por el administrador. La prioridad es: fotografía subida o elección de predeterminada, foto incluida en el proyecto y finalmente ilustración de respaldo. El endpoint /foto-comedor?id=ID sirve la imagen y comprueba que el comedor exista; para visitantes exige que esté activo, mientras ADMIN puede consultar también los inactivos.
+
+La aplicación guarda los archivos de imagen, no modifica el código Java ni hace commits. Para trasladar las fotografías subidas a otro equipo, respalda esta carpeta y la base de datos correspondiente; el push de Git no copia esa carpeta externa. Los archivos de un comedor eliminado no se sirven públicamente, aunque permanecen en el directorio de datos. Las fotos incluidas manualmente dentro del proyecto sí pueden versionarse con Git.
+
+### Correcciones del inicio
+
+- El título usa la misma familia tipográfica del sitio, sin la fuente serif ni cursiva anterior.
+- El recuadro de comedores activos ocupa una fila debajo de la fotografía, con separación propia; ya no se posiciona encima de ella. El pie descriptivo permanece dentro de la foto.
+- Se actualizaron las versiones de CSS y JavaScript para facilitar la recarga de estos cambios.
+
+### Activar y verificar esta entrega
+
+Detén Tomcat, ejecuta **Clean and Build > Run** y recarga con **Ctrl+F5**. Esta primera actualización de código sí requiere desplegar; las cargas de fotos posteriores se aplican directamente. **No se requiere migración SQL** ni cambiar las clases de negocio.
+
+La implementación añade ImagenComedor y FotoComedorServlet, configura multipart en AdminComedorServlet y obtiene claves generadas en ComedorDAO/JdbcDAO. Se actualizaron el formulario, la etiqueta compartida de fotos, las validaciones de tamaño en el filtro, JavaScript y estilos. La vista técnica existente del diagrama se ajustó a los nuevos métodos y clases.
+
+Verificación: Maven package y compilación Jasper de JSP completados correctamente; 21 aserciones aisladas de validación/almacenamiento de fotos y asociación del ID en verificacion/VerificarImagenComedor.java. Esta prueba usa una carpeta temporal y no toca MySQL ni fotografías reales. La prueba HTTP completa con tu Tomcat y la inspección visual siguen pendientes por el bloqueo de conexión local en la sesión de asistencia.
+
+Para demostrarlo: crear un comedor con foto; editar sin adjuntar otra y comprobar que se conserva; reemplazarla; elegir la predeterminada; intentar adjuntar un archivo que no sea imagen o supere el límite. Finalmente, reiniciar/desplegar de nuevo y comprobar que la elección permanece.
+
 ## Actualización visual del 21/10/2026
 
 Se mejoraron las plantillas existentes del inicio y de los dashboards administrativo y del donador. Se conserva Bootstrap, la navegación por roles, los formularios CRUD, la conexión JDBC y los datos reales del sistema.

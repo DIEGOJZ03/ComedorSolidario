@@ -21,20 +21,43 @@
         <input class="form-control" id="direccion" name="direccion" type="text" maxlength="200" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.direccion : comedor.direccion}"/>'>
     </div>
     <div class="col-md-6">
+        <label class="form-label" for="provincia">Provincia</label>
+        <select class="form-select" id="provincia" name="provincia" required data-provincia-comedor>
+            <option value="">Selecciona una provincia</option>
+            <c:forEach var="ubicacion" items="${ubicaciones}">
+                <option value="${ubicacion.key}" ${provinciaSeleccionada == ubicacion.key ? 'selected' : ''}><c:out value="${ubicacion.key}"/></option>
+            </c:forEach>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="distrito">Distrito</label>
+        <select class="form-select" id="distrito" name="distrito" required data-distrito-comedor aria-describedby="distrito-ayuda">
+            <option value="">Selecciona un distrito</option>
+            <c:forEach var="ubicacion" items="${ubicaciones}">
+                <optgroup label="${ubicacion.key}" data-provincia="${ubicacion.key}">
+                    <c:forEach var="d" items="${ubicacion.value}">
+                        <option value="<c:out value='${d}'/>" ${provinciaSeleccionada == ubicacion.key and distritoSeleccionado == d ? 'selected' : ''}><c:out value="${d}"/></option>
+                    </c:forEach>
+                </optgroup>
+            </c:forEach>
+        </select>
+        <p class="form-text" id="distrito-ayuda">Elige primero la provincia y después su distrito.</p>
+    </div>
+    <c:if test="${not empty avisoUbicacion}"><div class="col-12"><p class="text-danger mb-0" role="alert"><c:out value="${avisoUbicacion}"/></p></div></c:if>
+    <div class="col-md-6">
         <label class="form-label" for="zona">Zona</label>
         <input class="form-control" id="zona" name="zona" type="text" maxlength="80" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.zona : comedor.zona}"/>'>
     </div>
     <div class="col-md-6">
-        <label class="form-label" for="distrito">Distrito</label>
-        <input class="form-control" id="distrito" name="distrito" type="text" maxlength="100" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.distrito : comedor.distrito}"/>'>
-    </div>
-    <div class="col-md-6">
-        <label class="form-label" for="provincia">Provincia</label>
-        <input class="form-control" id="provincia" name="provincia" type="text" maxlength="100" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.provincia : comedor.provincia}"/>'>
-    </div>
-    <div class="col-md-6">
         <label class="form-label" for="responsable">Responsable</label>
-        <input class="form-control" id="responsable" name="responsable" type="text" maxlength="120" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.responsable : comedor.responsable}"/>'>
+        <select class="form-select" id="responsable" name="responsable" required aria-describedby="responsable-ayuda" ${empty responsables ? 'disabled' : ''}>
+            <option value="">Selecciona un responsable</option>
+            <c:forEach var="persona" items="${responsables}">
+                <option value="<c:out value='${persona}'/>" ${responsableSeleccionado == persona ? 'selected' : ''}><c:out value="${persona}"/></option>
+            </c:forEach>
+        </select>
+        <p class="form-text" id="responsable-ayuda">Responsables registrados en los comedores del sistema.</p>
+        <c:if test="${empty responsables}"><p class="text-danger" role="alert">No hay responsables registrados para asignar. Se necesita un responsable existente antes de crear este comedor.</p></c:if>
     </div>
     <div class="col-md-6">
         <label class="form-label" for="telefono">Teléfono</label>
@@ -71,7 +94,7 @@
         </fieldset>
     </div>
     <div class="col-12 d-flex gap-2 mt-4">
-        <button class="btn btn-primary" type="submit">Guardar comedor</button>
+        <button class="btn btn-primary" type="submit" ${empty responsables ? 'disabled' : ''}>Guardar comedor</button>
         <a class="btn btn-outline-secondary" href="${ctx}/admin/comedores">Volver</a>
     </div>
 </form>

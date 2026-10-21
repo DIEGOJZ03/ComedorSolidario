@@ -27,13 +27,18 @@ public class ComedorServlet extends BaseServlet {
             r.setAttribute("necesidades", new NecesidadDAO().listar(c.getId(), true));
             vista(r, s, "public/detalle-comedor.jsp");
         } else {
-            r.setAttribute(
-                    "comedores",
-                    dao.listar(
-                            true,
-                            texto(r, "zona", 80, false),
-                            texto(r, "distrito", 100, false),
-                            texto(r, "provincia", 100, false)));
+            String provincia = texto(r, "provincia", 100, false);
+            String distrito = texto(r, "distrito", 100, false);
+            if (!provincia.isBlank()) provincia = UbicacionComedor.provincia(provincia);
+            if (!distrito.isBlank()) {
+                if (provincia.isBlank())
+                    throw new IllegalArgumentException("Selecciona una provincia antes de filtrar por distrito.");
+                distrito = UbicacionComedor.distrito(provincia, distrito);
+            }
+            r.setAttribute("ubicaciones", UbicacionComedor.distritos());
+            r.setAttribute("provinciaSeleccionada", provincia);
+            r.setAttribute("distritoSeleccionado", distrito);
+            r.setAttribute("comedores", dao.listar(true, texto(r, "zona", 80, false), distrito, provincia));
             vista(r, s, "public/comedores.jsp");
         }
     }
