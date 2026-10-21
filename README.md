@@ -1,174 +1,159 @@
-# LEEME — Cambios para la rúbrica de Soluciones Web
+# LEEME - Comedor Solidario: rúbrica y funcionamiento
 
-Fecha: 20/10/2026. Proyecto: Comedor Solidario. Se trabajó sobre esta carpeta local; no había repositorio Git. El archivo `leeme.md` original se conserva.
+Actualizado el 20/10/2026. Esta guía reemplaza las instrucciones anteriores que llamaban "Eliminar" a una desactivación. El archivo leeme.md original se conserva.
 
-## 1. Qué se implementó
+## 1. Eliminar, desactivar y reactivar
 
-Se conservan los dos CRUD de **comedores y necesidades**, se completan los módulos de **usuarios y donaciones**, y se incorporan únicamente dos entidades útiles: **productos y campañas**. Resultado: seis CRUD administrativos sobre seis entidades distintas. No se crearon seis módulos adicionales.
+Los seis módulos administrativos (Comedores, Necesidades, Usuarios, Donaciones, Productos y Campañas) tienen acciones distintas:
 
-| Entidad / tabla | Crear | Leer listado y detalle | Actualizar | Eliminar / dar de baja |
-| --- | --- | --- | --- | --- |
-| Comedor / comedores | Formulario existente | Listado y detalle existentes | Formulario existente | INACTIVO, reversible |
-| Necesidad / necesidades | Formulario, con producto opcional | Listado y nuevo detalle individual | Formulario y producto de referencia | INACTIVA, reversible |
-| Usuario / usuarios | ADMIN registra DONADOR | Listado y detalle sin contraseñas | Nombre, apellido, correo, teléfono y estado del donador | INACTIVO, reversible; invalida el acceso de sesiones abiertas |
-| Donacion / donaciones | ADMIN registra a nombre de un donador activo | Listado y detalle | Datos mientras está PENDIENTE; avance PENDIENTE → ACEPTADA → ENTREGADA | activo = FALSE; conserva la fila y la fecha de entrega histórica |
-| Producto / productos | Nombre, descripción, unidad y estado | Listado y detalle | Formulario | INACTIVO, reversible |
-| Campania / campanias | Comedor, nombre, descripción, fechas y estado | Listado y detalle | Formulario | INACTIVO, reversible |
-
-Los productos forman un catálogo reutilizable de recursos solicitados: cada necesidad puede referenciar un producto. La referencia es opcional para conservar las necesidades existentes. El nombre, descripción y unidad de cada necesidad siguen siendo sus propios datos; cambiar el catálogo no reescribe solicitudes históricas. Los productos inactivos permanecen identificables para la administración y las referencias históricas.
-
-Las campañas organizan convocatorias de apoyo de un comedor. Son públicas únicamente cuando están activas, su comedor está activo y la fecha actual está entre inicio y fin, ambos incluidos. No se añadieron pagos, inventarios, roles ni procesos ajenos al alcance.
-
-**Permisos:** todos los CRUD de gestión están bajo `/admin/` y exigen ADMIN. Se conserva la funcionalidad del DONADOR descrita en el PDF: registro propio, perfil, consulta pública y registro/consulta de sus aportes. El administrador no se convierte en donador al registrar un aporte: selecciona la cuenta del donador real. Las cuentas ADMIN existentes se consultan, pero no se modifican ni desactivan desde el CRUD de donadores; se evita perder el acceso administrativo.
-
-Las bajas son lógicas, válidas para el criterio «dar de baja». No se usa DELETE ni se rompen claves foráneas. En donaciones se separa la vigencia (`activo`) del proceso de entrega (`estado`), para mantener los tres estados del PDF. Una donación de baja deja de mostrarse en listados y totales; la fila permanece en SQL. No se implementó su reactivación.
-
-## 2. Antes de ejecutar: base de datos
-
-Usar MySQL 8.0.16 o superior (el esquema utiliza CHECK) y Tomcat 10.1 con JDK 21 o superior. El proyecto compila con `release 21` y usa Jakarta Servlet 6.0; Tomcat 9 no corresponde a estas dependencias.
-
-### Si YA tienes la base comedor_solidario
-
-1. Conserva una copia de seguridad de tu base desde MySQL Workbench.
-2. Abre `database/migracion_rubrica.sql` en Workbench, conectado a tu servidor.
-3. Ejecuta el archivo completo **una sola vez** antes de desplegar el WAR actualizado.
-4. Este script crea `productos` y `campanias`, agrega `necesidades.producto_id` nullable con FK y `donaciones.activo` con valor inicial TRUE. No elimina ni cambia el contenido de los registros anteriores.
-5. No ejecutes de nuevo `comedor_solidario.sql` sobre tu base existente. Tampoco repitas la migración: sus ALTER TABLE no son idempotentes.
-
-Si una ejecución del script se interrumpe, revisa qué objetos se crearon antes de continuar: MySQL puede confirmar DDL parcialmente. No borres la base para intentar corregirlo.
-
-### Si es una instalación NUEVA
-
-Ejecuta solamente `database/comedor_solidario.sql`. Incluye las cuatro tablas originales, datos de demostración y la ampliación de la rúbrica. **No ejecutes después la migración**, porque ya está incorporada al final de este archivo.
-
-### Conexión
-
-La clase reutilizable sigue siendo `util/ConexionBD.java`. Usa `CS_DB_URL`, `CS_DB_USER` y `CS_DB_PASSWORD`, o un archivo `src/resources/db.properties` con `db.url`, `db.user` y `db.password`. Las variables de entorno tienen precedencia. Configura tus credenciales reales localmente; el archivo `.example` no se carga automáticamente. No es necesario cambiar el código Java para conectar.
-
-Ejemplo de estructura del archivo, sustituyendo los valores de usuario y contraseña por los de tu instalación:
-
-```properties
-db.url=jdbc:mysql://localhost:3306/comedor_solidario
-db.user=TU_USUARIO_MYSQL
-db.password=TU_CLAVE_MYSQL
-```
-
-No se cambiaron contraseñas ni cuentas existentes. Inicia sesión con tu cuenta ADMIN habitual.
-
-## 3. Compilar y ver los cambios
-
-1. Abre en NetBeans la carpeta `ComedorSolidario-yoel`, donde está `pom.xml`.
-2. Aplica el SQL que corresponda según la sección anterior y configura la conexión.
-3. Selecciona **Clean and Build** y después **Run**, usando Tomcat 10.1. Si ejecutas Maven en consola: `mvn clean package`.
-4. Despliega `target/ComedorSolidario.war`. Abre `http://localhost:8080/ComedorSolidario/inicio`, ajustando puerto y contexto si tu Tomcat utiliza otros.
-5. Inicia sesión como ADMIN. La barra administrativa contiene Comedores, Necesidades, Donaciones, Usuarios, Productos y Campañas.
-6. En Usuarios, Productos y Campañas usa **Registrar**, **Ver**, **Editar** y **Dar de baja**. En Donaciones, **Registrar donación**, luego **Ver detalle** para editar datos pendientes, aceptar, entregar o dar de baja. En Necesidades se agregó **Ver** y el selector opcional de producto.
-7. Crea una campaña activa para un comedor activo, con fechas que incluyan hoy. Abre una ventana sin sesión: Comedores → detalle del comedor. Verás la campaña leída de MySQL. Al editarla o darla de baja desde ADMIN, recarga la página pública para ver el cambio.
-
-### Cómo demostrar cada CRUD
-
-Para cada entidad usa un registro de prueba: **crear → listar → ver detalle → editar → volver a consultar → dar de baja → verificar persistencia**. En comedores, necesidades, usuarios, productos y campañas también puedes reactivar. Para donaciones edita antes de aceptar; los datos materiales quedan protegidos cuando deja de estar pendiente. La aceptación y entrega son operaciones adicionales de actualización con control del estado anterior y registro de fecha.
-
-`docs/VERIFICACION.md` contiene la secuencia completa de aceptación, validaciones y comprobación de permisos. No uses registros reales para una demostración de bajas.
-
-## 4. Diagramas PlantUML
-
-- `docs/modelo-clases.puml`: entregable principal; seis entidades con todos sus atributos privados, tipos, constructores explícitos, getters/setters y asociaciones con multiplicidad.
-- `docs/clases-completas.puml`: vista técnica ampliada; las 33 clases Java, interfaz Mapper interna, herencia de DAO y servlets, dependencias y separación en paquetes. Los tipos externos de Jakarta están señalados.
-
-Abre el `.puml` en un visor compatible con PlantUML. Si ya tienes el JAR de PlantUML, desde la raíz del proyecto puedes generar un SVG con:
-
-```text
-java -jar RUTA/plantuml.jar -tsvg docs/modelo-clases.puml
-java -jar RUTA/plantuml.jar -tsvg docs/clases-completas.puml
-```
-
-Se usa el motor Smetana para evitar depender de Graphviz. Los archivos se entregan como texto editable; no es necesario convertirlos para revisar el código PlantUML. La compilación Java no valida el renderizado de PlantUML.
-
-### Coherencia entre modelo, Java y SQL
-
-| Clase | Tabla | Claves foráneas y multiplicidades |
+| Acción | Operación en MySQL | Resultado |
 | --- | --- | --- |
-| Usuario | usuarios | Un usuario puede registrar 0..* donaciones; cada donación tiene 1 usuario donador |
-| Comedor | comedores | Un comedor tiene 0..* necesidades, donaciones y campañas |
-| Necesidad | necesidades | `comedorId` → `comedor_id` obligatorio; `productoId` → `producto_id` opcional (0..1 producto por necesidad) |
-| Donacion | donaciones | `donanteId` → `donante_id`, `comedorId` → `comedor_id`, ambos obligatorios |
-| Producto | productos | Puede ser referenciado por 0..* necesidades |
-| Campania | campanias | `comedorId` → `comedor_id` obligatorio |
+| Eliminar | DELETE de la fila por ID | Desaparece definitivamente; no puede reactivarse. |
+| Desactivar | UPDATE del estado o de activo | Conserva la fila y sus relaciones; queda inactiva. |
+| Reactivar | UPDATE al estado activo | Recupera la vigencia de una fila conservada. |
 
-Las asociaciones están implementadas mediante IDs; no se dibujan colecciones ni referencias de objetos que no existan en el código. No corresponde dibujar composición ni eliminación en cascada, porque los registros conservan identidad e historial. La herencia real está en `JdbcDAO` y `BaseServlet`, visible en el diagrama ampliado.
+En el listado aparecen Ver, Editar, Desactivar/Reactivar y Eliminar según los permisos y estado del registro. Eliminar pide confirmación explícita; Cancelar no envía el formulario. Las acciones se envían por POST, requieren sesión ADMIN y token CSRF.
 
-Los atributos `comedorNombre` y `donanteNombre` se obtienen mediante JOIN y no son columnas de las tablas respectivas. `Integer productoId` permite NULL; `int` representa IDs obligatorios. `BigDecimal` corresponde a DECIMAL(12,2), `LocalDateTime` a DATETIME, `LocalDate` a DATE y `boolean activo` a BOOLEAN. Los estados y roles se conservan como String en Java, coherentes con sus ENUM SQL y validados en controladores.
+La base conserva sus claves foráneas, sin borrado en cascada:
+- Un comedor con necesidades, donaciones o campañas no puede eliminarse.
+- Un producto referenciado por una necesidad no puede eliminarse.
+- Un donador con donaciones no puede eliminarse.
+- Desactivar un registro relacionado no elimina su relación: todavía puede impedir el borrado del registro padre.
+- Las cuentas ADMIN están protegidas: el CRUD de Usuarios gestiona donadores; no elimina administradores.
+- Si MySQL rechaza una relación, se muestra un mensaje y el registro permanece. No se transforma el borrado en una baja silenciosa.
+- Si la cuenta MySQL carece de permiso DELETE, se informa para que el administrador del servidor revise los permisos sobre esta base.
 
-## 5. Integración JDBC pública
+En Donaciones se añadió la visualización administrativa de activas e inactivas, la columna Vigencia y Reactivar. El proceso PENDIENTE / ACEPTADA / ENTREGADA es independiente de la vigencia. Desactivar y reactivar no cambian la fecha de entrega ni el estado del proceso. Solo pueden editarse datos de donaciones activas y pendientes. Eliminar sí borra la donación, incluyendo su historial; los totales posteriores se calculan sin ella.
 
-La integración existente se conserva: `InicioServlet` consulta indicadores y comedores; `ComedorServlet` filtra comedores y obtiene sus necesidades; las vistas del donador consultan sus propios aportes. Se agregó `CampaniaDAO.listarPublicas(comedorId)` al detalle público del comedor. Los textos de navegación pueden permanecer en JSP; los registros y listados de negocio provienen de SQL.
+## 2. Qué cubren los seis CRUD
 
-Los DAO usan `JdbcDAO` y `ConexionBD`: PreparedStatement con parámetros para entradas, y try-with-resources para cerrar Connection, PreparedStatement y ResultSet. Las JSP muestran los valores mediante JSTL y `c:out`. No se incorporó otra tecnología de persistencia.
+| Entidad | Crear y consultar | Actualizar | Eliminar y desactivar |
+| --- | --- | --- | --- |
+| Comedor | Formulario, listado y detalle | Datos del comedor | Borrado sin referencias; estado reversible |
+| Necesidad | Formulario, listado y detalle | Cantidad, prioridad, datos y producto opcional | Borrado de la necesidad; estado reversible |
+| Usuario | Crear DONADOR, listar y ver | Datos del donador | Borrado sin donaciones; estado reversible; ADMIN protegido |
+| Donación | Crear a nombre de un donador, listar y ver | Datos pendientes; avance de entrega | Borrado físico; vigencia reversible |
+| Producto | Crear, listar y ver | Datos del catálogo | Borrado sin necesidades vinculadas; estado reversible |
+| Campaña | Crear, listar y ver | Comedor, contenido y fechas | Borrado físico; estado reversible |
 
-## 6. Reparto propuesto para seis integrantes
+Ya existían Comedores y Necesidades; se completaron Usuarios y Donaciones y se añadieron Productos y Campañas. No se agregaron seis módulos nuevos.
 
-Los nombres provienen del PDF entregado. Esta tabla es una **propuesta de responsabilidad para estudiar, validar y exponer**, no una afirmación de autoría previa. El equipo debe acordarla antes de presentar su reporte individual.
+Productos permite referenciar recursos solicitados por las necesidades. No es un sistema de stock: cambiar un producto no reescribe el nombre, descripción ni unidad guardados en necesidades anteriores.
 
-| Integrante | CRUD propuesto | Qué debe explicar |
+Campañas organiza convocatorias de un comedor con fechas de inicio y fin. Una campaña pública debe estar activa, pertenecer a un comedor activo y estar dentro de sus fechas, inclusive. No se vincularon campañas a donaciones ni se implementaron metas de recaudación.
+
+Los seis CRUD administrativos son exclusivos de ADMIN. Se conservan el registro propio, perfil y aportes propios del DONADOR.
+
+## 3. Ejecutar esta actualización en NetBeans
+
+Si tu aplicación ya funciona y aplicaste la ampliación anterior, esta actualización NO requiere migración SQL.
+
+1. Abre ComedorSolidario-yoel, la carpeta que contiene pom.xml.
+2. Detén Tomcat desde Servicios > Servidores en NetBeans.
+3. Ejecuta Clean and Build (Limpiar y construir), y luego Run (Ejecutar).
+4. Usa JDK 21 o superior y Tomcat 10.1. El proyecto compila con release 21 y Jakarta Servlet 6.0.
+5. Abre http://localhost:8080/ComedorSolidario/inicio, ajustando puerto/contexto a tu servidor.
+6. Inicia sesión con tu cuenta ADMIN de la aplicación y recarga con Ctrl+F5.
+7. Abre un listado: ahora deben verse Eliminar y Desactivar como acciones separadas. En una fila inactiva, Desactivar cambia a Reactivar; Eliminar sigue siendo un borrado.
+
+En consola, desde la raíz del proyecto: mvn clean package. El WAR generado es target/ComedorSolidario.war.
+
+### Configuración de una instalación que aún no tiene la ampliación
+
+- Base existente: respaldar y ejecutar database/migracion_rubrica.sql una sola vez. Crea productos y campañas; añade necesidades.producto_id y donaciones.activo.
+- Instalación nueva: ejecutar solamente database/comedor_solidario.sql; ya contiene la ampliación. No ejecutar después la migración.
+- No repetir los ALTER TABLE ni reinicializar una base con datos para actualizar los botones.
+- ConexionBD usa CS_DB_URL, CS_DB_USER y CS_DB_PASSWORD o src/resources/db.properties con db.url, db.user y db.password. Las variables de entorno tienen prioridad. El archivo .example no se carga automáticamente.
+- Mantener las credenciales locales fuera de Git. La cuenta MySQL y la cuenta ADMIN de la web son cuentas distintas.
+
+## 4. Integración JDBC de la web no administrativa
+
+Esta parte significa que las páginas del visitante leen información real de MySQL, incluso sin iniciar sesión como administrador.
+
+| Página | Información consultada | Código responsable |
 | --- | --- | --- |
-| De Fina Maldonado Flavio Alonso | Comedores | Formulario, filtros públicos, persistencia y baja lógica |
-| Juarez Zapata Diego Humberto | Donaciones | Registro administrativo a nombre del donador, edición pendiente, estados y baja |
-| Rujel Dios Julio César | Usuarios / donadores | Correo único, hash, edición, baja y permisos |
-| Yovera Villegas Franky Yoel | Necesidades | Cantidad, prioridad, relación con comedor y producto opcional |
-| Vidal Vega Didier Fabricio | Productos | Catálogo, CRUD y referencias históricas |
-| Zevallos Davila Jennifer | Campañas | Relación con comedor, fechas y publicación JDBC |
+| /inicio | Comedores destacados activos, total de comedores activos, total de donadores y resumen de donaciones vigentes | InicioServlet; ComedorDAO, UsuarioDAO y DonacionDAO |
+| /comedores | Comedores activos y filtros por zona, distrito y provincia | ComedorServlet; ComedorDAO.listar |
+| /comedores/detalle?id=... | Datos de un comedor activo y sus necesidades activas | ComedorServlet; ComedorDAO.buscar y NecesidadDAO.listar |
+| Mismo detalle público | Campañas activas, dentro de fechas, de ese comedor activo | CampaniaDAO.listarPublicas |
+| Panel y donaciones del DONADOR | Resumen y listado de sus propios aportes vigentes | DonadorDashboardServlet, DonacionServlet y DonacionDAO |
 
-## 7. Archivos modificados y añadidos
+La consulta pública de comedores, necesidades e indicadores ya existía: se conservó y revisó. La ampliación incorporó las campañas al detalle público y el filtrado de donaciones inactivas en listados del donador y resúmenes.
 
-| Archivo o grupo | Cambio |
+Recorrido real: navegador > servlet > DAO > ConexionBD/MySQL > objetos del modelo > atributos de la petición > JSP. Las JSP recorren resultados con JSTL y muestran textos con c:out; los registros no se escriben a mano en HTML. Los títulos y etiquetas de navegación sí pueden ser estáticos.
+
+### Conexión, parámetros y recursos
+
+- util/ConexionBD.java centraliza la configuración y obtiene conexiones JDBC.
+- dao/JdbcDAO.java prepara las consultas con Connection.prepareStatement.
+- Los valores del visitante (ID, filtros, etc.) se envían con PreparedStatement.setObject, usando marcadores ?, sin concatenar esos valores al SQL.
+- Connection, PreparedStatement y ResultSet se cierran con try-with-resources, incluso ante errores.
+- CampaniaDAO.listarPublicas usa un ID parametrizado, JOIN con comedores, estados activos y CURRENT_DATE BETWEEN fecha_inicio AND fecha_fin.
+- El total de donadores actual cuenta cuentas DONADOR; no aplica filtro por estado. Los resúmenes de donaciones sí excluyen aportes inactivos.
+
+### Demostración para el profesor
+
+1. Desde ADMIN, crea una campaña de prueba en un comedor activo, con fechas que incluyan hoy.
+2. Abre una ventana privada sin sesión y entra al detalle público de ese comedor.
+3. Verifica que aparece el título guardado en MySQL.
+4. Edita el título desde ADMIN y recarga la página pública: debe reflejar el cambio sin editar JSP.
+5. Desactiva la campaña: deja de mostrarse. Reactívala: vuelve a mostrarse si sigue dentro de fechas.
+6. Elimínala definitivamente: desaparece del administrador y de MySQL.
+7. Prueba los filtros de comedores y el detalle de necesidades. Esto demuestra JDBC también fuera del panel administrativo.
+
+## 5. Modelo y coherencia con SQL
+
+Se mantienen seis clases de negocio encapsuladas: Usuario, Comedor, Necesidad, Donacion, Producto y Campania, organizadas junto a paquetes dao, controller, util y filter.
+
+| Relación | Implementación |
 | --- | --- |
-| `database/comedor_solidario.sql` | Ampliación del esquema para instalación nueva |
-| `database/migracion_rubrica.sql` | Actualización no destructiva para una base existente |
-| `model/Donacion.java`, `model/Necesidad.java` | Vigencia lógica y FK opcional de producto |
-| `model/Producto.java`, `model/Campania.java` | Nuevas entidades encapsuladas |
-| `dao/DonacionDAO.java` | Editar pendiente, dar de baja y excluir bajas de listados/totales |
-| `dao/UsuarioDAO.java` | Crear/editar donadores y cambiar estado desde administración |
-| `dao/NecesidadDAO.java` | Guardar y leer producto de referencia |
-| `dao/ProductoDAO.java`, `dao/CampaniaDAO.java` | CRUD JDBC; consulta de campañas públicas |
-| `controller/AdminDonacionServlet.java`, `controller/AdminUsuarioServlet.java` | Completar operaciones administrativas |
-| `controller/AdminProductoServlet.java`, `controller/AdminCampaniaServlet.java` | Controladores de los dos nuevos CRUD |
-| `controller/NecesidadServlet.java` | Detalle individual y validación de producto |
-| `controller/ComedorServlet.java` | Consulta de campañas públicas |
-| `filter/SeguridadFilter.java` | Comprobar vigencia de la cuenta, incluyendo sesiones abiertas |
-| `util/ValidacionUtil.java` | Validación reutilizable de fechas |
-| `web/views/admin/usuarios/*`, `donaciones/*`, `necesidades/*` | Formularios, detalle y acciones correspondientes |
-| `web/views/admin/productos/*`, `campanias/*` | Interfaces nuevas con el estilo existente |
-| `web/views/common/header.jspf` | Enlaces a Productos y Campañas |
-| `web/views/public/detalle-comedor.jsp` | Campañas vigentes obtenidas de SQL |
-| `docs/*.puml`, `docs/VERIFICACION.md`, `LEEME_RUBRICA.md` | Diagramas, guía de pruebas e instrucciones |
+| Comedor a necesidades, donaciones y campañas | Un comedor puede tener 0..* de cada una; cada registro hijo tiene un comedor obligatorio |
+| Usuario a donaciones | Un donador puede tener 0..* aportes; cada donación tiene un donador obligatorio |
+| Producto a necesidades | Un producto puede ser referenciado por 0..* necesidades; cada necesidad tiene 0..1 producto |
 
-Las rutas Java de la tabla están bajo `src/java/com/comedorsolidario/`. El listado exacto con hashes está en `docs/CAMBIOS_ARCHIVOS.md`. Se conservan el diseño CSS, imágenes, autenticación original, configuración Maven y flujos del donador. Los controles de vigencia agregados son necesarios para que la baja de cuentas tenga efecto.
+Las asociaciones se representan mediante IDs y claves foráneas, no mediante colecciones inexistentes. Los nombres de comedor y donador en Donacion provienen de JOIN. Los atributos privados y accesores del modelo no cambian en esta actualización.
 
-## 8. Verificación y límites reales
+El diagrama de entidades existente sigue describiendo esas clases. No se creó otro archivo PlantUML en esta actualización. Se actualizó únicamente la vista técnica ya existente docs/clases-completas.puml con eliminar(int): void en los seis DAO, eliminarRegistro(...) en JdbcDAO y listarAdministracion(String) / cambiarVigencia(int, boolean) en DonacionDAO, para mantener su correspondencia con Java.
 
-Se compiló el proyecto con Maven y Java release 21: **BUILD SUCCESS**, 33 clases fuente y WAR generado. No se pudo conectar a MySQL desde esta sesión (ERROR 2003 / 10013 en localhost:3306), por lo que **no se aplicó la migración ni se verificaron los CRUD de extremo a extremo en una base real**. Tampoco se afirma haber comprobado visualmente las JSP en Tomcat ni renderizado los diagramas. Es necesario ejecutar la guía de aceptación en tu entorno antes de la evaluación.
+## 6. Responsabilidad individual
 
-La migración es aditiva: conserva los datos anteriores. Para revertir una entrega, utiliza tu respaldo original del proyecto. No elimines tablas ni columnas nuevas si ya contienen datos que quieras conservar. El respaldo temporal de esta sesión no se incluye en la entrega.
+Son seis entidades para seis integrantes. El equipo debe acordar y consignar el nombre de quien desarrolla, valida y explica cada CRUD; una distribución propuesta no demuestra autoría ni reemplaza la evaluación individual.
 
-Además se ejecutó un verificador de encapsulamiento, correspondencia del modelo con PlantUML y límites de validación. Terminó correctamente; el código y la orden para repetirlo están en `verificacion/VerificarRubrica.java` y `docs/VERIFICACION.md`. Esto no sustituye las pruebas JDBC y HTTP pendientes.
+| Integrante propuesto | CRUD |
+| --- | --- |
+| De Fina Maldonado Flavio Alonso | Comedores |
+| Juarez Zapata Diego Humberto | Donaciones |
+| Rujel Dios Julio César | Usuarios / donadores |
+| Yovera Villegas Franky Yoel | Necesidades |
+| Vidal Vega Didier Fabricio | Productos |
+| Zevallos Davila Jennifer | Campañas |
 
-## Corrección de conexión del 20/10/2026
+La asignación anterior es propuesta, pendiente de confirmación del equipo. Cada integrante debe demostrar crear, listar, consultar un detalle, actualizar y eliminar un registro propio de prueba.
 
-Se revisó el log real de Tomcat (último error observado a las 02:01:30): `Access denied for user 'comedor_app'@'localhost' (using password: NO)`. Faltaba `src/resources/db.properties`; solo estaba el archivo de ejemplo, que no se carga. Se creó el archivo correcto con la configuración proporcionada por el usuario y se recompiló correctamente. Las credenciales quedan en el archivo local, excluido por .gitignore; no se reproducen aquí.
+## 7. Archivos de esta actualización
 
-Para activar esta corrección: detener Tomcat en NetBeans → Services/Servicios → Servers/Servidores; aplicar la migración SQL una sola vez si aún no se hizo; ejecutar Clean and Build y luego Run. La URL configurada es http://localhost:8080/ComedorSolidario/inicio. La contraseña MySQL no es la contraseña de la cuenta ADMIN de la aplicación.
+Las rutas Java siguientes están bajo src/java/com/comedorsolidario/:
 
-La conexión desde la sesión de asistencia sigue bloqueada por permisos de red, por lo que no se ejecutó la migración ni se comprobó el login después del nuevo despliegue. El diagnóstico de solo lectura `verificacion/DiagnosticoConexion.java` permite comprobar conexión, seis tablas y las columnas nuevas desde una terminal local.
+- dao/JdbcDAO.java: ejecución común de borrado, rechazo por referencias, ID inválido, fila inexistente/protegida y falta de permiso DELETE.
+- Los seis DAO: método eliminar(int) con DELETE parametrizado; UsuarioDAO restringe el borrado a DONADOR.
+- dao/DonacionDAO.java: listado administrativo de activas/inactivas y cambiarVigencia.
+- Los seis controladores administrativos: acción eliminar y mensajes; AdminDonacionServlet también gestiona vigencia y consulta de inactivas.
+- web/views/admin/*/listar.jsp: botones separados y confirmación irreversible.
+- Detalles de usuarios, productos, campañas y donaciones: acciones diferenciadas; donaciones muestra vigencia.
+- web/views/common/header.jspf: mensajes de rechazo de la acción.
+- LEEME_RUBRICA.md y docs/VERIFICACION.md: instrucciones actualizadas.
+- verificacion/VerificarEliminacion.java: comprobaciones aisladas del SQL de borrado y manejo de rechazos.
 
-## Mejora de acciones visibles del 20 de octubre de 2026
+No cambia el esquema SQL por esta separación. Los botones siguen utilizando la confirmación compartida ya existente.
 
-Se añadió Eliminar directamente a los listados de Usuarios, Productos, Campañas y Donaciones, junto a Ver y Editar. En Comedores y Necesidades, Desactivar ahora se muestra como Eliminar. La operación sigue siendo una baja lógica y conserva el historial; los registros inactivos muestran Reactivar cuando el módulo lo permite. Los botones superiores ahora indican Crear y la entidad; Usuarios muestra Crear donador. Las cuentas ADMIN mantienen su protección y las donaciones aceptadas o entregadas no permiten editar sus datos materiales.
+## 8. Qué está verificado y qué falta demostrar
 
-La confirmación compartida explica el efecto de la acción y diferencia Eliminar de Reactivar. Cancelar no envía la operación. Las acciones mantienen POST y token CSRF. Se armonizó el texto Eliminar en los detalles de Usuarios, Productos, Campañas y Donaciones.
+- Maven package: BUILD SUCCESS; WAR generado.
+- VerificarRubrica.java: 343 aserciones correctas de modelo/encapsulamiento/validación.
+- VerificarEliminacion.java: 33 aserciones correctas, interceptando el SQL sin conectar a MySQL.
+- Sintaxis JavaScript revisada con node --check.
+- Jasper de Tomcat compiló las JSP con 0 errores; detalles en docs/VERIFICACION.md.
 
-Archivos de esta actualización: los seis `web/views/admin/*/listar.jsp`; los detalles de usuarios, productos, campanias y donaciones; `web/views/common/footer.jspf`; `web/assets/js/main.js`. No cambia el esquema SQL, las entidades Java ni los DAO. No se necesita otra migración por estos botones.
+No se ejecutaron los DELETE sobre tu base ni se verificaron los seis recorridos HTTP/JDBC desde esta sesión. La conexión real y la demostración en NetBeans/Tomcat deben comprobarse en tu entorno. El usuario informó que resolvió MySQL; eso no sustituye probar esta nueva eliminación.
 
-Validación: Maven package completó BUILD SUCCESS; JavaScript pasó node --check; Jasper de Tomcat compiló las JSP con 0 errores. Jasper informó que su compilador utiliza nivel 19 para las JSP cuando se solicita 21; las clases del proyecto mantienen release 21. Esta comprobación de traducción/compilación no sustituye la ejecución HTTP y JDBC de cada CRUD.
-
-Para ver la actualización: detener Tomcat, Clean and Build, Run y recargar con Ctrl+F5. No repetir migracion_rubrica.sql si ya se aplicó. Para demostrar Eliminar usar un registro de prueba, cancelar una vez, confirmar después y comprobar el cambio de estado o su exclusión del listado según el módulo.
+El código cubre las operaciones y mecanismos solicitados por la rúbrica; la calificación requiere la aplicación funcionando, el diagrama que se entregue coherente y la demostración individual. No se afirma una nota ni cumplimiento máximo sin esas comprobaciones.

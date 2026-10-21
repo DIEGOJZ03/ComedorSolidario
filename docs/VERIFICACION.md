@@ -1,33 +1,46 @@
-# Verificación técnica
+# Verificación de eliminación y JDBC
+Actualización: 20/10/2026.
 
-La compilación Maven offline completó BUILD SUCCESS con Java release 21 y generó target/ComedorSolidario.war. Maven informó que no había pruebas automatizadas en el proyecto original.
+## Resultados obtenidos
 
-No se pudo conectar a MySQL desde esta sesión: el cliente devolvió ERROR 2003 / 10013 al intentar localhost:3306. No se ejecutó la migración sobre tu base ni se modificaron sus registros. La prueba funcional de extremo a extremo en Tomcat y MySQL queda pendiente; compilar el WAR no demuestra que los formularios y SQL se hayan ejecutado.
+| Comprobación | Resultado | Alcance |
+| --- | --- | --- |
+| Maven offline package | BUILD SUCCESS | Empaquetado del WAR |
+| VerificarRubrica.java | 343 aserciones correctas | Encapsulamiento, modelo y límites de validación |
+| VerificarEliminacion.java | 33 aserciones correctas | DELETE de seis DAO, ID parametrizado, protección ADMIN, errores y vigencia |
+| node --check web/assets/js/main.js | Sin errores | Sintaxis del JavaScript |
+| Jasper de Tomcat: JspC | Generation completed with [0] errors | Traducción y compilación de JSP |
 
-## Prueba de aceptación en tu entorno
+VerificarEliminacion intercepta ejecutar mediante subclases de los DAO: NO conecta a MySQL. Prueba filas inexistentes/protegidas, FK simulada, falta de permiso DELETE, propagación de error SQL y separación UPDATE/DELETE. No prueba realmente el motor MySQL ni la interacción HTTP.
 
-1. Aplicar la migración una sola vez, compilar y desplegar como explica LEEME_RUBRICA.md.
-2. Iniciar sesión como ADMIN. En cada uno de los seis módulos: registrar un dato de prueba, encontrarlo en el listado, abrir Ver, editarlo, volver a consultar y darlo de baja. Reiniciar Tomcat y verificar que los cambios permanecen.
-3. Productos: registrar Arroz de prueba, unidad kg; seleccionarlo como referencia de una necesidad. Desactivar el producto y verificar que la necesidad conserva su referencia histórica.
-4. Campañas: elegir un comedor activo y fechas que incluyan el día actual. Verificar su aparición pública en Comedores → detalle. Editar el título y recargar; dar de baja y comprobar que deja de aparecer. Una campaña futura, vencida o de un comedor inactivo no se publica.
-5. Usuarios: crear un DONADOR con correo único; editar sus datos; darlo de baja. Comprobar que no inicia sesión y que una sesión previamente abierta deja de tener acceso. Reactivarlo. Intentar editar una cuenta ADMIN mediante URL: debe devolver 403; mediante POST tampoco puede modificarla.
-6. Donaciones: registrar a nombre del donador activo, consultar detalle, editar mientras PENDIENTE, aceptar y entregar. Comprobar fecha_entrega y que no retrocede. Dar de baja y comprobar que desaparece de listados y totales, conservando su fila SQL. Un aporte aceptado o entregado no permite cambiar sus datos materiales.
-7. Validaciones: cantidad cero/negativa, más de dos decimales, correo duplicado, campos obligatorios vacíos, fecha final anterior a inicial, dinero con unidad distinta de soles e identificador inexistente. Deben rechazarse con mensaje y sin insertar/actualizar.
-8. Sin sesión, abrir /admin/productos: debe dirigir al login. Como DONADOR, debe responder 403. POST sin token csrf válido: 403. Consultar directamente /views/admin/productos/listar.jsp: 404.
-9. Consultar /inicio, filtrar /comedores y abrir detalle sin sesión. Desactivar un comedor desde ADMIN: desaparece de resultados públicos. Las necesidades inactivas y las donaciones de otros usuarios no deben aparecer al donador.
+La aplicación sigue compilada con release 21. La comprobación aislada Jasper utiliza source/target 19, compatibles con el compilador JSP disponible, sin cambiar pom.xml.
 
-Usar datos de prueba propios y no eliminar registros reales para la demostración. Las bajas de entidades de negocio son lógicas.
+## Repetir verificadores
 
-## Comprobaciones ejecutadas adicionales
+Desde la raíz del proyecto después de compilar:
 
-Se ejecutó `verificacion/VerificarRubrica.java` contra las clases compiladas. Resultado: 343 aserciones correctas de encapsulamiento, correspondencia de atributos/accesores con el PlantUML y límites de validación de cantidades, fechas, identificadores y opciones. Son aserciones automáticas de un verificador, no 343 casos de prueba ni pruebas HTTP/JDBC. No sustituyen la aceptación funcional anterior.
-
-Para repetir en PowerShell desde la raíz del proyecto, después de compilar:
-
-```powershell
+~~~powershell
+java --class-path target/classes verificacion/VerificarEliminacion.java
 java --class-path "target/classes;$env:USERPROFILE/.m2/repository/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar" verificacion/VerificarRubrica.java .
-```
+node --check web/assets/js/main.js
+~~~
 
-## Revisión de interfaces del 20 de octubre de 2026
+## Aceptación pendiente en NetBeans, Tomcat y MySQL
 
-La compilación del WAR volvió a finalizar correctamente. Se verificó la sintaxis de main.js y se precompilaron las vistas mediante org.apache.jasper.JspC de Tomcat: Generation completed with [0] errors. Jasper usó su nivel soportado 19 para las JSP (warning al solicitar 21); no se cambió el release 21 del proyecto. Se mantienen pendientes las pruebas funcionales HTTP/JDBC de los seis flujos y la demostración individual. El usuario informó que resolvió su conexión MySQL.
+Usar registros propios de prueba. Esta actualización no requiere otra migración si la ampliación anterior ya está instalada.
+
+1. Detener Tomcat, Clean and Build, Run y Ctrl+F5. Entrar como ADMIN.
+2. En cada módulo: crear, listar, abrir Ver, editar y comprobar los datos persistidos.
+3. Desactivar el registro. Verificar que permanece en MySQL y que el listado ofrece Reactivar. Reactivarlo y comprobar su vigencia.
+4. Pulsar Eliminar y cancelar: el registro debe permanecer. Repetir y confirmar: debe desaparecer del listado y de MySQL; consultar su detalle no debe devolver el registro.
+5. En Workbench, comprobar la tabla correspondiente con SELECT * FROM tabla WHERE id = ID_DE_PRUEBA; después de desactivar existe; después de eliminar devuelve cero filas.
+6. Crear un producto vinculado a una necesidad de prueba. Eliminar el producto: debe rechazarse y conservar ambos registros. Desactivar la necesidad tampoco libera la FK. No borrar registros reales para resolver la prueba.
+7. Repetir protección de referencias con comedor y donador. Las cuentas ADMIN no deben admitir edición, desactivación ni eliminación desde el CRUD de donadores.
+8. Donaciones: comprobar que administración muestra activas e inactivas y permite Reactivar. El listado del donador y los resúmenes excluyen las inactivas. Reactivar conserva estado de entrega y fecha. Solo una donación activa PENDIENTE admite editar datos.
+9. Sin sesión, abrir /admin/productos: redirige al login. Como DONADOR: 403. POST sin CSRF válido: 403. Acceso externo directo a /views/admin/productos/listar.jsp: 404.
+10. Validar campos vacíos, cantidades no válidas, correo duplicado, fecha final anterior a inicial e IDs inexistentes.
+11. Crear una campaña activa, de comedor activo y dentro de fechas. En ventana privada sin sesión, abrir el detalle público: debe aparecer. Editar título y recargar; desactivar y recargar; reactivar y recargar. Finalmente eliminar la campaña de prueba.
+12. Verificar que campañas futuras/vencidas y comedores inactivos no se muestran públicamente. Probar filtros de zona, distrito y provincia con datos reales.
+13. Cada integrante debe demostrar su entidad. Registrar resultados y evidencias antes de afirmar cumplimiento completo de la rúbrica.
+
+El usuario informó que resolvió su conexión MySQL. Desde esta sesión no se ejecutaron los flujos HTTP/JDBC ni borrados en su base. Compilar y simular SQL no equivale a la demostración funcional.

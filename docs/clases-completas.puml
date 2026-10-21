@@ -194,6 +194,7 @@ class Usuario {
 }
 package "com.comedorsolidario.dao" {
 class CampaniaDAO {
+  + eliminar(id : int) : void
   + listar() : List<Campania>
   + buscar(id : int) : Campania
   + guardar(o : Campania) : void
@@ -202,6 +203,7 @@ class CampaniaDAO {
   - map(rs : ResultSet) : Campania
 }
 class ComedorDAO {
+  + eliminar(id : int) : void
   + listar(soloActivos : boolean, zona : String, distrito : String, provincia : String) : List<Comedor>
   + buscar(id : int) : Comedor
   + guardar(c : Comedor) : void
@@ -210,6 +212,9 @@ class ComedorDAO {
   - map(rs : ResultSet) : Comedor
 }
 class DonacionDAO {
+  + eliminar(id : int) : void
+  + listarAdministracion(estado : String) : List<Donacion>
+  + cambiarVigencia(id : int, activo : boolean) : void
   - {static} SELECT : String
   + listar(donanteId : Integer, estado : String) : List<Donacion>
   + buscar(id : int) : Donacion
@@ -221,12 +226,14 @@ class DonacionDAO {
   - map(rs : ResultSet) : Donacion
 }
 abstract class JdbcDAO {
+  # eliminarRegistro(sql : String, id : int, mensajeRelacionado : String) : void
   # consultar(sql : String, mapper : Mapper<T>, parametros : Object...) : List<T>
   # ejecutar(sql : String, parametros : Object...) : int
   # contar(sql : String, parametros : Object...) : long
   - asignar(ps : PreparedStatement, parametros : Object[]) : void
 }
 class NecesidadDAO {
+  + eliminar(id : int) : void
   - {static} SELECT : String
   + listar(comedorId : Integer, activas : boolean) : List<Necesidad>
   + buscar(id : int) : Necesidad
@@ -235,6 +242,7 @@ class NecesidadDAO {
   - map(rs : ResultSet) : Necesidad
 }
 class ProductoDAO {
+  + eliminar(id : int) : void
   + listar() : List<Producto>
   + buscar(id : int) : Producto
   + guardar(o : Producto) : void
@@ -242,6 +250,7 @@ class ProductoDAO {
   - map(rs : ResultSet) : Producto
 }
 class UsuarioDAO {
+  + eliminar(id : int) : void
   + buscarEmail(email : String) : Usuario
   + buscar(id : int) : Usuario
   + listar() : List<Usuario>
