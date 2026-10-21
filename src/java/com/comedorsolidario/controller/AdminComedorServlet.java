@@ -80,8 +80,6 @@ public class AdminComedorServlet extends BaseServlet {
             c.setProvincia(UbicacionComedor.provincia(texto(r, "provincia", 100, true)));
             c.setDistrito(UbicacionComedor.distrito(c.getProvincia(), texto(r, "distrito", 100, true)));
             c.setResponsable(texto(r, "responsable", 120, true));
-            if (!dao.listarResponsables().contains(c.getResponsable()))
-                throw new IllegalArgumentException("Selecciona un responsable ya registrado en los comedores. Si la lista cambió, vuelve a elegirlo.");
             c.setTelefono(texto(r, "telefono", 20, true));
             c.setEstado(opcion(r.getParameter("estado"), "ACTIVO", "INACTIVO"));
             Part foto = r.getContentType() != null && r.getContentType().startsWith("multipart/form-data")
@@ -118,7 +116,6 @@ public class AdminComedorServlet extends BaseServlet {
 
     private void cargarOpciones(HttpServletRequest r, Comedor c) throws SQLException {
         r.setAttribute("ubicaciones", UbicacionComedor.distritos());
-        r.setAttribute("responsables", new ComedorDAO().listarResponsables());
         boolean enviado = "POST".equals(r.getMethod());
         String provincia = enviado ? r.getParameter("provincia") : c.getProvincia();
         String distrito = enviado ? r.getParameter("distrito") : c.getDistrito();
@@ -132,7 +129,5 @@ public class AdminComedorServlet extends BaseServlet {
         }
         r.setAttribute("provinciaSeleccionada", seleccionProvincia);
         r.setAttribute("distritoSeleccionado", seleccionDistrito);
-        String responsable = enviado ? r.getParameter("responsable") : c.getResponsable();
-        r.setAttribute("responsableSeleccionado", responsable == null ? "" : responsable.trim());
     }
 }

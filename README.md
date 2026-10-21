@@ -16,13 +16,13 @@ El formulario Crear/Editar comedor ahora presenta **Provincia antes de Distrito*
 
 Al cambiar la provincia se actualizan los distritos y se limpia la selección anterior. Java vuelve a comprobar la combinación antes de guardar: no acepta, por ejemplo, Miraflores con provincia Callao, aunque se altere el formulario. Las ubicaciones existentes se conservan al editar si pertenecen al catálogo. Se admiten diferencias de mayúsculas/acentos, Lima como alias de Cercado de Lima y Chosica/Lurigancho-Chosica como alias de Lurigancho. Si una ubicación anterior queda fuera del alcance, el formulario solicita elegir una válida; no migra ni sobrescribe registros automáticamente.
 
-**Responsable** también es un desplegable. Sus opciones se consultan mediante JDBC desde los nombres que ya figuran en la columna comedores.responsable, sin duplicados ni nombres vacíos, incluyendo comedores inactivos. El servidor rechaza un nombre que no esté en esa lista. Se conserva el responsable al editar y se permite reutilizarlo en otro comedor.
+**Responsable** es un campo de texto directo donde cada persona puede registrar al responsable del comedor (hasta 120 caracteres). Se conserva el responsable al editar y se almacena en la columna `comedores.responsable`.
 
-Los responsables actuales son contactos de comedores, no cuentas ADMIN/DONADOR. Esta actualización conserva responsable como String/VARCHAR y no crea una relación con usuarios ni asigna permisos nuevos. La selección guarda el nombre elegido; no sincroniza cambios de nombre entre distintos comedores. Si no existen responsables en la base, se muestra un aviso y se impide guardar sin una asignación válida. No se inventan responsables ni se utiliza automáticamente a un donador.
+Los responsables actuales son contactos de comedores, no cuentas ADMIN/DONADOR. Esta actualización conserva `responsable` como String/VARCHAR y no crea una relación con usuarios ni asigna permisos nuevos.
 
 **Activación:** detener Tomcat, Clean and Build, Run y Ctrl+F5. No ejecutar migraciones SQL. La carga de fotografías sigue funcionando como antes.
 
-**Comprobación manual:** crear un comedor seleccionando Lima y un distrito; elegir un responsable existente; guardar y abrir Editar para comprobar las selecciones. Cambiar a Callao y verificar que el distrito anterior se limpia. Probar también el comedor existente de Callao y un error en otro campo: el formulario debe volver a cargar sus listas.
+**Comprobación manual:** crear un comedor seleccionando Lima y un distrito; escribir el nombre del responsable en el campo de texto; guardar y abrir Editar para comprobar que el valor se mantiene. Cambiar a Callao y verificar que el distrito anterior se limpia. Probar también el comedor existente de Callao.
 
 Archivos afectados: AdminComedorServlet, ComedorDAO, nueva utilidad UbicacionComedor, formulario.jsp de comedores, main.js y versión del script en footer.jspf. La vista técnica existente del diagrama se actualiza; las entidades del negocio y el esquema SQL no cambian.
 

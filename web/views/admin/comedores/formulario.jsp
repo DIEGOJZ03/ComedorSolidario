@@ -50,14 +50,7 @@
     </div>
     <div class="col-md-6">
         <label class="form-label" for="responsable">Responsable</label>
-        <select class="form-select" id="responsable" name="responsable" required aria-describedby="responsable-ayuda" ${empty responsables ? 'disabled' : ''}>
-            <option value="">Selecciona un responsable</option>
-            <c:forEach var="persona" items="${responsables}">
-                <option value="<c:out value='${persona}'/>" ${responsableSeleccionado == persona ? 'selected' : ''}><c:out value="${persona}"/></option>
-            </c:forEach>
-        </select>
-        <p class="form-text" id="responsable-ayuda">Responsables registrados en los comedores del sistema.</p>
-        <c:if test="${empty responsables}"><p class="text-danger" role="alert">No hay responsables registrados para asignar. Se necesita un responsable existente antes de crear este comedor.</p></c:if>
+        <input class="form-control" id="responsable" name="responsable" type="text" maxlength="120" required value='<c:out value="${pageContext.request.method eq \'POST\' ? param.responsable : comedor.responsable}"/>'>
     </div>
     <div class="col-md-6">
         <label class="form-label" for="telefono">Teléfono</label>
@@ -94,7 +87,7 @@
         </fieldset>
     </div>
     <div class="col-12 d-flex gap-2 mt-4">
-        <button class="btn btn-primary" type="submit" ${empty responsables ? 'disabled' : ''}>Guardar comedor</button>
+        <button class="btn btn-primary" type="submit">Guardar comedor</button>
         <a class="btn btn-outline-secondary" href="${ctx}/admin/comedores">Volver</a>
     </div>
 </form>
