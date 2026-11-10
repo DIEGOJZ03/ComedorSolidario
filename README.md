@@ -1,250 +1,304 @@
-# Comedor Solidario
+# LEEME - Comedor Solidario: rúbrica y funcionamiento
 
-Aplicación universitaria para **Soluciones Web y Aplicaciones Distribuidas**.
-Java Web MVC: JSP + Servlets + JavaBeans + DAO + JDBC + MySQL. Dos roles: ADMIN y DONADOR.
+## Productos: catálogo sencillo desde Necesidades (21/10/2026)
 
-## Verificación de esta entrega
+La pantalla **Admin > Productos** es una sola tabla con **Producto, Cantidad total, Presentación y Acciones**. Muestra los nombres registrados en Necesidades y suma sus cantidades por producto y unidad. Si solo se han registrado arroz y aceite, aparecerán esos productos. No usa nombres alternativos del catálogo de referencia.
 
-Compilación correcta, 3 pruebas unitarias, 29 comprobaciones funcionales con Tomcat/MySQL y 18 comprobaciones de interfaz. Consulta `docs/pruebas/VERIFICACION.md` para la evidencia y sus límites. La interfaz gráfica de NetBeans no se ejecutó en el entorno de pruebas.
+Se retiraron de esta vista el botón Crear producto de catálogo, Registrar necesidad, el bloque de necesidades activas, las categorías automáticas y la segunda tabla de catálogo. No se borraron productos ni necesidades de la base. Los formularios y controladores anteriores de productos se conservan, pero sus acciones no se presentan en esta pantalla de consulta.
 
-Se incluye `dist/ComedorSolidario.war`, construido con el código entregado. Para empezar, sigue la compilación desde NetBeans y configura `db.properties` como se indica abajo. El WAR precompilado no contiene tus credenciales: si lo usas directamente, configura `CS_DB_URL`, `CS_DB_USER` y `CS_DB_PASSWORD` en el entorno de Tomcat antes de iniciarlo.
+**Acciones > Ver:** abre una página independiente en /admin/productos/distribucion. Se eliminó el detalle desplegable que alargaba las filas del listado. La nueva página muestra el nombre del producto, total y presentación, seguidos de una tabla con comedor destinatario, cantidad y unidad original, prioridad y botón Ver solicitud. El nombre del comedor abre sus datos y Volver a productos regresa al catálogo. Si un comedor tiene varias solicitudes, cada una aparece identificada por su número.
 
-## 1. Qué contiene y qué hace
+El enlace identifica el producto por nombre y unidad, con parámetros codificados; no usa posiciones de fila ni IDs de un catálogo distinto. El servidor vuelve a consultar las necesidades vigentes y calcula el total y su detalle con las mismas solicitudes. Si el producto ya no tiene solicitudes activas en comedores activos, devuelve 404. No se agregaron botones de creación ni categorías.
 
-- Inicio responsive, búsqueda combinada por zona/distrito/provincia y necesidades por comedor.
-- Registro, login, logout POST, sesiones y autorización en Java.
-- Dashboard del donador, perfil editable, registro y seguimiento de sus donaciones.
-- Dashboard administrativo; CRUD de comedores con desactivación/reactivación; gestión de necesidades; consulta de usuarios.
-- Donaciones: PENDIENTE → ACEPTADA → ENTREGADA, sin saltos ni retrocesos.
-- Contraseñas PBKDF2, SQL parametrizado, validación backend, escape HTML y tokens CSRF.
-- Bootstrap local: la interfaz no depende de Internet al ejecutarse.
-- `docs/`: arquitectura, diagramas, casos de uso, contenido de 12 diapositivas y verificación.
+El origen es la solicitud registrada en Necesidades y el destino es el comedor que requiere esa cantidad. Esto no identifica a un donante/proveedor ni confirma entregas: esa información no se deduce de las necesidades.
 
-Registrar DINERO solo registra el compromiso en soles. No hay pasarela ni cobro. Las entregas se coordinan físicamente y las confirma el administrador. Las cantidades de necesidades se actualizan manualmente; no se descuentan automáticamente al entregar una donación.
-Todos los comedores, responsables, direcciones y teléfonos del SQL son ficticios.
+- Arroz y azúcar se suman por separado, aunque ambos estén en kg. Tampoco se mezclan kg con litros o cajas. Se reconocen variantes de escritura como kg/kilos y litro/litros.
+- Para líquidos, la presentación muestra la **equivalencia en envases de 20 L**: 100 L equivalen a 5 envases; 105 L equivalen a 5 envases más 5 L restantes. Menos de 20 L muestra cero envases completos y el volumen restante. No se redondea hacia arriba.
+- Los envases de 20 L son una referencia de presentación solicitada, no una capacidad real registrada: las necesidades actuales guardan cantidad y unidad, pero no número de botellas ni capacidad de cada una. No se presenta esta equivalencia como inventario.
+- Las cantidades son las solicitadas en necesidades ACTIVA de comedores ACTIVO. Quitar el bloque visual de necesidades activas no cambia ese criterio. Para cambiar el producto o la cantidad, se edita la necesidad en su propia sección. Al volver a abrir Productos, JDBC consulta los datos y recalcula el catálogo.
 
-## 2. Programas que debes instalar (Windows)
+**Para verlo:** detener la aplicación, Clean and Build, Run y Ctrl+F5. Abrir Admin > Productos y pulsar Ver en la columna Acciones junto a Arroz o Aceite. Comprobar que se abre una página independiente, que las cantidades detalladas suman su total y que funcionan Ver solicitud, el enlace al comedor y Volver a productos. No se requieren migraciones SQL ni volver a registrar datos.
 
-1. **JDK 21**, no solo JRE: [Microsoft Build of OpenJDK](https://learn.microsoft.com/java/openjdk/download) u otra distribución de JDK 21.
-2. **Apache NetBeans** con soporte Java Web y Maven: [descargas oficiales](https://netbeans.apache.org/front/main/download/). Si la versión del IDE solicita un JDK más reciente para arrancar, úsalo para el IDE y registra JDK 21 como plataforma del proyecto.
-3. **Apache Tomcat 10.1.x**, distribución Core ZIP: [descarga oficial](https://tomcat.apache.org/download-10.cgi). No Tomcat 9, 10.0 ni 11 para esta configuración.
-4. **MySQL Community Server 8.4 LTS** y opcionalmente **MySQL Workbench**: [MySQL](https://dev.mysql.com/downloads/). Workbench es un cliente: por sí solo no instala el servidor.
-5. **VS Code**, opcional, para editar CSS, JavaScript y revisar HTML.
+Implementación: AdminProductoServlet consulta NecesidadDAO.listar(null, true); ResumenProductosService agrupa por nombre y unidad; ResumenProducto calcula la equivalencia de líquidos. No se guardan totales duplicados en MySQL. El diagrama técnico existente refleja las clases actuales.
 
-Maven integrado en NetBeans descarga Servlet API, JSTL y Connector/J según `pom.xml`. Para compilar desde una terminal puedes instalar Maven 3.9.x. Se requiere Internet en la primera compilación.
+La verificación local utiliza datos en memoria y no modifica MySQL. Después de compilar se puede repetir desde la raíz del proyecto:
 
-## 3. Configurar Java/JDK
-
-1. Instala JDK 21 en una ruta como `C:\Program Files\Microsoft\jdk-21...`.
-2. En Windows busca **Editar las variables de entorno del sistema** → **Variables de entorno**.
-3. Crea `JAVA_HOME` con la carpeta del JDK (sin `\bin`).
-4. Agrega `%JAVA_HOME%\bin` a `Path`.
-5. Cierra y abre una terminal. Ejecuta `java -version` y `javac -version`. Ambos deben indicar 21 para este proyecto.
-6. En NetBeans: **Tools → Java Platforms → Add Platform → Java Standard Edition**. Selecciona la carpeta de JDK 21.
-
-El `pom.xml` compila con `release=21`. El servidor Tomcat también debe ejecutarse con JDK 21.
-
-## 4. Descomprimir y abrir el proyecto
-
-1. Extrae `ComedorSolidario.zip`, por ejemplo en `C:\Proyectos`.
-2. Debe existir `C:\Proyectos\ComedorSolidario\pom.xml`.
-3. En NetBeans: **File → Open Project**. Selecciona la carpeta que contiene ese `pom.xml` y pulsa **Open Project**.
-4. Espera a que Maven descargue dependencias. No crees un segundo proyecto ni pegues los archivos dentro de otro.
-5. Clic derecho al proyecto → **Properties**: selecciona JDK 21 cuando la opción de plataforma esté disponible.
-6. Las carpetas físicas son `src/java` y `web`. Maven las configura expresamente; NetBeans puede mostrarlas como **Source Packages** y **Web Pages**. En la pestaña **Files** puedes ver las rutas reales.
-
-## 5. Instalar y registrar Tomcat en NetBeans
-
-1. Extrae el Core ZIP de Tomcat en `C:\Servidores\apache-tomcat-10.1.x`.
-2. Comprueba que existan `bin`, `conf`, `lib` y `webapps`.
-3. En NetBeans, activa **Tools → Plugins → Installed → Java Web and EE** si el soporte web no aparece. Según la distribución puede ser necesario instalarlo desde **Available Plugins**.
-4. Abre **Window → Services**. En **Servers**, clic derecho → **Add Server**.
-5. Selecciona **Apache Tomcat or TomEE** y coloca un nombre, por ejemplo `Tomcat 10.1`.
-6. Elige la carpeta de Tomcat. Selecciona JDK 21 en sus propiedades de plataforma Java.
-7. Si el asistente pide usuario y contraseña para administrar el servidor, crea un usuario LOCAL de despliegue. No es el usuario administrador del sistema Comedor Solidario.
-8. Para configuración manual, agrega dentro de `<tomcat-users>` de `conf/tomcat-users.xml`:
-
-```xml
-<role rolename="manager-script"/>
-<user username="netbeans" password="ELIGE_UNA_CLAVE_LOCAL" roles="manager-script"/>
+```powershell
+java --class-path target/classes verificacion/VerificarResumenProductos.java
 ```
 
-9. Usa esas credenciales en las propiedades del servidor de NetBeans y mantenlo accesible solo localmente. No es necesario abrir puertos de Internet.
-10. Clic derecho al proyecto → **Properties → Run**: servidor Tomcat 10.1, contexto `/ComedorSolidario`, URL relativa `/`.
-11. Si tu NetBeans no ofrece Tomcat, comprueba el módulo Java Web y actualiza a una distribución compatible. También puedes desplegar el WAR manualmente como se explica más abajo.
+## Buscador público: provincia, distrito y zona (21/10/2026)
 
-## 6. Instalar/configurar MySQL
+Desde Inicio > Comedores destacados > Explorar todos, el catálogo público presenta Provincia antes de Distrito, ambos como desplegables. Utiliza el mismo catálogo de ubicaciones que el administrador. La búsqueda inicial muestra todas las provincias; al elegir Lima o Callao se habilitan sus distritos. Se puede dejar Todos los distritos para consultar la provincia completa. Cambiar de provincia limpia el distrito anterior y Limpiar restablece todos los filtros.
 
-1. Ejecuta el instalador de MySQL Community Server 8.4 para Windows.
-2. Configura una instalación de desarrollo local, puerto **3306** y servicio Windows iniciado automáticamente.
-3. Establece y guarda la contraseña de `root` de MySQL. Es distinta de cualquier cuenta de la aplicación.
-4. Abre MySQL Workbench → crea conexión a `127.0.0.1`, puerto 3306, usuario `root`.
-5. Pulsa **Test Connection**, introduce la contraseña y abre la conexión.
-6. Si ya tienes un servidor en 3307, usa ese puerto tanto en Workbench como en JDBC. No cambies el puerto de otro proyecto sin necesidad.
-7. Esta entrega se orienta a **MySQL 8.4**. XAMPP puede incluir MariaDB; no asumas que es la misma versión del servidor.
+Zona es el sector general guardado en cada comedor (por ejemplo, Norte, Sur, Este, Centro u Oeste). Es un filtro opcional de texto y ahora tiene una explicación visible. No se calcula automáticamente a partir del distrito.
 
-## 7. Crear la base e importar el SQL
+Los resultados siguen consultándose por JDBC y solo incluyen comedores activos. Provincia y distrito se validan en el servidor; las consultas parametrizadas comparan la ubicación completa para evitar que buscar Lurigancho también incluya San Juan de Lurigancho. Se reconocen las denominaciones anteriores Lima/Cercado de Lima y Chosica/Lurigancho. Los filtros elegidos se conservan al mostrar los resultados.
 
-1. En Workbench: **File → Open SQL Script**.
-2. Abre `database/comedor_solidario.sql`.
-3. Ejecuta TODO el archivo con el botón del rayo (sin limitarte a una selección).
-4. El propio script crea `comedor_solidario`, selecciona la base, crea las cuatro tablas e inserta datos de prueba.
-5. En **Schemas**, pulsa actualizar. Abre `comedor_solidario → Tables`.
-6. Verifica que existan `usuarios`, `comedores`, `necesidades` y `donaciones`.
-7. Ejecuta `SELECT COUNT(*) FROM comedor_solidario.comedores;`: inicialmente devuelve 5.
-8. Importa una sola vez. El script no hace DROP ni sobrescribe una base existente. Si aparece “Table already exists”, verifica que ya se importó; no elimines datos de trabajos previos.
+Para comprobarlo: Clean and Build, Run y Ctrl+F5. Abrir Comedores, elegir Lima y Comas, buscar y revisar las selecciones; cambiar a Callao para comprobar que se limpia el distrito; pulsar Limpiar para volver al listado completo. No se necesita ejecutar SQL ni cambiar los datos existentes.
 
-Alternativa con cliente de línea de comandos: abre `mysql -u root -p`; dentro del cliente ejecuta `SOURCE C:/Proyectos/ComedorSolidario/database/comedor_solidario.sql;`.
+## Selección de provincia, distrito y responsable (21/10/2026)
 
-Crea un usuario de base de datos específico, después de importar:
+El formulario Crear/Editar comedor ahora presenta **Provincia antes de Distrito**. En registros nuevos se preselecciona Lima. El distrito es un desplegable con los 43 distritos de la provincia de Lima. Callao se mantiene como provincia independiente, con sus siete distritos, porque el proyecto ya incluye el comedor Unidos por el Callao.
 
-```sql
-CREATE USER 'comedor_app'@'localhost' IDENTIFIED BY 'ELIGE_UNA_CLAVE_MYSQL';
-GRANT SELECT, INSERT, UPDATE, DELETE ON comedor_solidario.* TO 'comedor_app'@'localhost';
+Al cambiar la provincia se actualizan los distritos y se limpia la selección anterior. Java vuelve a comprobar la combinación antes de guardar: no acepta, por ejemplo, Miraflores con provincia Callao, aunque se altere el formulario. Las ubicaciones existentes se conservan al editar si pertenecen al catálogo. Se admiten diferencias de mayúsculas/acentos, Lima como alias de Cercado de Lima y Chosica/Lurigancho-Chosica como alias de Lurigancho. Si una ubicación anterior queda fuera del alcance, el formulario solicita elegir una válida; no migra ni sobrescribe registros automáticamente.
+
+**Responsable** es un campo de texto directo donde cada persona puede registrar al responsable del comedor (hasta 120 caracteres). Se conserva el responsable al editar y se almacena en la columna `comedores.responsable`.
+
+Los responsables actuales son contactos de comedores, no cuentas ADMIN/DONADOR. Esta actualización conserva `responsable` como String/VARCHAR y no crea una relación con usuarios ni asigna permisos nuevos.
+
+**Activación:** detener Tomcat, Clean and Build, Run y Ctrl+F5. No ejecutar migraciones SQL. La carga de fotografías sigue funcionando como antes.
+
+**Comprobación manual:** crear un comedor seleccionando Lima y un distrito; escribir el nombre del responsable en el campo de texto; guardar y abrir Editar para comprobar que el valor se mantiene. Cambiar a Callao y verificar que el distrito anterior se limpia. Probar también el comedor existente de Callao.
+
+Archivos afectados: AdminComedorServlet, ComedorDAO, nueva utilidad UbicacionComedor, formulario.jsp de comedores, main.js y versión del script en footer.jspf. La vista técnica existente del diagrama se actualiza; las entidades del negocio y el esquema SQL no cambian.
+
+Fuentes del catálogo geográfico (consultadas el 21/10/2026): [lista de distritos publicada por la Embajada del Perú](https://www.peru-embajada.cz/files/lima-metropolitana.pdf) y [Municipalidad de Ventanilla, Plan de Acción de Seguridad Ciudadana 2023, sección de distritos de Callao](https://www.muniventanilla.gob.pe/contenidos-nfs/files/otrosEnlaces/codisec/PROPUESTA_DEL_PLAN_DE_ACCION_DISTRITAL_DE_SEGURIDAD_CIUDADANA_2023.pdf). El catálogo es local y no requiere Internet para funcionar.
+
+## Últimos ajustes: fotos desde administración y portada (21/10/2026)
+
+### Crear o editar un comedor con fotografía
+
+1. Inicia sesión como ADMIN y entra a **Comedores > Crear comedor** o **Editar**.
+2. Completa los datos y busca **Fotografía del comedor**, al final del formulario.
+3. Selecciona un **JPG o PNG de hasta 5 MB**. Verás una vista previa antes de guardar.
+4. Pulsa **Guardar comedor**. El sistema obtiene el ID asignado por MySQL y asocia la foto automáticamente: no tienes que renombrarla.
+5. Consulta el catálogo o el detalle público. Si ese comedor está entre los tres destacados, también aparecerá en el inicio.
+
+Si no eliges archivo, al editar se conserva la foto actual. Un comedor nuevo sin foto utiliza la ilustración predeterminada. Para quitar la foto visible, marca **Usar la imagen predeterminada** y guarda. Para reemplazarla después, selecciona otra fotografía.
+
+Se conserva la protección ADMIN y CSRF. El servidor comprueba el contenido real de la imagen, limita sus dimensiones a 6000 píxeles por lado y 16 millones de píxeles en total, y la vuelve a guardar como PNG. No usa el nombre original como ruta. Si el formulario tiene errores, vuelve a seleccionar el archivo antes de reenviar.
+
+### Carpeta de las imágenes subidas
+
+Las nuevas fotos se guardan fuera del WAR, en **[carpeta del usuario que ejecuta Tomcat]/ComedorSolidarioDatos/comedores**. Si ejecutas NetBeans/Tomcat con tu usuario Diego, la ruta habitual es:
+
+```text
+C:\Users\diego\ComedorSolidarioDatos\comedores
 ```
 
-Este usuario se utiliza por JDBC. **No sirve para iniciar sesión en la página web.** Si ya existe, usa su contraseña conocida o actualízala conscientemente con `ALTER USER`; no vuelvas a ejecutar `CREATE USER` sobre una cuenta existente.
+La carpeta se crea al guardar la primera foto o al elegir explícitamente la predeterminada. El archivo usa el ID: por ejemplo, **7.png**. La variable de entorno opcional **CS_UPLOAD_DIR** permite elegir otra carpeta; debe establecerse antes de iniciar NetBeans/Tomcat. La cuenta que ejecuta Tomcat necesita permiso de escritura en ella.
 
-## 8. Configurar JDBC y Connector/J
+Guardar una fotografía desde la web tiene efecto al recargar; **no necesita recompilar**. Las fotos sobreviven a Clean and Build porque están fuera de target y del despliegue. Un archivo PNG de cero bytes es la marca interna de elección de imagen predeterminada: no lo interpretes como una carga fallida ni lo reemplaces manualmente.
 
-1. Copia `src/resources/db.properties.example` como `src/resources/db.properties`.
-2. Edita la copia:
+Las cinco fotos existentes **1.jpg a 5.jpg** de web/assets/img/comedores se siguen usando mientras no exista una elección guardada por el administrador. La prioridad es: fotografía subida o elección de predeterminada, foto incluida en el proyecto y finalmente ilustración de respaldo. El endpoint /foto-comedor?id=ID sirve la imagen y comprueba que el comedor exista; para visitantes exige que esté activo, mientras ADMIN puede consultar también los inactivos.
 
-```properties
-db.url=jdbc:mysql://localhost:3306/comedor_solidario?sslMode=DISABLED&allowPublicKeyRetrieval=true&connectionTimeZone=America/Lima
-db.user=comedor_app
-db.password=ELIGE_UNA_CLAVE_MYSQL
-```
+La aplicación guarda los archivos de imagen, no modifica el código Java ni hace commits. Para trasladar las fotografías subidas a otro equipo, respalda esta carpeta y la base de datos correspondiente; el push de Git no copia esa carpeta externa. Los archivos de un comedor eliminado no se sirven públicamente, aunque permanecen en el directorio de datos. Las fotos incluidas manualmente dentro del proyecto sí pueden versionarse con Git.
 
-3. Cambia puerto, usuario y contraseña por los configurados en tu MySQL. No incluyas comillas alrededor de los valores.
-4. Si la contraseña contiene `\`, representa esa barra como `\\` en el archivo `.properties`.
-5. `ConexionBD.java` carga ese archivo y utiliza `DriverManager.getConnection`. No es necesario modificar todos los DAO ni poner contraseñas en los Servlets.
-6. Alternativa: define `CS_DB_URL`, `CS_DB_USER` y `CS_DB_PASSWORD` en el entorno del proceso Tomcat. Tienen prioridad sobre `db.properties`.
-7. Después de cambiar `db.properties`, ejecuta **Clean and Build** y vuelve a desplegar. Si cambias variables del entorno, reinicia NetBeans/Tomcat para que las hereden.
-8. Connector/J ya está declarado en `pom.xml`: `com.mysql:mysql-connector-j:8.4.0`. NetBeans/Maven lo descarga y lo empaqueta en `WEB-INF/lib` del WAR.
-9. En **Dependencies** debe verse `mysql-connector-j`. No agregues otra copia manual al servidor: produciría duplicados innecesarios.
-10. Servlet API tiene alcance `provided`: Tomcat la suministra. JSTL compatible con Jakarta sí se incluye en el WAR.
+### Correcciones del inicio
 
-`sslMode=DISABLED` y `allowPublicKeyRetrieval=true` se usan aquí para MySQL en tu equipo. Si se despliega en otro servidor, configura TLS y una URL adecuada. No publiques `db.properties` con credenciales reales.
+- El título usa la misma familia tipográfica del sitio, sin la fuente serif ni cursiva anterior.
+- El recuadro de comedores activos ocupa una fila debajo de la fotografía, con separación propia; ya no se posiciona encima de ella. El pie descriptivo permanece dentro de la foto.
+- Se actualizaron las versiones de CSS y JavaScript para facilitar la recarga de estos cambios.
 
-## 9. Clean and Build y ejecución
+### Activar y verificar esta entrega
 
-1. Guarda los cambios.
-2. En NetBeans, clic derecho al proyecto → **Clean and Build**.
-3. Espera `BUILD SUCCESS`. Las pruebas unitarias se ejecutan durante la compilación.
-4. Se genera `target/ComedorSolidario.war`.
-5. Comprueba que el servicio de MySQL esté iniciado.
-6. Clic derecho al proyecto → **Run**. Selecciona Tomcat 10.1 si NetBeans lo pregunta.
-7. Abre **http://localhost:8080/ComedorSolidario/**.
-8. Debes ver el inicio con estadísticas y comedores destacados.
-9. Si Tomcat está en otro puerto, sustituye 8080. El contexto distingue mayúsculas.
+Detén Tomcat, ejecuta **Clean and Build > Run** y recarga con **Ctrl+F5**. Esta primera actualización de código sí requiere desplegar; las cargas de fotos posteriores se aplican directamente. **No se requiere migración SQL** ni cambiar las clases de negocio.
 
-En terminal con Maven instalado: `mvn clean package` desde la carpeta del proyecto.
+La implementación añade ImagenComedor y FotoComedorServlet, configura multipart en AdminComedorServlet y obtiene claves generadas en ComedorDAO/JdbcDAO. Se actualizaron el formulario, la etiqueta compartida de fotos, las validaciones de tamaño en el filtro, JavaScript y estilos. La vista técnica existente del diagrama se ajustó a los nuevos métodos y clases.
 
-### Despliegue manual del WAR
+Verificación: Maven package y compilación Jasper de JSP completados correctamente; 21 aserciones aisladas de validación/almacenamiento de fotos y asociación del ID en verificacion/VerificarImagenComedor.java. Esta prueba usa una carpeta temporal y no toca MySQL ni fotografías reales. La prueba HTTP completa con tu Tomcat y la inspección visual siguen pendientes por el bloqueo de conexión local en la sesión de asistencia.
 
-Si prefieres ejecutar sin la integración del IDE: detén Tomcat, copia `target/ComedorSolidario.war` a su carpeta `webapps`, inicia `bin/startup.bat` y abre la misma URL. Para volver a desplegar, usa el mecanismo de despliegue de Tomcat o sustituye el WAR con Tomcat detenido. No edites directamente los archivos de la carpeta expandida: el siguiente despliegue los reemplazará.
+Para demostrarlo: crear un comedor con foto; editar sin adjuntar otra y comprobar que se conserva; reemplazarla; elegir la predeterminada; intentar adjuntar un archivo que no sea imagen o supere el límite. Finalmente, reiniciar/desplegar de nuevo y comprobar que la elección permanece.
 
-## 10. Cuentas web de prueba
+## Actualización visual del 21/10/2026
 
-| Rol | Correo | Contraseña |
-|---|---|---|
-| Administrador | admin@comedorsolidario.pe | Admin2026! |
-| Donador principal | donador@comedorsolidario.pe | Donador2026! |
-| Donadora | lucia@example.com | Donador2026! |
-| Donador | carlos@example.com | Donador2026! |
+Se mejoraron las plantillas existentes del inicio y de los dashboards administrativo y del donador. Se conserva Bootstrap, la navegación por roles, los formularios CRUD, la conexión JDBC y los datos reales del sistema.
 
-Son cuentas de demostración. El SQL contiene hashes PBKDF2 con sal distinta para cada usuario, no contraseñas en texto plano. No uses estas claves en un despliegue público.
+- Inicio: portada con la imagen de comunidad existente, nueva composición, indicadores de MySQL, tarjetas con fotografía, pasos para donar y llamada a la acción.
+- Administración: resumen de comedores, donadores y donaciones vigentes; barras proporcionales por estado; acceso a pendientes y a los seis módulos. No se muestran tendencias ni porcentajes inventados.
+- Donador: resumen de sus aportes vigentes, seguimiento por estado y accesos a donar, buscar comedores y perfil.
+- Fotos: una imagen por ID de comedor, compartida entre inicio, catálogo y detalle público. Sin imagen, se usa una ilustración genérica de respaldo.
+- Diseño adaptable: ajustes para móvil y escritorio, foco de teclado, etiquetas de accesibilidad y respeto de la preferencia de movimiento reducido.
 
-## 11. Probar el administrador y el CRUD
+### Dónde guardar las fotos
 
-1. Abre **Iniciar sesión**. Ingresa la cuenta administradora.
-2. Comprueba que veas el dashboard con seis indicadores y el menú administrativo.
-3. En **Comedores → Registrar comedor**, completa todos los campos y guarda. Aparece en el listado: CREATE.
-4. Pulsa **Ver** y comprueba su información: READ.
-5. Pulsa **Editar**, cambia el teléfono o distrito y guarda: UPDATE.
-6. Pulsa **Desactivar**, confirma el modal: DELETE lógico. El registro permanece en administración, pero desaparece del catálogo público.
-7. Pulsa **Reactivar**: vuelve al catálogo.
-8. En **Necesidades → Registrar necesidad**, selecciona el comedor, agrega arroz, 20 kg y prioridad ALTA.
-9. Comprueba que aparezca en el detalle público; edita la cantidad y desactiva/reactiva la necesidad.
-10. En **Usuarios**, verifica las cuentas registradas. No se muestran hashes ni contraseñas.
+Dentro del proyecto: **web/assets/img/comedores/**.
 
-## 12. Probar al donador y el ciclo completo
+1. Entra a Administración > Comedores y consulta el ID del registro.
+2. Guarda una fotografía horizontal con ese ID: por ejemplo, **3.jpg** para el comedor 3.
+3. Se admiten extensiones minúsculas **jpg, jpeg, png y webp**, en ese orden de prioridad. Mantén una sola foto por ID. No basta con renombrar una extensión: exporta la imagen en el formato correcto.
+4. Se recomienda 1200 x 750 píxeles y menos de 1 MB. Las tarjetas recortan el encuadre para mantener el mismo tamaño.
+5. Detén Tomcat, ejecuta **Clean and Build**, después **Run** y recarga con **Ctrl+F5**.
 
-1. Cierra sesión con el botón correspondiente.
-2. Ingresa con `donador@comedorsolidario.pe`.
-3. Revisa sus indicadores iniciales y **Mis donaciones**.
-4. Busca `San Juan de Lurigancho`; prueba además zona `Este` y provincia `Lima`.
-5. Abre **Olla Común Santa Rosa** y revisa sus necesidades.
-6. Pulsa **Donar a este comedor**.
-7. Selecciona ALIMENTOS, cantidad 10, unidad kg, descripción “Arroz en bolsas cerradas”.
-8. Guarda. En **Mis donaciones** debe aparecer PENDIENTE.
-9. Cierra sesión e ingresa como administrador.
-10. Abre **Donaciones**, filtra PENDIENTE y entra al detalle del aporte recién creado.
-11. Pulsa **Aceptar donación** y confirma. Debe cambiar a ACEPTADA.
-12. Regresa al donador y comprueba el nuevo estado.
-13. Como administrador, vuelve al detalle y pulsa **Confirmar entrega**; confirma la acción.
-14. Como donador, verifica ENTREGADA y la fecha de entrega.
-15. En **Mi perfil**, actualiza nombre o teléfono. El correo es de consulta.
-16. Prueba **Registro** con otro correo; vuelve a intentar ese correo y verifica el mensaje de duplicado.
-17. Intenta entrar a `/admin/comedores` siendo donador: debe devolver 403.
-18. Cierra sesión e intenta `/donante/donaciones`: debe dirigir al login.
-19. Inicia sesión con Lucía: no debe ver las donaciones del donador principal.
+La misma imagen aparecerá en el catálogo, en el detalle del comedor y en los destacados cuando el registro forme parte de esa selección. No edites imágenes dentro de target ni de la carpeta desplegada de Tomcat; se regeneran al compilar. No hace falta modificar SQL.
 
-## 13. Estructura y funcionamiento
+La foto principal del inicio es **web/assets/img/comunidad.png**. Puedes reemplazarla por otro PNG y volver a desplegar. Las instrucciones también están junto a las imágenes, en **web/assets/img/comedores/LEEME.md**.
 
-- `src/java/com/comedorsolidario/model`: JavaBeans.
-- `dao`: SQL parametrizado; `JdbcDAO` cierra todos los recursos con try-with-resources.
-- `controller`: un Servlet por responsabilidad. `BaseServlet` centraliza mensajes de error y navegación.
-- `filter/SeguridadFilter`: UTF-8, sesión, rol, CSRF, bloqueo del acceso externo a `/views/`.
-- `util`: conexión, hash de contraseñas y validación.
-- `web/index.jsp`: contenido de la página inicial; `InicioServlet` prepara los datos.
-- `web/views`: JSP separadas por auth, public, donante y admin. Las peticiones directas se bloquean; los Servlets hacen forward interno.
-- `web/assets`: estilos, JS mínimo, Bootstrap e ilustraciones originales SVG.
-- `web/WEB-INF/web.xml`: filtro, errores, sesiones y página de bienvenida.
-- `database`: SQL de instalación y datos de demostración.
-- `test/java`: pruebas unitarias de reglas y contraseñas.
-- `docs/pruebas`: informe y prueba HTTP reproducible.
+### Archivos del rediseño
 
-Se respeta tu estructura `src/java` y `web` mediante configuración Maven. La arquitectura aprobada sugería `WEB-INF/views`; esta implementación conserva tu ruta `web/views` y la protege con un filtro. Ninguna JSP ejecuta SQL. Todas las JSP dinámicas se visitan mediante sus Servlets.
+- web/index.jsp; web/views/admin/dashboard.jsp; web/views/donante/dashboard.jsp.
+- web/views/common/cards-comedores.jspf y web/views/public/detalle-comedor.jsp.
+- web/views/common/header.jspf: carga la nueva hoja de estilos.
+- web/assets/css/refresh.css: amplía los estilos existentes.
+- web/assets/js/main.js: respaldo de imágenes y señalización de la navegación actual; conserva la confirmación de acciones.
+- web/WEB-INF/tags/fotoComedor.tag e icono.tag: componentes de presentación reutilizables.
+- web/assets/img/iconos.svg y web/assets/img/comedores/sin-foto.svg: recursos locales.
 
-JDK 21, Tomcat 10.1 y Servlet 6.0 usan **jakarta.servlet**. Las clases `javax.crypto` son parte de Java SE y no significan mezcla de Servlet API.
+### Verificación del rediseño
 
-La aplicación es una única unidad WAR. Navegador, servidor Tomcat y servidor MySQL son los componentes que se comunican; no se introducen microservicios ni un framework adicional.
+Maven package finalizó con BUILD SUCCESS. Las JSP y sus etiquetas se compilaron con Jasper de Tomcat: 0 errores. main.js pasó node --check. Los cambios de presentación no añaden columnas ni modifican las consultas JDBC.
 
-## 14. Trabajar las vistas desde VS Code
+No se pudo realizar la inspección visual en navegador ni ejecutar HTTP contra el Tomcat local desde la sesión de asistencia (acceso a socket bloqueado). Al desplegar, revisar inicio, ambos dashboards, menú móvil, tarjetas con y sin foto y detalle del comedor. Comprobar también el caso de cero donaciones: las barras deben permanecer vacías, sin división por cero.
 
-1. Abre la carpeta `ComedorSolidario` con **File → Open Folder**.
-2. Edita `web/assets/css/styles.css`, `web/assets/js/main.js` y las vistas JSP.
-3. Para revisar la versión funcional abre la URL de Tomcat en el navegador.
-4. Live Server no ejecuta JSP, Java ni JDBC. Si haces una maqueta HTML por tu cuenta, solo te servirá para revisar la presentación.
-5. Las JSP comparten `views/common/header.jspf` y `footer.jspf` para evitar duplicación de navbar y footer.
+Los cambios de configuración que ya existían en nbactions.xml y web/META-INF/context.xml no forman parte de este rediseño.
 
-## 15. Errores frecuentes
+---
 
-| Síntoma | Solución |
-|---|---|
-| `release version 21 not supported` | Maven está usando un JDK anterior. Selecciona JDK 21 y verifica `mvn -version`. |
-| `UnsupportedClassVersionError` | Tomcat se está ejecutando con Java anterior a 21. Cambia su plataforma y reinicia. |
-| `ClassNotFoundException: jakarta.servlet...` | Se usó Tomcat 9 o una biblioteca incorrecta. Ejecuta con Tomcat 10.1. |
-| `ClassNotFoundException: com.mysql.cj.jdbc.Driver` | Revisa la descarga Maven de Connector/J y vuelve a generar/desplegar el WAR. |
-| `Access denied for user` | Corrige usuario, contraseña y permisos MySQL en `db.properties`. |
-| `Communications link failure` | Inicia MySQL y revisa host/puerto de la URL JDBC. |
-| `Unknown database` | Importa primero el SQL completo. |
-| `Table already exists` | La base ya fue importada. Verifica los datos antes de hacer cualquier cambio. |
-| Puerto 8080 ocupado | Detén la otra instancia o cambia el Connector de Tomcat a 8081 y usa ese puerto. |
-| Error 404 en `/views/...jsp` | Es intencional: accede mediante `/login`, `/comedores` o los controladores. |
-| Error 404 en todo el proyecto | Revisa que el WAR se desplegó, contexto exacto, puerto y log de Tomcat. |
-| JSTL no se encuentra | Revisa dependencias Jakarta JSTL del POM; no agregues JSTL antigua `javax`. |
-| 403 al enviar un formulario | La sesión/token puede haber expirado. Recarga el formulario e inicia sesión nuevamente. |
-| No descarga dependencias Maven | Comprueba Internet y el proxy de tu institución. No desactives TLS. |
-| Los cambios no aparecen | Guarda, Clean and Build y vuelve a desplegar. Revisa que editas el proyecto original. |
-| Hay una página 500 | Consulta Output/Tomcat y `logs/catalina...`; la página no expone detalles técnicos al visitante. |
+Actualizado el 20/10/2026. Esta guía reemplaza las instrucciones anteriores que llamaban "Eliminar" a una desactivación. El archivo leeme.md original se conserva.
 
-## 16. Verificación y alcance
+## 1. Eliminar, desactivar y reactivar
 
-Consulta `docs/pruebas/VERIFICACION.md` para conocer las comprobaciones realmente ejecutadas. Las pruebas HTTP están en `docs/pruebas/prueba_http.py`: ejecutarlas requiere Python 3, una instancia local y una base de pruebas con el SQL de ejemplo. Crea registros de prueba; no usar contra datos de producción.
+Los seis módulos administrativos (Comedores, Necesidades, Usuarios, Donaciones, Productos y Campañas) tienen acciones distintas:
 
-No se implementan envío de emails, recuperación de contraseña, carga de fotografías, pagos electrónicos ni cancelación de donaciones. No forman parte del alcance funcional acordado. No se usan Spring, React, Angular, Vue, Node.js, PHP, Laravel ni Django.
+| Acción | Operación en MySQL | Resultado |
+| --- | --- | --- |
+| Eliminar | DELETE de la fila por ID | Desaparece definitivamente; no puede reactivarse. |
+| Desactivar | UPDATE del estado o de activo | Conserva la fila y sus relaciones; queda inactiva. |
+| Reactivar | UPDATE al estado activo | Recupera la vigencia de una fila conservada. |
 
-Fuentes de compatibilidad: [Tomcat 10.1](https://tomcat.apache.org/whichversion.html), [Connector/J](https://dev.mysql.com/doc/connector-j/en/), [NetBeans](https://netbeans.apache.org/).
+En el listado aparecen Ver, Editar, Desactivar/Reactivar y Eliminar según los permisos y estado del registro. Eliminar pide confirmación explícita; Cancelar no envía el formulario. Las acciones se envían por POST, requieren sesión ADMIN y token CSRF.
+
+La base conserva sus claves foráneas, sin borrado en cascada:
+- Un comedor con necesidades, donaciones o campañas no puede eliminarse.
+- Un producto referenciado por una necesidad no puede eliminarse.
+- Un donador con donaciones no puede eliminarse.
+- Desactivar un registro relacionado no elimina su relación: todavía puede impedir el borrado del registro padre.
+- Las cuentas ADMIN están protegidas: el CRUD de Usuarios gestiona donadores; no elimina administradores.
+- Si MySQL rechaza una relación, se muestra un mensaje y el registro permanece. No se transforma el borrado en una baja silenciosa.
+- Si la cuenta MySQL carece de permiso DELETE, se informa para que el administrador del servidor revise los permisos sobre esta base.
+
+En Donaciones se añadió la visualización administrativa de activas e inactivas, la columna Vigencia y Reactivar. El proceso PENDIENTE / ACEPTADA / ENTREGADA es independiente de la vigencia. Desactivar y reactivar no cambian la fecha de entrega ni el estado del proceso. Solo pueden editarse datos de donaciones activas y pendientes. Eliminar sí borra la donación, incluyendo su historial; los totales posteriores se calculan sin ella.
+
+## 2. Qué cubren los seis CRUD
+
+| Entidad | Crear y consultar | Actualizar | Eliminar y desactivar |
+| --- | --- | --- | --- |
+| Comedor | Formulario, listado y detalle | Datos del comedor | Borrado sin referencias; estado reversible |
+| Necesidad | Formulario, listado y detalle | Cantidad, prioridad, datos y producto opcional | Borrado de la necesidad; estado reversible |
+| Usuario | Crear DONADOR, listar y ver | Datos del donador | Borrado sin donaciones; estado reversible; ADMIN protegido |
+| Donación | Crear a nombre de un donador, listar y ver | Datos pendientes; avance de entrega | Borrado físico; vigencia reversible |
+| Producto | Crear, listar y ver | Datos del catálogo | Borrado sin necesidades vinculadas; estado reversible |
+| Campaña | Crear, listar y ver | Comedor, contenido y fechas | Borrado físico; estado reversible |
+
+Ya existían Comedores y Necesidades; se completaron Usuarios y Donaciones y se añadieron Productos y Campañas. No se agregaron seis módulos nuevos.
+
+Productos permite referenciar recursos solicitados por las necesidades. No es un sistema de stock: cambiar un producto no reescribe el nombre, descripción ni unidad guardados en necesidades anteriores.
+
+Campañas organiza convocatorias de un comedor con fechas de inicio y fin. Una campaña pública debe estar activa, pertenecer a un comedor activo y estar dentro de sus fechas, inclusive. No se vincularon campañas a donaciones ni se implementaron metas de recaudación.
+
+Los seis CRUD administrativos son exclusivos de ADMIN. Se conservan el registro propio, perfil y aportes propios del DONADOR.
+
+## 3. Ejecutar esta actualización en NetBeans
+
+Si tu aplicación ya funciona y aplicaste la ampliación anterior, esta actualización NO requiere migración SQL.
+
+1. Abre ComedorSolidario-yoel, la carpeta que contiene pom.xml.
+2. Detén Tomcat desde Servicios > Servidores en NetBeans.
+3. Ejecuta Clean and Build (Limpiar y construir), y luego Run (Ejecutar).
+4. Usa JDK 21 o superior y Tomcat 10.1. El proyecto compila con release 21 y Jakarta Servlet 6.0.
+5. Abre http://localhost:8080/ComedorSolidario/inicio, ajustando puerto/contexto a tu servidor.
+6. Inicia sesión con tu cuenta ADMIN de la aplicación y recarga con Ctrl+F5.
+7. Abre un listado: ahora deben verse Eliminar y Desactivar como acciones separadas. En una fila inactiva, Desactivar cambia a Reactivar; Eliminar sigue siendo un borrado.
+
+En consola, desde la raíz del proyecto: mvn clean package. El WAR generado es target/ComedorSolidario.war.
+
+### Configuración de una instalación que aún no tiene la ampliación
+
+- Base existente: respaldar y ejecutar database/migracion_rubrica.sql una sola vez. Crea productos y campañas; añade necesidades.producto_id y donaciones.activo.
+- Instalación nueva: ejecutar solamente database/comedor_solidario.sql; ya contiene la ampliación. No ejecutar después la migración.
+- No repetir los ALTER TABLE ni reinicializar una base con datos para actualizar los botones.
+- ConexionBD usa CS_DB_URL, CS_DB_USER y CS_DB_PASSWORD o src/resources/db.properties con db.url, db.user y db.password. Las variables de entorno tienen prioridad. El archivo .example no se carga automáticamente.
+- Mantener las credenciales locales fuera de Git. La cuenta MySQL y la cuenta ADMIN de la web son cuentas distintas.
+
+## 4. Integración JDBC de la web no administrativa
+
+Esta parte significa que las páginas del visitante leen información real de MySQL, incluso sin iniciar sesión como administrador.
+
+| Página | Información consultada | Código responsable |
+| --- | --- | --- |
+| /inicio | Comedores destacados activos, total de comedores activos, total de donadores y resumen de donaciones vigentes | InicioServlet; ComedorDAO, UsuarioDAO y DonacionDAO |
+| /comedores | Comedores activos y filtros por zona, distrito y provincia | ComedorServlet; ComedorDAO.listar |
+| /comedores/detalle?id=... | Datos de un comedor activo y sus necesidades activas | ComedorServlet; ComedorDAO.buscar y NecesidadDAO.listar |
+| Mismo detalle público | Campañas activas, dentro de fechas, de ese comedor activo | CampaniaDAO.listarPublicas |
+| Panel y donaciones del DONADOR | Resumen y listado de sus propios aportes vigentes | DonadorDashboardServlet, DonacionServlet y DonacionDAO |
+
+La consulta pública de comedores, necesidades e indicadores ya existía: se conservó y revisó. La ampliación incorporó las campañas al detalle público y el filtrado de donaciones inactivas en listados del donador y resúmenes.
+
+Recorrido real: navegador > servlet > DAO > ConexionBD/MySQL > objetos del modelo > atributos de la petición > JSP. Las JSP recorren resultados con JSTL y muestran textos con c:out; los registros no se escriben a mano en HTML. Los títulos y etiquetas de navegación sí pueden ser estáticos.
+
+### Conexión, parámetros y recursos
+
+- util/ConexionBD.java centraliza la configuración y obtiene conexiones JDBC.
+- dao/JdbcDAO.java prepara las consultas con Connection.prepareStatement.
+- Los valores del visitante (ID, filtros, etc.) se envían con PreparedStatement.setObject, usando marcadores ?, sin concatenar esos valores al SQL.
+- Connection, PreparedStatement y ResultSet se cierran con try-with-resources, incluso ante errores.
+- CampaniaDAO.listarPublicas usa un ID parametrizado, JOIN con comedores, estados activos y CURRENT_DATE BETWEEN fecha_inicio AND fecha_fin.
+- El total de donadores actual cuenta cuentas DONADOR; no aplica filtro por estado. Los resúmenes de donaciones sí excluyen aportes inactivos.
+
+### Demostración para el profesor
+
+1. Desde ADMIN, crea una campaña de prueba en un comedor activo, con fechas que incluyan hoy.
+2. Abre una ventana privada sin sesión y entra al detalle público de ese comedor.
+3. Verifica que aparece el título guardado en MySQL.
+4. Edita el título desde ADMIN y recarga la página pública: debe reflejar el cambio sin editar JSP.
+5. Desactiva la campaña: deja de mostrarse. Reactívala: vuelve a mostrarse si sigue dentro de fechas.
+6. Elimínala definitivamente: desaparece del administrador y de MySQL.
+7. Prueba los filtros de comedores y el detalle de necesidades. Esto demuestra JDBC también fuera del panel administrativo.
+
+## 5. Modelo y coherencia con SQL
+
+Se mantienen seis clases de negocio encapsuladas: Usuario, Comedor, Necesidad, Donacion, Producto y Campania, organizadas junto a paquetes dao, controller, util y filter.
+
+| Relación | Implementación |
+| --- | --- |
+| Comedor a necesidades, donaciones y campañas | Un comedor puede tener 0..* de cada una; cada registro hijo tiene un comedor obligatorio |
+| Usuario a donaciones | Un donador puede tener 0..* aportes; cada donación tiene un donador obligatorio |
+| Producto a necesidades | Un producto puede ser referenciado por 0..* necesidades; cada necesidad tiene 0..1 producto |
+
+Las asociaciones se representan mediante IDs y claves foráneas, no mediante colecciones inexistentes. Los nombres de comedor y donador en Donacion provienen de JOIN. Los atributos privados y accesores del modelo no cambian en esta actualización.
+
+El diagrama de entidades existente sigue describiendo esas clases. No se creó otro archivo PlantUML en esta actualización. Se actualizó únicamente la vista técnica ya existente docs/clases-completas.puml con eliminar(int): void en los seis DAO, eliminarRegistro(...) en JdbcDAO y listarAdministracion(String) / cambiarVigencia(int, boolean) en DonacionDAO, para mantener su correspondencia con Java.
+
+## 6. Responsabilidad individual
+
+Son seis entidades para seis integrantes. El equipo debe acordar y consignar el nombre de quien desarrolla, valida y explica cada CRUD; una distribución propuesta no demuestra autoría ni reemplaza la evaluación individual.
+
+| Integrante propuesto | CRUD |
+| --- | --- |
+| De Fina Maldonado Flavio Alonso | Comedores |
+| Juarez Zapata Diego Humberto | Donaciones |
+| Rujel Dios Julio César | Usuarios / donadores |
+| Yovera Villegas Franky Yoel | Necesidades |
+| Vidal Vega Didier Fabricio | Productos |
+| Zevallos Davila Jennifer | Campañas |
+
+La asignación anterior es propuesta, pendiente de confirmación del equipo. Cada integrante debe demostrar crear, listar, consultar un detalle, actualizar y eliminar un registro propio de prueba.
+
+## 7. Archivos de esta actualización
+
+Las rutas Java siguientes están bajo src/java/com/comedorsolidario/:
+
+- dao/JdbcDAO.java: ejecución común de borrado, rechazo por referencias, ID inválido, fila inexistente/protegida y falta de permiso DELETE.
+- Los seis DAO: método eliminar(int) con DELETE parametrizado; UsuarioDAO restringe el borrado a DONADOR.
+- dao/DonacionDAO.java: listado administrativo de activas/inactivas y cambiarVigencia.
+- Los seis controladores administrativos: acción eliminar y mensajes; AdminDonacionServlet también gestiona vigencia y consulta de inactivas.
+- web/views/admin/*/listar.jsp: botones separados y confirmación irreversible.
+- Detalles de usuarios, productos, campañas y donaciones: acciones diferenciadas; donaciones muestra vigencia.
+- web/views/common/header.jspf: mensajes de rechazo de la acción.
+- LEEME_RUBRICA.md y docs/VERIFICACION.md: instrucciones actualizadas.
+- verificacion/VerificarEliminacion.java: comprobaciones aisladas del SQL de borrado y manejo de rechazos.
+
+No cambia el esquema SQL por esta separación. Los botones siguen utilizando la confirmación compartida ya existente.
+
+## 8. Qué está verificado y qué falta demostrar
+
+- Maven package: BUILD SUCCESS; WAR generado.
+- VerificarRubrica.java: 343 aserciones correctas de modelo/encapsulamiento/validación.
+- VerificarEliminacion.java: 33 aserciones correctas, interceptando el SQL sin conectar a MySQL.
+- Sintaxis JavaScript revisada con node --check.
+- Jasper de Tomcat compiló las JSP con 0 errores; detalles en docs/VERIFICACION.md.
+
+No se ejecutaron los DELETE sobre tu base ni se verificaron los seis recorridos HTTP/JDBC desde esta sesión. La conexión real y la demostración en NetBeans/Tomcat deben comprobarse en tu entorno. El usuario informó que resolvió MySQL; eso no sustituye probar esta nueva eliminación.
+
+El código cubre las operaciones y mecanismos solicitados por la rúbrica; la calificación requiere la aplicación funcionando, el diagrama que se entregue coherente y la demostración individual. No se afirma una nota ni cumplimiento máximo sin esas comprobaciones.

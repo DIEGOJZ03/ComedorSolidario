@@ -5,9 +5,9 @@
 <div class="page-heading">
     <p class="eyebrow">Administración</p>
     <h1>Necesidades de los comedores</h1>
-    <p class="text-secondary">Mantén las prioridades y cantidades actualizadas.</p>
+    <p class="text-secondary">Administra cantidades y prioridades. Desactivar conserva la necesidad; Eliminar la borra definitivamente.</p>
 </div>
-<a class="btn btn-primary mb-4" href="${ctx}/admin/necesidades/formulario">+ Registrar necesidad</a>
+<a class="btn btn-primary mb-4" href="${ctx}/admin/necesidades/formulario">+ Crear necesidad</a>
 <form method="get" action="${ctx}/admin/necesidades" class="panel row g-3 mb-4">
     <div class="col-md-8">
         <label for="comedorId" class="form-label">Filtrar por comedor</label>
@@ -44,13 +44,25 @@
                     <td><c:set var="estado" value="${n.estado}"/><%@ include file="/views/common/badge.jspf" %></td>
                     <td>
                         <div class="action-group">
+                            <a class="btn btn-sm btn-outline-secondary" href="${ctx}/admin/necesidades/detalle?id=${n.id}">Ver</a>
                             <a class="btn btn-sm btn-outline-primary" href="${ctx}/admin/necesidades/formulario?id=${n.id}">Editar</a>
-                            <form method="post" action="${ctx}/admin/necesidades" data-confirm>
+                            <form method="post" action="${ctx}/admin/necesidades" data-confirm
+                                  data-confirm-title="${n.estado == 'ACTIVA' ? 'Desactivar registro' : 'Reactivar registro'}"
+                                  data-confirm-label="${n.estado == 'ACTIVA' ? 'Desactivar' : 'Reactivar'}"
+                                  data-confirm-message="${n.estado == 'ACTIVA' ? 'El registro quedará inactivo. Se conservarán sus datos y podrás reactivarlo.' : 'El registro volverá a estar activo con sus datos conservados.'}">
                                 <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                                 <input type="hidden" name="accion" value="estado">
                                 <input type="hidden" name="id" value="${n.id}">
                                 <input type="hidden" name="estado" value="${n.estado == 'ACTIVA' ? 'INACTIVA' : 'ACTIVA'}">
-                                <button class="btn btn-sm btn-outline-danger">${n.estado == 'ACTIVA' ? 'Desactivar' : 'Reactivar'}</button>
+                                <button class="btn btn-sm btn-outline-secondary" type="submit">${n.estado == 'ACTIVA' ? 'Desactivar' : 'Reactivar'}</button>
+                            </form>
+                            <form method="post" action="${ctx}/admin/necesidades" data-confirm
+                                  data-confirm-title="Eliminar definitivamente" data-confirm-label="Eliminar definitivamente"
+                                  data-confirm-message="Se borrará de la base de datos el registro #${n.id}. Esta acción no se puede deshacer ni reactivar. Si tiene registros relacionados, el borrado será rechazado. ¿Deseas continuar?">
+                                <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                                <input type="hidden" name="accion" value="eliminar">
+                                <input type="hidden" name="id" value="${n.id}">
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
                             </form>
                         </div>
                     </td>

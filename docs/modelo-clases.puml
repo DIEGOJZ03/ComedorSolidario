@@ -1,0 +1,222 @@
+@startuml ModeloClases
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+hide empty members
+title Comedor Solidario - Modelo de negocio implementado
+package "com.comedorsolidario.model" {
+class Campania {
+  - id : int
+  - comedorId : int
+  - nombre : String
+  - descripcion : String
+  - fechaInicio : LocalDate
+  - fechaFin : LocalDate
+  - estado : String
+  + Campania()
+  + getId() : int
+  + setId(id : int) : void
+  + getComedorId() : int
+  + setComedorId(comedorId : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getFechaInicio() : LocalDate
+  + setFechaInicio(fechaInicio : LocalDate) : void
+  + getFechaFin() : LocalDate
+  + setFechaFin(fechaFin : LocalDate) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+}
+class Comedor {
+  - id : int
+  - nombre : String
+  - descripcion : String
+  - direccion : String
+  - zona : String
+  - distrito : String
+  - provincia : String
+  - responsable : String
+  - telefono : String
+  - estado : String
+  - fechaRegistro : LocalDateTime
+  + Comedor()
+  + Comedor(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getDireccion() : String
+  + setDireccion(direccion : String) : void
+  + getZona() : String
+  + setZona(zona : String) : void
+  + getDistrito() : String
+  + setDistrito(distrito : String) : void
+  + getProvincia() : String
+  + setProvincia(provincia : String) : void
+  + getResponsable() : String
+  + setResponsable(responsable : String) : void
+  + getTelefono() : String
+  + setTelefono(telefono : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getFechaRegistro() : LocalDateTime
+  + setFechaRegistro(fechaRegistro : LocalDateTime) : void
+}
+class Donacion {
+  - activo : boolean
+  - id : int
+  - donanteId : int
+  - comedorId : int
+  - tipo : String
+  - cantidad : BigDecimal
+  - unidad : String
+  - descripcion : String
+  - estado : String
+  - fechaRegistro : LocalDateTime
+  - fechaEntrega : LocalDateTime
+  - comedorNombre : String
+  - donanteNombre : String
+  + isActivo() : boolean
+  + setActivo(activo : boolean) : void
+  + Donacion()
+  + Donacion(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getDonanteId() : int
+  + setDonanteId(donanteId : int) : void
+  + getComedorId() : int
+  + setComedorId(comedorId : int) : void
+  + getTipo() : String
+  + setTipo(tipo : String) : void
+  + getCantidad() : BigDecimal
+  + setCantidad(cantidad : BigDecimal) : void
+  + getUnidad() : String
+  + setUnidad(unidad : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getFechaRegistro() : LocalDateTime
+  + setFechaRegistro(fechaRegistro : LocalDateTime) : void
+  + getFechaEntrega() : LocalDateTime
+  + setFechaEntrega(fechaEntrega : LocalDateTime) : void
+  + getComedorNombre() : String
+  + setComedorNombre(comedorNombre : String) : void
+  + getDonanteNombre() : String
+  + setDonanteNombre(donanteNombre : String) : void
+}
+class Necesidad {
+  - productoId : Integer
+  - id : int
+  - comedorId : int
+  - nombre : String
+  - descripcion : String
+  - cantidadNecesaria : BigDecimal
+  - unidad : String
+  - prioridad : String
+  - estado : String
+  - comedorNombre : String
+  + getProductoId() : Integer
+  + setProductoId(productoId : Integer) : void
+  + Necesidad()
+  + Necesidad(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getComedorId() : int
+  + setComedorId(comedorId : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getCantidadNecesaria() : BigDecimal
+  + setCantidadNecesaria(cantidadNecesaria : BigDecimal) : void
+  + getUnidad() : String
+  + setUnidad(unidad : String) : void
+  + getPrioridad() : String
+  + setPrioridad(prioridad : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getComedorNombre() : String
+  + setComedorNombre(comedorNombre : String) : void
+}
+class Producto {
+  - id : int
+  - nombre : String
+  - descripcion : String
+  - unidad : String
+  - estado : String
+  + Producto()
+  + getId() : int
+  + setId(id : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getDescripcion() : String
+  + setDescripcion(descripcion : String) : void
+  + getUnidad() : String
+  + setUnidad(unidad : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+}
+class Usuario {
+  - id : int
+  - nombre : String
+  - apellido : String
+  - email : String
+  - passwordHash : String
+  - telefono : String
+  - rol : String
+  - estado : String
+  - fechaRegistro : LocalDateTime
+  + Usuario()
+  + Usuario(id : int)
+  + getId() : int
+  + setId(id : int) : void
+  + getNombre() : String
+  + setNombre(nombre : String) : void
+  + getApellido() : String
+  + setApellido(apellido : String) : void
+  + getEmail() : String
+  + setEmail(email : String) : void
+  + getPasswordHash() : String
+  + setPasswordHash(passwordHash : String) : void
+  + getTelefono() : String
+  + setTelefono(telefono : String) : void
+  + getRol() : String
+  + setRol(rol : String) : void
+  + getEstado() : String
+  + setEstado(estado : String) : void
+  + getFechaRegistro() : LocalDateTime
+  + setFechaRegistro(fechaRegistro : LocalDateTime) : void
+}
+}
+Usuario "1" <-- "0..*" Donacion : donanteId / donante_id
+Comedor "1" <-- "0..*" Donacion : comedorId / comedor_id
+Comedor "1" <-- "0..*" Necesidad : comedorId / comedor_id
+Producto "0..1" <-- "0..*" Necesidad : productoId / producto_id nullable
+Comedor "1" <-- "0..*" Campania : comedorId / comedor_id
+note as N1
+  Las asociaciones están implementadas mediante identificadores FK.
+  No se inventan listas ni referencias de objetos en los JavaBeans.
+  Cada FK obligatoria apunta a exactamente una entidad existente.
+  Baja lógica: no hay composición ni eliminación en cascada.
+  Donacion.activo es independiente de su estado de entrega.
+  String representa los ENUM SQL; los controladores validan sus valores.
+end note
+note right of Necesidad
+  comedorNombre: proyección JOIN; no es columna propia.
+  productoId: Integer permite SQL NULL.
+end note
+note right of Donacion
+  comedorNombre y donanteNombre: proyecciones JOIN.
+  cantidad: BigDecimal / DECIMAL(12,2).
+  fechaEntrega: LocalDateTime, permite NULL.
+  PENDIENTE -> ACEPTADA -> ENTREGADA.
+end note
+note right of Campania
+  Tabla campanias. Fechas LocalDate / DATE.
+  fechaFin >= fechaInicio.
+end note
+@enduml

@@ -5,6 +5,12 @@ import java.sql.*;
 import java.util.*;
 
 public class UsuarioDAO extends JdbcDAO {
+    /** Borrado físico; las claves foráneas impiden eliminar registros referenciados. */
+    public void eliminar(int id) throws SQLException {
+        eliminarRegistro("DELETE FROM usuarios WHERE id=? AND rol='DONADOR'", id,
+                "El donador tiene donaciones relacionadas. No se eliminó la cuenta. Puedes desactivarla para conservar su historial.");
+    }
+
     public Usuario buscarEmail(String email) throws SQLException {
         List<Usuario> lista = consultar("SELECT * FROM usuarios WHERE email=?", this::map, email);
         return lista.isEmpty() ? null : lista.get(0);
@@ -38,6 +44,15 @@ public class UsuarioDAO extends JdbcDAO {
                 u.getId());
     }
 
+    public void guardarAdministrado(Usuario u) throws SQLException {
+        if(u.getId()==0) ejecutar("INSERT INTO usuarios(nombre,apellido,email,password_hash,telefono,rol,estado) VALUES(?,?,?,?,?,'DONADOR',?)",u.getNombre(),u.getApellido(),u.getEmail(),u.getPasswordHash(),u.getTelefono(),u.getEstado());
+        else if(ejecutar("UPDATE usuarios SET nombre=?,apellido=?,email=?,telefono=?,estado=? WHERE id=? AND rol='DONADOR'",u.getNombre(),u.getApellido(),u.getEmail(),u.getTelefono(),u.getEstado(),u.getId())!=1)
+            throw new IllegalArgumentException("El donador no existe. Las cuentas ADMIN están protegidas.");
+    }
+    public void cambiarEstado(int id,String estado) throws SQLException {
+        if(ejecutar("UPDATE usuarios SET estado=? WHERE id=? AND rol='DONADOR'",estado,id)!=1)
+            throw new IllegalArgumentException("El donador no existe. Las cuentas ADMIN están protegidas.");
+    }
     public long totalDonadores() throws SQLException {
         return contar("SELECT COUNT(*) FROM usuarios WHERE rol='DONADOR'");
     }

@@ -5,6 +5,18 @@ import java.sql.*;
 import java.util.*;
 
 public class ComedorDAO extends JdbcDAO {
+    /** Responsables ya registrados, incluidos los de comedores inactivos; no son roles de usuario. */
+    public List<String> listarResponsables() throws SQLException {
+        return consultar("SELECT DISTINCT TRIM(responsable) AS responsable FROM comedores "
+                + "WHERE TRIM(responsable) <> '' ORDER BY responsable", rs -> rs.getString("responsable"));
+    }
+
+    /** Borrado físico; las claves foráneas impiden eliminar registros referenciados. */
+    public void eliminar(int id) throws SQLException {
+        eliminarRegistro("DELETE FROM comedores WHERE id=?", id,
+                "Tiene necesidades, donaciones o campañas relacionadas. No se eliminó el comedor. Puedes desactivarlo para conservar esas relaciones.");
+    }
+
     public List<Comedor> listar(boolean soloActivos, String zona, String distrito, String provincia)
             throws SQLException {
         String sql = "SELECT * FROM comedores WHERE 1=1";
@@ -15,11 +27,20 @@ public class ComedorDAO extends JdbcDAO {
             parametros.add(zona);
         }
         if (distrito != null && !distrito.isBlank()) {
-            sql += " AND LOCATE(?,distrito)>0";
-            parametros.add(distrito);
+            // Una selección identifica un distrito completo: Lurigancho no es San Juan de Lurigancho.
+            if ("Cercado de Lima".equals(distrito)) {
+                sql += " AND TRIM(distrito) IN (?,?)";
+                parametros.addAll(List.of(distrito, "Lima"));
+            } else if ("Lurigancho".equals(distrito)) {
+                sql += " AND TRIM(distrito) IN (?,?,?,?)";
+                parametros.addAll(List.of(distrito, "Chosica", "Lurigancho-Chosica", "Lurigancho (Chosica)"));
+            } else {
+                sql += " AND TRIM(distrito)=?";
+                parametros.add(distrito);
+            }
         }
         if (provincia != null && !provincia.isBlank()) {
-            sql += " AND LOCATE(?,provincia)>0";
+            sql += " AND TRIM(provincia)=?";
             parametros.add(provincia);
         }
         return consultar(sql + " ORDER BY nombre", this::map, parametros.toArray());
@@ -32,7 +53,7 @@ public class ComedorDAO extends JdbcDAO {
 
     public void guardar(Comedor c) throws SQLException {
         if (c.getId() == 0) {
-            ejecutar(
+            c.setId(insertar(
                     "INSERT INTO comedores(nombre,descripcion,direccion,zona,distrito,provincia,responsable,telefono,estado) VALUES (?,?,?,?,?,?,?,?,?)",
                     c.getNombre(),
                     c.getDescripcion(),
@@ -42,7 +63,7 @@ public class ComedorDAO extends JdbcDAO {
                     c.getProvincia(),
                     c.getResponsable(),
                     c.getTelefono(),
-                    c.getEstado());
+                    c.getEstado()));
         } else {
             if (ejecutar(
                             "UPDATE comedores SET nombre=?,descripcion=?,direccion=?,zona=?,distrito=?,provincia=?,responsable=?,telefono=?,estado=? WHERE id=?",

@@ -11,6 +11,7 @@
     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
     <input type="hidden" name="accion" value="guardar">
     <input type="hidden" name="id" value="${necesidad.id}">
+    <div class="col-12"><label class="form-label" for="productoId">Producto de referencia (opcional)</label><select class="form-select" name="productoId" id="productoId"><option value="">Sin referencia</option><c:forEach var="p" items="${productos}"><option value="${p.id}" ${(pageContext.request.method eq 'POST' ? param.productoId : necesidad.productoId) == p.id ? 'selected' : ''}><c:out value="${p.nombre}"/> (<c:out value="${p.estado}"/>)</option></c:forEach></select></div>
     <div class="col-12">
         <label class="form-label" for="comedorId">Comedor</label>
         <select class="form-select" id="comedorId" name="comedorId" required>

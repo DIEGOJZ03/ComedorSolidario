@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <c:set var="titulo" value="Detalle del comedor"/>
 <%@ include file="/views/common/header.jspf" %>
 <a class="text-link" href="${ctx}/comedores">← Volver a comedores</a>
@@ -7,11 +8,15 @@
     <p class="eyebrow"><c:out value="${comedor.distrito}"/> · <c:out value="${comedor.provincia}"/></p>
     <h1><c:out value="${comedor.nombre}"/></h1>
 </div>
+<div class="detail-comedor-photo"><ui:fotoComedor id="${comedor.id}" nombre="${comedor.nombre}"/></div>
 <div class="row g-4">
     <div class="col-lg-8">
         <section class="panel">
             <h2 class="h4">Una comunidad que necesita tu apoyo</h2>
             <p class="preserve-lines"><c:out value="${comedor.descripcion}"/></p>
+            <h2 class="h4 mt-4">Campañas vigentes</h2>
+            <c:forEach var="ca" items="${campanias}"><article class="border rounded p-3 mb-2"><h3 class="h5"><c:out value="${ca.nombre}"/></h3><p><c:out value="${ca.descripcion}"/></p><p>Desde <c:out value="${ca.fechaInicio}"/> hasta <c:out value="${ca.fechaFin}"/></p></article></c:forEach>
+            <c:if test="${empty campanias}"><p>No hay campañas vigentes.</p></c:if>
             <h2 class="h4 mt-4">Necesidades actuales</h2>
             <div class="table-responsive">
                 <table class="table align-middle">

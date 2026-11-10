@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 
 /** JavaBean: representa datos; no ejecuta consultas SQL. */
 public class Necesidad {
+    private Integer productoId;
+    public Integer getProductoId() { return productoId; }
+    public void setProductoId(Integer productoId) { this.productoId = productoId; }
     private int id;
     private int comedorId;
     private String nombre;

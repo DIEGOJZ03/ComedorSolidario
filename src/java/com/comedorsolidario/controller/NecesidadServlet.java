@@ -10,12 +10,19 @@ import com.comedorsolidario.model.*;
 import com.comedorsolidario.util.*;
 import static com.comedorsolidario.util.ValidacionUtil.*;
 
-@WebServlet({"/admin/necesidades", "/admin/necesidades/formulario"})
+@WebServlet({"/admin/necesidades", "/admin/necesidades/formulario", "/admin/necesidades/detalle"})
 public class NecesidadServlet extends BaseServlet {
     @Override
     protected void get(HttpServletRequest r, HttpServletResponse s)
             throws ServletException, IOException, SQLException {
         NecesidadDAO dao = new NecesidadDAO();
+        if (r.getServletPath().endsWith("/detalle")) {
+            Necesidad n = dao.buscar(id(r.getParameter("id")));
+            if (n == null) { s.sendError(404); return; }
+            r.setAttribute("necesidad", n);
+            vista(r, s, "admin/necesidades/detalle.jsp");
+            return;
+        }
         if (r.getServletPath().endsWith("/formulario")) {
             Necesidad n = new Necesidad();
             n.setEstado("ACTIVA");
@@ -42,6 +49,7 @@ public class NecesidadServlet extends BaseServlet {
     private void formulario(HttpServletRequest r, HttpServletResponse s)
             throws ServletException, IOException, SQLException {
         r.setAttribute("comedores", new ComedorDAO().listar(false, null, null, null));
+        r.setAttribute("productos", new ProductoDAO().listar());
         vista(r, s, "admin/necesidades/formulario.jsp");
     }
 
@@ -49,7 +57,17 @@ public class NecesidadServlet extends BaseServlet {
     protected void post(HttpServletRequest r, HttpServletResponse s)
             throws ServletException, IOException, SQLException {
         NecesidadDAO dao = new NecesidadDAO();
-        String accion = opcion(r.getParameter("accion"), "guardar", "estado");
+        String accion = opcion(r.getParameter("accion"), "guardar", "estado", "eliminar");
+        if ("eliminar".equals(accion)) {
+            try {
+                dao.eliminar(id(r.getParameter("id")));
+                ir(r, s, "/admin/necesidades", "Registro eliminado definitivamente.");
+            } catch (IllegalArgumentException e) {
+                r.getSession().setAttribute("errorAccion", e.getMessage());
+                ir(r, s, "/admin/necesidades", null);
+            }
+            return;
+        }
         if ("estado".equals(accion)) {
             dao.cambiarEstado(
                     id(r.getParameter("id")),
@@ -64,6 +82,12 @@ public class NecesidadServlet extends BaseServlet {
             n.setComedorId(id(r.getParameter("comedorId")));
             if (new ComedorDAO().buscar(n.getComedorId()) == null)
                 throw new IllegalArgumentException("El comedor no existe.");
+            String producto = r.getParameter("productoId");
+            if(producto != null && !producto.isBlank()) {
+                n.setProductoId(id(producto));
+                Producto p = new ProductoDAO().buscar(n.getProductoId());
+                if(p == null) throw new IllegalArgumentException("El producto no existe.");
+            }
             n.setNombre(texto(r, "nombre", 100, true));
             n.setDescripcion(texto(r, "descripcion", 1000, true));
             n.setCantidadNecesaria(cantidad(r.getParameter("cantidadNecesaria")));
