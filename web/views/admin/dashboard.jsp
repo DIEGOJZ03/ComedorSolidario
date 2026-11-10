@@ -1,57 +1,23 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <c:set var="titulo" value="Administración"/>
 <%@ include file="/views/common/header.jspf" %>
-<div class="page-heading">
-    <p class="eyebrow">Administración</p>
-    <h1>La solidaridad, organizada</h1>
-    <p class="text-secondary">Supervisa los comedores y el recorrido de cada aporte.</p>
+<div class="dashboard-page">
+    <section class="dashboard-welcome"><div><p class="eyebrow">Panel de administración</p><h1>La solidaridad,<br><em>bien organizada.</em></h1><p>Hola, <c:out value="${sessionScope.usuarioNombre}"/>. Aquí tienes una vista de tu comunidad.</p></div><a class="btn btn-lime" href="${ctx}/admin/donaciones/formulario">Registrar donación <ui:icono nombre="arrow"/></a></section>
+    <div class="dashboard-metrics">
+<article class="metric-card"><span class="icon-tile"><ui:icono nombre="home"/></span><p>Comedores registrados</p><strong>${totalComedores}</strong><small>Activos e inactivos</small></article><article class="metric-card"><span class="icon-tile"><ui:icono nombre="users"/></span><p>Donadores registrados</p><strong>${totalDonadores}</strong><small>Cuentas con rol de donador</small></article><article class="metric-card"><span class="icon-tile"><ui:icono nombre="heart"/></span><p>Donaciones vigentes</p><strong>${resumen.TOTAL}</strong><small>Excluye donaciones desactivadas</small></article>
+    </div>
+    <div class="dashboard-columns">
+        <section class="panel donation-overview"><div class="section-heading"><div><p class="eyebrow">De principio a fin</p><h2 class="h4">Recorrido de las donaciones</h2></div><span class="subtle-label">Vigentes</span></div>
+<a class="stage-row stage-pendiente" href="${ctx}/admin/donaciones?estado=PENDIENTE"><span class="stage-marker"><ui:icono nombre="clock"/></span><span class="stage-content"><span class="stage-title">Pendientes<strong>${resumen.PENDIENTE}</strong></span><span class="stage-track"><span style="width: ${resumen.TOTAL > 0 ? resumen.PENDIENTE * 100.0 / resumen.TOTAL : 0}%"></span></span><small>Por revisar y coordinar</small></span><ui:icono nombre="arrow"/></a><a class="stage-row stage-aceptada" href="${ctx}/admin/donaciones?estado=ACEPTADA"><span class="stage-marker"><ui:icono nombre="box"/></span><span class="stage-content"><span class="stage-title">Aceptadas<strong>${resumen.ACEPTADA}</strong></span><span class="stage-track"><span style="width: ${resumen.TOTAL > 0 ? resumen.ACEPTADA * 100.0 / resumen.TOTAL : 0}%"></span></span><small>A la espera de entrega</small></span><ui:icono nombre="arrow"/></a><a class="stage-row stage-entregada" href="${ctx}/admin/donaciones?estado=ENTREGADA"><span class="stage-marker"><ui:icono nombre="check"/></span><span class="stage-content"><span class="stage-title">Entregadas<strong>${resumen.ENTREGADA}</strong></span><span class="stage-track"><span style="width: ${resumen.TOTAL > 0 ? resumen.ENTREGADA * 100.0 / resumen.TOTAL : 0}%"></span></span><small>Entrega confirmada</small></span><ui:icono nombre="arrow"/></a>
+            <c:if test="${resumen.TOTAL == 0}"><p class="dashboard-empty">Aún no hay aportes vigentes. Al registrar uno, verás aquí su estado.</p></c:if>
+            <a class="text-link" href="${ctx}/admin/donaciones">Ver todas las donaciones <ui:icono nombre="arrow"/></a>
+        </section>
+        <aside class="focus-card"><span class="icon-tile"><ui:icono nombre="clock"/></span><p class="eyebrow">Tu siguiente paso</p><h2><c:choose><c:when test="${resumen.PENDIENTE > 0}">${resumen.PENDIENTE} aportes por revisar</c:when><c:otherwise>Sin aportes pendientes</c:otherwise></c:choose></h2><p>Revisa los aportes recibidos y coordina su aceptación. Cada registro actualizado facilita el seguimiento del donador.</p><a class="btn btn-primary" href="${ctx}/admin/donaciones?estado=PENDIENTE">Revisar pendientes <ui:icono nombre="arrow"/></a><a class="text-link mt-3" href="${ctx}/comedores">Ver la web pública</a></aside>
+    </div>
+    <section class="dashboard-section" aria-labelledby="gestion-titulo"><div class="section-heading"><div><p class="eyebrow">Todo en un lugar</p><h2 id="gestion-titulo">Gestiona tu comunidad</h2></div><p>Acceso directo a los seis módulos.</p></div><div class="module-grid">
+<a class="module-card" href="${ctx}/admin/comedores"><span class="icon-tile"><ui:icono nombre="home"/></span><span><strong>Comedores</strong><small>Datos y contacto de cada comunidad</small></span><ui:icono nombre="arrow"/></a><a class="module-card" href="${ctx}/admin/necesidades"><span class="icon-tile"><ui:icono nombre="list"/></span><span><strong>Necesidades</strong><small>Recursos, cantidades y prioridades</small></span><ui:icono nombre="arrow"/></a><a class="module-card" href="${ctx}/admin/donaciones"><span class="icon-tile"><ui:icono nombre="heart"/></span><span><strong>Donaciones</strong><small>Aportes y seguimiento de entregas</small></span><ui:icono nombre="arrow"/></a><a class="module-card" href="${ctx}/admin/usuarios"><span class="icon-tile"><ui:icono nombre="users"/></span><span><strong>Usuarios</strong><small>Cuentas y datos de los donadores</small></span><ui:icono nombre="arrow"/></a><a class="module-card" href="${ctx}/admin/productos"><span class="icon-tile"><ui:icono nombre="box"/></span><span><strong>Productos</strong><small>Catálogo de recursos solicitados</small></span><ui:icono nombre="arrow"/></a><a class="module-card" href="${ctx}/admin/campanias"><span class="icon-tile"><ui:icono nombre="flag"/></span><span><strong>Campañas</strong><small>Convocatorias y fechas de vigencia</small></span><ui:icono nombre="arrow"/></a>
+    </div></section>
 </div>
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-4">
-        <article class="stat-card">
-            <p>Comedores registrados</p>
-            <strong>${totalComedores}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-        <article class="stat-card">
-            <p>Donadores registrados</p>
-            <strong>${totalDonadores}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-        <article class="stat-card">
-            <p>Donaciones realizadas</p>
-            <strong>${resumen.TOTAL}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-        <article class="stat-card">
-            <p>Pendientes</p>
-            <strong>${resumen.PENDIENTE}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-        <article class="stat-card">
-            <p>Aceptadas</p>
-            <strong>${resumen.ACEPTADA}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-4">
-        <article class="stat-card">
-            <p>Entregadas</p>
-            <strong>${resumen.ENTREGADA}</strong>
-        </article>
-    </div>
-</div>
-<section class="panel">
-    <h2 class="h4">Gestión del sistema</h2>
-    <div class="d-flex flex-wrap gap-3 mt-3">
-        <a class="btn btn-primary" href="${ctx}/admin/comedores">Gestionar comedores · CRUD</a>
-        <a class="btn btn-outline-primary" href="${ctx}/admin/necesidades">Gestionar necesidades</a>
-        <a class="btn btn-outline-primary" href="${ctx}/admin/donaciones">Supervisar donaciones</a>
-        <a class="btn btn-outline-secondary" href="${ctx}/admin/usuarios">Consultar usuarios</a>
-    </div>
-</section>
 <%@ include file="/views/common/footer.jspf" %>

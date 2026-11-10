@@ -43,15 +43,34 @@ public class SeguridadFilter implements Filter {
             s.sendRedirect(r.getContextPath() + "/login");
             return;
         }
+        if (session.getAttribute("usuarioId") != null) {
+            try {
+                com.comedorsolidario.model.Usuario u = new com.comedorsolidario.dao.UsuarioDAO().buscar((Integer)session.getAttribute("usuarioId"));
+                if(u == null || !"ACTIVO".equals(u.getEstado())) {session.invalidate();s.sendRedirect(r.getContextPath()+"/login");return;}
+                session.setAttribute("usuarioRol",u.getRol());
+            } catch(java.sql.SQLException e) {throw new ServletException("No se pudo verificar la cuenta.",e);}
+        }
         String rol = (String) session.getAttribute("usuarioRol");
         if ((admin && !"ADMIN".equals(rol)) || (donador && !"DONADOR".equals(rol))) {
             s.sendError(403);
             return;
         }
-        if ("POST".equals(r.getMethod())
-                && !session.getAttribute("csrf").equals(r.getParameter("csrf"))) {
-            s.sendError(403);
-            return;
+        if ("POST".equals(r.getMethod())) {
+            try {
+                if (!session.getAttribute("csrf").equals(r.getParameter("csrf"))) {
+                    s.sendError(403);
+                    return;
+                }
+            } catch (IllegalStateException e) {
+                // Tomcat analiza multipart al leer el token: el límite también se atiende aquí.
+                if (ruta.startsWith("/admin/comedores") && r.getContentType() != null
+                        && r.getContentType().startsWith("multipart/form-data")) {
+                    session.setAttribute("errorAccion", "No se guardó el formulario: la foto supera el límite de 5 MB o la carga excede el tamaño permitido.");
+                    s.sendRedirect(r.getContextPath() + "/admin/comedores");
+                    return;
+                }
+                throw e;
+            }
         }
         chain.doFilter(r, s);
     }

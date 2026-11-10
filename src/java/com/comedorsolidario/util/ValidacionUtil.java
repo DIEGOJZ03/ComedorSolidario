@@ -17,6 +17,12 @@ public final class ValidacionUtil {
         return valor;
     }
 
+    public static java.time.LocalDate fecha(String valor) {
+        try { java.time.LocalDate f=java.time.LocalDate.parse(valor);
+            if(f.getYear()>=1000 && f.getYear()<=9999)return f;
+        } catch (RuntimeException ignored) {}
+        throw new IllegalArgumentException("Escribe una fecha válida entre los años 1000 y 9999.");
+    }
     public static int id(String valor) {
         try {
             int id = Integer.parseInt(valor);

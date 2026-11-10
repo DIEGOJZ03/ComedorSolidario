@@ -9,6 +9,7 @@
         <link rel="icon" type="image/svg+xml" href="${ctx}/assets/img/logo.svg">
         <link rel="stylesheet" href="${ctx}/assets/vendor/bootstrap/bootstrap.min.css">
         <link rel="stylesheet" href="${ctx}/assets/css/styles.css">
+        <link rel="stylesheet" href="${ctx}/assets/css/refresh.css?v=20261021-2">
     </head>
     <body>
         <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -77,10 +78,16 @@
                     <a href="${ctx}/admin/necesidades">Necesidades</a>
                     <a href="${ctx}/admin/donaciones">Donaciones</a>
                     <a href="${ctx}/admin/usuarios">Usuarios</a>
+                    <a href="${ctx}/admin/productos">Productos</a>
+                    <a href="${ctx}/admin/campanias">Campañas</a>
                 </div>
             </nav>
         </c:if>
         <main id="contenido" class="container main-content">
+            <c:if test="${not empty sessionScope.errorAccion}">
+                <div class="alert alert-danger" role="alert"><c:out value="${sessionScope.errorAccion}"/></div>
+                <c:remove var="errorAccion" scope="session"/>
+            </c:if>
             <c:if test="${not empty error}">
                 <div class="alert alert-danger" role="alert">
                     <c:out value="${error}"/>

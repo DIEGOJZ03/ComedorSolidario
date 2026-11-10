@@ -1,45 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <c:set var="titulo" value="Mi panel"/>
 <%@ include file="/views/common/header.jspf" %>
-<div class="page-heading">
-    <p class="eyebrow">Tu espacio solidario</p>
-    <h1>Hola, <c:out value="${sessionScope.usuarioNombre}"/></h1>
-    <p class="text-secondary">Así avanzan tus aportes a la comunidad.</p>
+<div class="dashboard-page">
+    <section class="dashboard-welcome donor-welcome"><div><p class="eyebrow">Tu espacio solidario</p><h1>Hola, <c:out value="${sessionScope.usuarioNombre}"/>.<br><em>Tu ayuda suma.</em></h1><p>Consulta tus aportes y encuentra una nueva comunidad a la que apoyar.</p></div><a class="btn btn-lime" href="${ctx}/donante/donaciones/nueva">Realizar donación <ui:icono nombre="heart"/></a></section>
+    <div class="dashboard-metrics">
+<article class="metric-card"><span class="icon-tile"><ui:icono nombre="heart"/></span><p>Mis donaciones vigentes</p><strong>${resumen.TOTAL}</strong><small>Todos tus aportes activos</small></article><article class="metric-card"><span class="icon-tile"><ui:icono nombre="box"/></span><p>Aportes aceptados</p><strong>${resumen.ACEPTADA}</strong><small>En espera de entrega</small></article><article class="metric-card"><span class="icon-tile"><ui:icono nombre="check"/></span><p>Aportes entregados</p><strong>${resumen.ENTREGADA}</strong><small>Con entrega confirmada</small></article>
+    </div>
+    <div class="dashboard-columns"><section class="panel donation-overview"><div class="section-heading"><div><p class="eyebrow">Acompaña cada aporte</p><h2 class="h4">Así van tus donaciones</h2></div></div>
+<a class="stage-row stage-pendiente" href="${ctx}/donante/donaciones"><span class="stage-marker"><ui:icono nombre="clock"/></span><span class="stage-content"><span class="stage-title">Pendientes<strong>${resumen.PENDIENTE}</strong></span><span class="stage-track"><span style="width: ${resumen.TOTAL > 0 ? resumen.PENDIENTE * 100.0 / resumen.TOTAL : 0}%"></span></span><small>Por revisar y coordinar</small></span><ui:icono nombre="arrow"/></a><a class="stage-row stage-aceptada" href="${ctx}/donante/donaciones"><span class="stage-marker"><ui:icono nombre="box"/></span><span class="stage-content"><span class="stage-title">Aceptadas<strong>${resumen.ACEPTADA}</strong></span><span class="stage-track"><span style="width: ${resumen.TOTAL > 0 ? resumen.ACEPTADA * 100.0 / resumen.TOTAL : 0}%"></span></span><small>A la espera de entrega</small></span><ui:icono nombre="arrow"/></a><a class="stage-row stage-entregada" href="${ctx}/donante/donaciones"><span class="stage-marker"><ui:icono nombre="check"/></span><span class="stage-content"><span class="stage-title">Entregadas<strong>${resumen.ENTREGADA}</strong></span><span class="stage-track"><span style="width: ${resumen.TOTAL > 0 ? resumen.ENTREGADA * 100.0 / resumen.TOTAL : 0}%"></span></span><small>Entrega confirmada</small></span><ui:icono nombre="arrow"/></a>
+        <c:if test="${resumen.TOTAL == 0}"><p class="dashboard-empty">Tu historia solidaria puede empezar hoy. Registra tu primera donación para seguirla desde aquí.</p></c:if>
+        <a class="text-link" href="${ctx}/donante/donaciones">Consultar mis donaciones <ui:icono nombre="arrow"/></a>
+    </section><aside class="focus-card donor-focus"><span class="icon-tile"><ui:icono nombre="home"/></span><p class="eyebrow">Una nueva oportunidad de ayudar</p><h2>Hay una mesa<br>esperando tu apoyo.</h2><p>Conoce las necesidades actuales de los comedores antes de decidir tu próximo aporte.</p><a class="btn btn-primary" href="${ctx}/comedores">Explorar comedores <ui:icono nombre="arrow"/></a></aside></div>
+    <section class="dashboard-section"><div class="section-heading"><div><p class="eyebrow">A tu alcance</p><h2>¿Qué quieres hacer hoy?</h2></div></div><div class="module-grid donor-modules">
+<a class="module-card" href="${ctx}/donante/donaciones/nueva"><span class="icon-tile"><ui:icono nombre="heart"/></span><span><strong>Realizar una donación</strong><small>Elige un comedor y registra tu aporte</small></span><ui:icono nombre="arrow"/></a><a class="module-card" href="${ctx}/donante/donaciones"><span class="icon-tile"><ui:icono nombre="list"/></span><span><strong>Mis donaciones</strong><small>Consulta el detalle y estado de tus aportes</small></span><ui:icono nombre="arrow"/></a><a class="module-card" href="${ctx}/donante/perfil"><span class="icon-tile"><ui:icono nombre="users"/></span><span><strong>Mi perfil</strong><small>Mantén actualizados tus datos de contacto</small></span><ui:icono nombre="arrow"/></a>
+    </div></section>
 </div>
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
-        <article class="stat-card">
-            <p>Donaciones realizadas</p>
-            <strong>${resumen.TOTAL}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <article class="stat-card">
-            <p>Pendientes</p>
-            <strong>${resumen.PENDIENTE}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <article class="stat-card">
-            <p>Aceptadas</p>
-            <strong>${resumen.ACEPTADA}</strong>
-        </article>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <article class="stat-card">
-            <p>Entregadas</p>
-            <strong>${resumen.ENTREGADA}</strong>
-        </article>
-    </div>
-</div>
-<section class="panel">
-    <h2 class="h4">¿Qué quieres hacer hoy?</h2>
-    <div class="d-flex flex-wrap gap-3 mt-3">
-        <a class="btn btn-primary" href="${ctx}/donante/donaciones/nueva">Realizar donación</a>
-        <a class="btn btn-outline-primary" href="${ctx}/comedores">Buscar comedor</a>
-        <a class="btn btn-outline-primary" href="${ctx}/donante/donaciones">Mis donaciones</a>
-        <a class="btn btn-outline-secondary" href="${ctx}/donante/perfil">Mi perfil</a>
-    </div>
-</section>
 <%@ include file="/views/common/footer.jspf" %>

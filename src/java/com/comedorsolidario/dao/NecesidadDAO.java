@@ -5,6 +5,12 @@ import java.sql.*;
 import java.util.*;
 
 public class NecesidadDAO extends JdbcDAO {
+    /** Borrado físico; las claves foráneas impiden eliminar registros referenciados. */
+    public void eliminar(int id) throws SQLException {
+        eliminarRegistro("DELETE FROM necesidades WHERE id=?", id,
+                "La necesidad tiene registros relacionados y no se puede eliminar. Puedes desactivarla.");
+    }
+
     private static final String SELECT =
             "SELECT n.*,c.nombre AS comedor_nombre FROM necesidades n JOIN comedores c ON c.id=n.comedor_id";
 
@@ -30,7 +36,8 @@ public class NecesidadDAO extends JdbcDAO {
     public void guardar(Necesidad n) throws SQLException {
         if (n.getId() == 0) {
             ejecutar(
-                    "INSERT INTO necesidades(comedor_id,nombre,descripcion,cantidad_necesaria,unidad,prioridad,estado) VALUES (?,?,?,?,?,?,?)",
+                    "INSERT INTO necesidades(producto_id,comedor_id,nombre,descripcion,cantidad_necesaria,unidad,prioridad,estado) VALUES (?,?,?,?,?,?,?,?)",
+                    n.getProductoId(),
                     n.getComedorId(),
                     n.getNombre(),
                     n.getDescripcion(),
@@ -40,7 +47,8 @@ public class NecesidadDAO extends JdbcDAO {
                     n.getEstado());
         } else {
             if (ejecutar(
-                            "UPDATE necesidades SET comedor_id=?,nombre=?,descripcion=?,cantidad_necesaria=?,unidad=?,prioridad=?,estado=? WHERE id=?",
+                            "UPDATE necesidades SET producto_id=?,comedor_id=?,nombre=?,descripcion=?,cantidad_necesaria=?,unidad=?,prioridad=?,estado=? WHERE id=?",
+                            n.getProductoId(),
                             n.getComedorId(),
                             n.getNombre(),
                             n.getDescripcion(),
@@ -61,6 +69,7 @@ public class NecesidadDAO extends JdbcDAO {
     private Necesidad map(ResultSet rs) throws SQLException {
         Necesidad o = new Necesidad();
         o.setId(rs.getInt("id"));
+        o.setProductoId(rs.getObject("producto_id", Integer.class));
         o.setComedorId(rs.getInt("comedor_id"));
         o.setNombre(rs.getString("nombre"));
         o.setDescripcion(rs.getString("descripcion"));

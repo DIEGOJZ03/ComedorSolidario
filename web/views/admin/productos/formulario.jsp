@@ -1,0 +1,10 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<c:set var="titulo" value="Guardar producto"/>
+<%@ include file="/views/common/header.jspf" %>
+<div class="page-heading"><p class="eyebrow">Administración</p><h1>Guardar producto</h1></div>
+<form class="panel row g-3" method="post" action="${ctx}/admin/productos"><input type="hidden" name="csrf" value="${sessionScope.csrf}"><input type="hidden" name="accion" value="guardar"><input type="hidden" name="id" value="${item.id}"><div class="col-md-6"><label class="form-label" for="nombre">nombre</label><input class="form-control" id="nombre" name="nombre" type="text" maxlength="100" required  value='<c:out value="${pageContext.request.method eq 'POST' ? param.nombre : item.nombre}"/>'></div>
+<div class="col-md-6"><label class="form-label" for="descripcion">descripcion</label><input class="form-control" id="descripcion" name="descripcion" type="text" maxlength="1000" required  value='<c:out value="${pageContext.request.method eq 'POST' ? param.descripcion : item.descripcion}"/>'></div>
+<div class="col-md-6"><label class="form-label" for="unidad">unidad</label><input class="form-control" id="unidad" name="unidad" type="text" maxlength="30" required  value='<c:out value="${pageContext.request.method eq 'POST' ? param.unidad : item.unidad}"/>'></div>
+<div class="col-md-6"><label class="form-label" for="estado">Estado</label><select class="form-select" id="estado" name="estado" required><option value="ACTIVO" ${(pageContext.request.method eq 'POST' ? param.estado : item.estado) == 'ACTIVO' ? 'selected' : ''}>ACTIVO</option><option value="INACTIVO" ${(pageContext.request.method eq 'POST' ? param.estado : item.estado) == 'INACTIVO' ? 'selected' : ''}>INACTIVO</option></select></div>
+<div class="col-12"><button class="btn btn-primary">Guardar</button> <a class="btn btn-outline-secondary" href="${ctx}/admin/productos">Volver</a></div></form><%@ include file="/views/common/footer.jspf" %>

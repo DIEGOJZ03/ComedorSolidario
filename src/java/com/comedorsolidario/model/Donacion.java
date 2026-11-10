@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 
 /** JavaBean: representa datos; no ejecuta consultas SQL. */
 public class Donacion {
+    private boolean activo;
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
     private int id;
     private int donanteId;
     private int comedorId;
