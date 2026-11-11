@@ -5,6 +5,21 @@ import java.math.BigDecimal;
 
 /** JavaBean: representa datos; no ejecuta consultas SQL. */
 public class Donacion {
+    private String modalidad;
+    public String getModalidad() { return modalidad; }
+    public void setModalidad(String v) { modalidad=v; }
+    private Integer puntoAcopioId;
+    public Integer getPuntoAcopioId() { return puntoAcopioId; }
+    public void setPuntoAcopioId(Integer v) { puntoAcopioId=v; }
+    private String puntoAcopioNombre;
+    public String getPuntoAcopioNombre() { return puntoAcopioNombre; }
+    public void setPuntoAcopioNombre(String v) { puntoAcopioNombre=v; }
+    private String motivo;
+    public String getMotivo() { return motivo; }
+    public void setMotivo(String v) { motivo=v; }
+    private String estadoRecojo;
+    public String getEstadoRecojo() { return estadoRecojo; }
+    public void setEstadoRecojo(String v) { estadoRecojo=v; }
     private boolean activo;
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }

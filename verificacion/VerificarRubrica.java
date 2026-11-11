@@ -23,7 +23,8 @@ class VerificarRubrica {
 
     public static void main(String[] args) throws Exception {
         String uml = Files.readString(Path.of(args[0], "docs/modelo-clases.puml"));
-        for (String name : List.of("Usuario", "Comedor", "Necesidad", "Donacion", "Producto", "Campania")) {
+        for (String name : List.of("Usuario", "Comedor", "Necesidad", "Donacion", "Producto", "Campania",
+                "PuntoAcopio", "SolicitudRecojo", "RutaRecojo", "DetalleRutaRecojo")) {
             Class<?> c = Class.forName("com.comedorsolidario.model." + name);
             String section = uml.split("class " + name + " \\{")[1].split("\\n}")[0];
             for (Field f : c.getDeclaredFields()) {

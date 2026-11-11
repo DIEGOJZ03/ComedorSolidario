@@ -43,12 +43,15 @@
                                 <input type="hidden" name="id" value="${donacion.id}">
                                 <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
                             </form></div>
+    <p>Modalidad: <c:out value="${donacion.modalidad}"/> · Punto: <c:out value="${donacion.puntoAcopioNombre}"/></p>
+    <c:if test="${donacion.modalidad == 'RECOJO'}"><a href="${ctx}/admin/logistica/recojos">Coordinar y confirmar desde Solicitudes de Recojo</a></c:if>
+    <c:if test="${donacion.modalidad != 'RECOJO' && donacion.activo && (donacion.estado == 'PENDIENTE' || donacion.estado == 'ACEPTADA')}"><form method="post" action="${ctx}/admin/logistica/cerrar-donacion" class="panel row g-3" data-confirm><input type="hidden" name="csrf" value="${sessionScope.csrf}"><input type="hidden" name="id" value="${donacion.id}"><label>Resultado<select name="estado" class="form-select"><option>RECHAZADA</option><option>CANCELADA</option><option>INCUMPLIDA</option></select></label><label>Motivo<input class="form-control" name="motivo" maxlength="1000" required></label><button class="btn btn-outline-danger">Registrar cierre</button></form></c:if>
     <ol class="status-steps">
         <li class="complete">Pendiente</li>
         <li class="${donacion.estado != 'PENDIENTE' ? 'complete' : ''}">Aceptada</li>
         <li class="${donacion.estado == 'ENTREGADA' ? 'complete' : ''}">Entregada</li>
     </ol>
-    <c:if test="${donacion.activo and donacion.estado != 'ENTREGADA'}">
+    <c:if test="${donacion.activo and donacion.modalidad != 'RECOJO' and (donacion.estado == 'PENDIENTE' or donacion.estado == 'ACEPTADA')}">
         <form method="post" action="${ctx}/admin/donaciones" data-confirm>
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="id" value="${donacion.id}">

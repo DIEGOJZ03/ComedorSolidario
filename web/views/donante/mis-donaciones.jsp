@@ -17,7 +17,7 @@
                 <th>Tipo / aporte</th>
                 <th>Registro</th>
                 <th>Estado</th>
-                <th>Entrega</th>
+                <th>Entrega</th><th>Modalidad / recojo</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +28,7 @@
                     <td><c:out value="${d.tipo}"/><br><span class="small">${d.cantidad} <c:out value="${d.unidad}"/></span></td>
                     <td><c:out value="${d.fechaRegistro}"/></td>
                     <td><c:set var="estado" value="${d.estado}"/><%@ include file="/views/common/badge.jspf" %></td>
-                    <td><c:out value="${d.fechaEntrega}" default="Por confirmar"/></td>
+                    <td><c:out value="${d.fechaEntrega}" default="Por confirmar"/></td><td><c:out value="${d.modalidad}"/> <c:out value="${d.puntoAcopioNombre}"/><br><c:out value="${d.estadoRecojo}"/></td>
                 </tr>
             </c:forEach>
             <c:if test="${empty donaciones}">

@@ -39,6 +39,11 @@ public final class ValidacionUtil {
         return email;
     }
 
+    public static String telefono(String valor) {
+        String t=valor==null?"":valor.trim().replaceAll("[ ()-]", "");
+        if(!t.matches("\\+?[0-9]{7,15}")) throw new IllegalArgumentException("Escribe un teléfono válido de 7 a 15 dígitos (puede iniciar con +).");
+        return t;
+    }
     public static String password(HttpServletRequest r) {
         String valor = r.getParameter("password");
         if (valor == null || valor.length() < 8 || valor.length() > 128)

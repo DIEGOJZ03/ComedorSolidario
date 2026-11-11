@@ -25,7 +25,7 @@ public class RegistroServlet extends BaseServlet {
             Usuario u = new Usuario();
             u.setNombre(texto(r, "nombre", 80, true));
             u.setApellido(texto(r, "apellido", 80, true));
-            u.setTelefono(texto(r, "telefono", 20, false));
+            u.setTelefono(telefono(r.getParameter("telefono")));
             u.setEmail(email(r));
             String clave = password(r);
             if (!clave.equals(r.getParameter("confirmacion")))

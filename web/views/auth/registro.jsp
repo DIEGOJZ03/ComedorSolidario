@@ -24,7 +24,7 @@
         </div>
         <div class="col-md-6">
             <label class="form-label" for="telefono">Teléfono</label>
-            <input class="form-control" id="telefono" name="telefono" type="tel" maxlength="20" value='<c:out value="${param.telefono}"/>'>
+            <input class="form-control" id="telefono" name="telefono" required title="7 a 15 dígitos; se admiten espacios, guiones y prefijo +" type="tel" maxlength="20" value='<c:out value="${param.telefono}"/>'>
         </div>
         <div class="col-md-6">
             <label class="form-label" for="password">Contraseña</label>

@@ -1,5 +1,10 @@
 # LEEME - Comedor Solidario: rúbrica y funcionamiento
 
+## T3: confianza, acopio, recojos y rutas
+
+La versión actual amplía la T2. Antes de ejecutarla sobre la base habitual, aplicar manualmente `database/migracion_t3_logistica.sql` desde Workbench. No repetir el instalador inicial. Ver [activación y pruebas paso a paso](docs/EJECUCION_Y_PRUEBAS_MANUALES_T3.md), [guía de módulos y arquitectura](docs/T3_LOGISTICA.md), [pruebas T3](docs/VERIFICACION_T3.md), [diagrama de base de datos](docs/base-datos-t3.svg) y [archivos de la entrega](docs/ARCHIVOS_T3.md). Las secciones anteriores de T2 se conservan abajo como antecedentes; el alcance vigente de logística se describe en la guía T3.
+
+
 ## Productos: catálogo sencillo desde Necesidades (21/10/2026)
 
 La pantalla **Admin > Productos** es una sola tabla con **Producto, Cantidad total, Presentación y Acciones**. Muestra los nombres registrados en Necesidades y suma sus cantidades por producto y unidad. Si solo se han registrado arroz y aceite, aparecerán esos productos. No usa nombres alternativos del catálogo de referencia.

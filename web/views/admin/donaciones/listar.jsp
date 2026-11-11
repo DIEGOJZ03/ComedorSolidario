@@ -15,7 +15,7 @@
             <option value="" ${(param.estado) == '' ? 'selected' : ''}>Todos</option>
             <option value="PENDIENTE" ${(param.estado) == 'PENDIENTE' ? 'selected' : ''}>Pendiente</option>
             <option value="ACEPTADA" ${(param.estado) == 'ACEPTADA' ? 'selected' : ''}>Aceptada</option>
-            <option value="ENTREGADA" ${(param.estado) == 'ENTREGADA' ? 'selected' : ''}>Entregada</option>
+            <c:forTokens var="e" items="PROGRAMADA,RECHAZADA,CANCELADA,INCUMPLIDA" delims=","><option value="${e}" ${param.estado == e ? 'selected' : ''}>${e}</option></c:forTokens><option value="ENTREGADA" ${(param.estado) == 'ENTREGADA' ? 'selected' : ''}>Entregada</option>
         </select>
     </div>
     <div class="col-md-6 d-flex align-items-end">

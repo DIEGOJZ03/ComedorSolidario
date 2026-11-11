@@ -24,7 +24,7 @@
                                 <a class="nav-link" href="${ctx}/inicio">Inicio</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${ctx}/comedores">Comedores</a>
+                                <a class="nav-link" href="${ctx}/comedores">Comedores</a></li><li class="nav-item"><a class="nav-link" href="${ctx}/acopio/puntos">Puntos de acopio</a>
                             </li>
                             <c:choose>
                                 <c:when test="${empty sessionScope.usuarioId}">
@@ -53,7 +53,7 @@
                                                 <a class="nav-link" href="${ctx}/donante/donaciones">Mis donaciones</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="${ctx}/donante/perfil">Mi perfil</a>
+                                                <a class="nav-link" href="${ctx}/donante/perfil">Mi perfil</a></li><li class="nav-item"><a class="nav-link" href="${ctx}/donante/logistica/recojos">Mis recojos</a></li><li class="nav-item"><a class="nav-link" href="${ctx}/donante/logistica/historial">Historial</a>
                                             </li>
                                         </c:otherwise>
                                     </c:choose>
@@ -80,6 +80,7 @@
                     <a href="${ctx}/admin/usuarios">Usuarios</a>
                     <a href="${ctx}/admin/productos">Productos</a>
                     <a href="${ctx}/admin/campanias">Campañas</a>
+<a href="${ctx}/admin/logistica/puntos">Puntos de Acopio</a><a href="${ctx}/admin/logistica/recojos">Solicitudes de Recojo</a><a href="${ctx}/admin/logistica/rutas">Rutas de Recojo</a><a href="${ctx}/admin/logistica/alertas">Confianza</a>
                 </div>
             </nav>
         </c:if>

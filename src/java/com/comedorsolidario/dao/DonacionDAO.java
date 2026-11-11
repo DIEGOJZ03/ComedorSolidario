@@ -12,7 +12,7 @@ public class DonacionDAO extends JdbcDAO {
     }
 
     private static final String SELECT =
-            "SELECT d.*,c.nombre AS comedor_nombre,CONCAT(u.nombre,' ',u.apellido) AS donante_nombre FROM donaciones d JOIN comedores c ON c.id=d.comedor_id JOIN usuarios u ON u.id=d.donante_id";
+            "SELECT d.*,p.nombre punto_acopio_nombre,s.estado estado_recojo,c.nombre AS comedor_nombre,CONCAT(u.nombre,' ',u.apellido) AS donante_nombre FROM donaciones d JOIN comedores c ON c.id=d.comedor_id JOIN usuarios u ON u.id=d.donante_id LEFT JOIN puntos_acopio p ON p.id=d.punto_acopio_id LEFT JOIN solicitudes_recojo s ON s.donacion_id=d.id";
 
     public List<Donacion> listar(Integer donanteId, String estado) throws SQLException {
         String sql = SELECT + " WHERE d.activo=TRUE";
@@ -36,8 +36,11 @@ public class DonacionDAO extends JdbcDAO {
     }
 
     public void cambiarVigencia(int id, boolean activo) throws SQLException {
-        if (ejecutar("UPDATE donaciones SET activo=? WHERE id=?", activo, id) != 1)
-            throw new IllegalArgumentException("La donación no existe.");
+        transaccion(c->{
+            var d=fila(c,"SELECT donante_id,estado FROM donaciones WHERE id=?",id);
+            if(activo && List.of("PENDIENTE","ACEPTADA","PROGRAMADA").contains(d.get("estado")))comprobarCupo(c,((Number)d.get("donante_id")).intValue(),id);
+            cambio(c,"UPDATE donaciones SET activo=? WHERE id=?",activo,id);return null;
+        });
     }
 
     public Donacion buscar(int id) throws SQLException {
@@ -45,27 +48,37 @@ public class DonacionDAO extends JdbcDAO {
         return lista.isEmpty() ? null : lista.get(0);
     }
 
-    public void registrar(Donacion d) throws SQLException {
-        // INSERT SELECT vuelve a comprobar comedor y donador activos al escribir.
-        int filas =
-                ejecutar(
-                        "INSERT INTO donaciones(donante_id,comedor_id,tipo,cantidad,unidad,descripcion,estado) "
-                                + "SELECT u.id,c.id,?,?,?,?,'PENDIENTE' FROM usuarios u CROSS JOIN comedores c "
-                                + "WHERE u.id=? AND u.rol='DONADOR' AND u.estado='ACTIVO' AND c.id=? AND c.estado='ACTIVO'",
-                        d.getTipo(),
-                        d.getCantidad(),
-                        d.getUnidad(),
-                        d.getDescripcion(),
-                        d.getDonanteId(),
-                        d.getComedorId());
-        if (filas != 1)
-            throw new IllegalArgumentException("El comedor o la cuenta ya no están activos.");
+    public void registrar(Donacion d) throws SQLException { transaccion(c->{registrar(c,d);return null;}); }
+    public void registrar(Connection c,Donacion d) throws SQLException {
+        comprobarCupo(c,d.getDonanteId(),0);
+        String modalidad=d.getModalidad()==null?"DIRECTA":d.getModalidad();
+        com.comedorsolidario.util.ValidacionUtil.opcion(modalidad,"DIRECTA","ACOPIO","RECOJO");
+        if("ACOPIO".equals(modalidad)) {
+            var p=fila(c,"SELECT estado FROM puntos_acopio WHERE id=? FOR UPDATE",d.getPuntoAcopioId());
+            if(!"ACTIVO".equals(p.get("estado")))throw new IllegalArgumentException("Selecciona un punto de acopio activo.");
+        } else d.setPuntoAcopioId(null);
+        d.setId(alta(c,"INSERT INTO donaciones(donante_id,comedor_id,tipo,cantidad,unidad,descripcion,estado,modalidad,punto_acopio_id) SELECT ?,id,?,?,?,?,'PENDIENTE',?,? FROM comedores WHERE id=? AND estado='ACTIVO'",d.getDonanteId(),d.getTipo(),d.getCantidad(),d.getUnidad(),d.getDescripcion(),modalidad,d.getPuntoAcopioId(),d.getComedorId()));
     }
-
+    public static void comprobarCupo(Connection c,int usuario,int excluir) throws SQLException {
+        var u=fila(c,"SELECT nombre,apellido,email,telefono,estado,rol FROM usuarios WHERE id=? FOR UPDATE",usuario);
+        if(!"ACTIVO".equals(u.get("estado")) || !"DONADOR".equals(u.get("rol")))throw new IllegalArgumentException("La cuenta del donador debe estar activa.");
+        for(String k:List.of("nombre","apellido","email"))if(u.get(k)==null || u.get(k).toString().isBlank())throw new IllegalArgumentException("Completa los datos del perfil antes de donar.");
+        com.comedorsolidario.util.ValidacionUtil.telefono((String)u.get("telefono"));
+        int n=filas(c,"SELECT id FROM donaciones WHERE donante_id=? AND id<>? AND activo=TRUE AND estado IN ('PENDIENTE','ACEPTADA','PROGRAMADA') FOR UPDATE",usuario,excluir).size();
+        if(n>=2)throw new IllegalArgumentException("Ya tienes 2 donaciones activas. Completa tus donaciones pendientes antes de registrar otra.");
+    }
+    public List<Donacion> historial(int usuario) throws SQLException {return consultar(SELECT+" WHERE d.donante_id=? ORDER BY d.id DESC",this::map,usuario);}
     public void actualizar(Donacion d) throws SQLException {
-        int filas=ejecutar("UPDATE donaciones SET donante_id=?,comedor_id=?,tipo=?,cantidad=?,unidad=?,descripcion=? WHERE id=? AND estado='PENDIENTE' AND activo=TRUE AND EXISTS(SELECT 1 FROM usuarios WHERE id=? AND rol='DONADOR' AND estado='ACTIVO') AND EXISTS(SELECT 1 FROM comedores WHERE id=? AND estado='ACTIVO')",
-            d.getDonanteId(),d.getComedorId(),d.getTipo(),d.getCantidad(),d.getUnidad(),d.getDescripcion(),d.getId(),d.getDonanteId(),d.getComedorId());
-        if(filas!=1)throw new IllegalArgumentException("Solo se pueden editar donaciones pendientes y vigentes con donador y comedor activos.");
+        transaccion(c->{
+            comprobarCupo(c,d.getDonanteId(),d.getId());
+            var anterior=fila(c,"SELECT donante_id,modalidad FROM donaciones WHERE id=? FOR UPDATE",d.getId());
+            if("RECOJO".equals(anterior.get("modalidad")) && ((Number)anterior.get("donante_id")).intValue()!=d.getDonanteId())
+                throw new IllegalArgumentException("Un recojo conserva su donador porque la dirección pertenece a su solicitud.");
+            int filas=cambio(c,"UPDATE donaciones SET donante_id=?,comedor_id=?,tipo=?,cantidad=?,unidad=?,descripcion=? WHERE id=? AND estado='PENDIENTE' AND activo=TRUE AND EXISTS(SELECT 1 FROM comedores WHERE id=? AND estado='ACTIVO')",
+                d.getDonanteId(),d.getComedorId(),d.getTipo(),d.getCantidad(),d.getUnidad(),d.getDescripcion(),d.getId(),d.getComedorId());
+            if(filas!=1)throw new IllegalArgumentException("Solo se pueden editar donaciones pendientes y vigentes con donador y comedor activos.");
+            return null;
+        });
     }
     public void darBaja(int id) throws SQLException {
         if(ejecutar("UPDATE donaciones SET activo=FALSE WHERE id=? AND activo=TRUE",id)!=1)
@@ -78,7 +91,7 @@ public class DonacionDAO extends JdbcDAO {
         else throw new IllegalArgumentException("Esta donación no admite otro cambio de estado.");
         // Actualización condicional: dos administradores no pueden avanzar el mismo paso dos veces.
         return ejecutar(
-                        "UPDATE donaciones SET estado=?,fecha_entrega=CASE WHEN ?='ENTREGADA' THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id=? AND estado=? AND activo=TRUE",
+                        "UPDATE donaciones SET estado=?,fecha_entrega=CASE WHEN ?='ENTREGADA' THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id=? AND estado=? AND activo=TRUE AND modalidad<>'RECOJO'",
                         siguiente,
                         siguiente,
                         id,
@@ -88,7 +101,7 @@ public class DonacionDAO extends JdbcDAO {
 
     public Map<String, Long> resumen(Integer donanteId) throws SQLException {
         Map<String, Long> datos = new LinkedHashMap<>();
-        for (String e : List.of("PENDIENTE", "ACEPTADA", "ENTREGADA")) datos.put(e, 0L);
+        for (String e : List.of("PENDIENTE", "ACEPTADA", "PROGRAMADA", "ENTREGADA", "RECHAZADA", "CANCELADA", "INCUMPLIDA")) datos.put(e, 0L);
         String sql =
                 "SELECT estado,COUNT(*) AS cantidad FROM donaciones WHERE activo=TRUE"
                         + (donanteId == null ? "" : " AND donante_id=?")
@@ -103,6 +116,7 @@ public class DonacionDAO extends JdbcDAO {
 
     private Donacion map(ResultSet rs) throws SQLException {
         Donacion o = new Donacion();
+        o.setModalidad(rs.getString("modalidad"));o.setPuntoAcopioId((Integer)rs.getObject("punto_acopio_id"));o.setPuntoAcopioNombre(rs.getString("punto_acopio_nombre"));o.setMotivo(rs.getString("motivo"));o.setEstadoRecojo(rs.getString("estado_recojo"));
         o.setId(rs.getInt("id"));
         o.setActivo(rs.getBoolean("activo"));
         o.setDonanteId(rs.getInt("donante_id"));

@@ -1,0 +1,204 @@
+@startuml base-datos-t3
+title Comedor Solidario — esquema final T2 + migración T3
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam entityBackgroundColor #F5FAF7
+skinparam entityBorderColor #265C48
+
+entity usuarios {
+  * id : INT <<PK>>
+  --
+  * nombre : VARCHAR(80)
+  * apellido : VARCHAR(80)
+  * email : VARCHAR(150) <<UNIQUE>>
+  * password_hash : VARCHAR(255)
+  * telefono : VARCHAR(20)
+  * rol : ENUM(ADMIN, DONADOR)
+  * estado : ENUM(ACTIVO, INACTIVO)
+  * fecha_registro : DATETIME
+}
+entity comedores {
+  * id : INT <<PK>>
+  --
+  * nombre : VARCHAR(120)
+  * descripcion : VARCHAR(1500)
+  * direccion : VARCHAR(200)
+  * zona : VARCHAR(80)
+  * distrito : VARCHAR(100)
+  * provincia : VARCHAR(100)
+  * responsable : VARCHAR(120)
+  * telefono : VARCHAR(20)
+  * estado : ENUM(ACTIVO, INACTIVO)
+  * fecha_registro : DATETIME
+}
+entity productos {
+  * id : INT <<PK>>
+  --
+  * nombre : VARCHAR(100)
+  * descripcion : VARCHAR(1000)
+  * unidad : VARCHAR(30)
+  * estado : ENUM(ACTIVO, INACTIVO)
+}
+entity necesidades {
+  * id : INT <<PK>>
+  --
+  * comedor_id : INT <<FK>>
+  producto_id : INT <<FK, NULL>>
+  * nombre : VARCHAR(100)
+  * descripcion : VARCHAR(1000)
+  * cantidad_necesaria : DECIMAL(12,2)
+  * unidad : VARCHAR(30)
+  * prioridad : ENUM(ALTA, MEDIA, BAJA)
+  * estado : ENUM(ACTIVA, INACTIVA)
+}
+entity campanias {
+  * id : INT <<PK>>
+  --
+  * comedor_id : INT <<FK>>
+  * nombre : VARCHAR(100)
+  * descripcion : VARCHAR(1000)
+  * fecha_inicio : DATE
+  * fecha_fin : DATE
+  * estado : ENUM(ACTIVO, INACTIVO)
+}
+entity donaciones {
+  * id : INT <<PK>>
+  --
+  * donante_id : INT <<FK>>
+  * comedor_id : INT <<FK>>
+  punto_acopio_id : INT <<FK, NULL, T3>>
+  * tipo : ENUM(ALIMENTOS, UTENSILIOS, DINERO, OTROS)
+  * cantidad : DECIMAL(12,2)
+  * unidad : VARCHAR(30)
+  * descripcion : VARCHAR(1000)
+  * estado : ENUM <<ampliado T3>>
+  * fecha_registro : DATETIME
+  fecha_entrega : DATETIME <<NULL>>
+  * activo : BOOLEAN
+  * modalidad : ENUM(DIRECTA, ACOPIO, RECOJO) <<T3>>
+  * motivo : VARCHAR(1000) <<T3>>
+}
+entity puntos_acopio <<T3>> {
+  * id : INT <<PK>>
+  --
+  * nombre : VARCHAR(120)
+  * direccion : VARCHAR(200)
+  * provincia : VARCHAR(100)
+  * distrito : VARCHAR(100)
+  * zona : VARCHAR(80)
+  * referencia : VARCHAR(250)
+  * horarios : VARCHAR(200)
+  * responsable : VARCHAR(120)
+  * telefono : VARCHAR(20)
+  * estado : ENUM(ACTIVO, INACTIVO)
+  * fecha_registro : DATETIME
+}
+entity solicitudes_recojo <<T3>> {
+  * id : INT <<PK>>
+  --
+  * donacion_id : INT <<FK, UNIQUE>>
+  * direccion : VARCHAR(200)
+  * provincia : VARCHAR(100)
+  * distrito : VARCHAR(100)
+  * zona : VARCHAR(80)
+  * referencia : VARCHAR(250)
+  * fecha_preferida : DATE
+  * horario_preferido : VARCHAR(200)
+  * telefono : VARCHAR(20)
+  fecha_programada : DATE <<NULL>>
+  * horario_programado : VARCHAR(200)
+  * responsable : VARCHAR(120)
+  * observaciones : VARCHAR(1000)
+  * estado : ENUM <<ver nota>>
+  * fecha_registro : DATETIME
+  * fecha_actualizacion : DATETIME
+}
+entity rutas_recojo <<T3>> {
+  * id : INT <<PK>>
+  --
+  * fecha : DATE
+  * distrito : VARCHAR(100)
+  * horario : VARCHAR(200)
+  * responsable : VARCHAR(120)
+  * observaciones : VARCHAR(1000)
+  * estado : ENUM(PLANIFICADA, EN_PROCESO, COMPLETADA, CANCELADA)
+  * fecha_registro : DATETIME
+}
+entity detalle_ruta_recojo <<T3>> {
+  * ruta_id : INT <<PK, FK>>
+  * solicitud_id : INT <<PK, FK>>
+  --
+  * orden : INT
+  * activa : BOOLEAN
+  solicitud_activa : INT <<GENERATED, UNIQUE, NULL>>
+  * fecha_registro : DATETIME
+}
+entity historial_donacion <<T3>> {
+  * id : INT <<PK>>
+  --
+  * donacion_id : INT <<FK>>
+  * administrador_id : INT <<FK>>
+  * estado : VARCHAR(30)
+  * motivo : VARCHAR(1000)
+  * fecha : DATETIME
+}
+entity historial_usuario <<T3>> {
+  * id : INT <<PK>>
+  --
+  * usuario_id : INT <<FK>>
+  * administrador_id : INT <<FK>>
+  * estado : VARCHAR(20)
+  * motivo : VARCHAR(1000)
+  * fecha : DATETIME
+}
+
+usuarios ||--o{ donaciones : donante_id
+comedores ||--o{ donaciones : comedor_id
+comedores ||--o{ necesidades : comedor_id
+productos |o--o{ necesidades : producto_id
+comedores ||--o{ campanias : comedor_id
+puntos_acopio |o--o{ donaciones : punto_acopio_id
+donaciones ||--o| solicitudes_recojo : donacion_id
+rutas_recojo ||--o{ detalle_ruta_recojo : ruta_id
+solicitudes_recojo ||--o{ detalle_ruta_recojo : solicitud_id
+donaciones ||--o{ historial_donacion : donacion_id
+usuarios ||--o{ historial_donacion : administrador_id
+usuarios ||--o{ historial_usuario : usuario_id
+usuarios ||--o{ historial_usuario : administrador_id
+
+note bottom of donaciones
+  Estados: PENDIENTE, ACEPTADA, ENTREGADA,
+  PROGRAMADA, RECHAZADA, CANCELADA, INCUMPLIDA.
+  CHECK: cantidad > 0.
+  CHECK: fecha_entrega no nula solo si ENTREGADA.
+  Índice de cupo: (donante_id, activo, estado).
+  El límite de dos aportes se verifica en transacción,
+  bloqueando la fila del donador; no mediante CHECK.
+end note
+note bottom of solicitudes_recojo
+  Estados: SOLICITADO, PROGRAMADO, RECOGIDO,
+  COMPLETADO, RECHAZADO, CANCELADO, INCUMPLIDO.
+  Una solicitud por donación.
+end note
+note bottom of detalle_ruta_recojo
+  PK compuesta: (ruta_id, solicitud_id). CHECK: orden > 0.
+  solicitud_activa = CASE WHEN activa THEN solicitud_id ELSE NULL END.
+  Su índice UNIQUE impide dos rutas activas para la misma solicitud.
+  Al cerrar una ruta se conserva el detalle con activa = FALSE.
+end note
+note bottom of necesidades
+  CHECK: cantidad_necesaria > 0.
+  producto_id opcional conserva las necesidades existentes.
+end note
+note bottom of campanias
+  CHECK: fecha_fin >= fecha_inicio.
+end note
+legend bottom
+  * Campo NOT NULL. PK = clave primaria. FK = clave foránea.
+  Todas las tablas usan InnoDB; no hay eliminaciones en cascada.
+  Las seis tablas T3 y tres columnas de donaciones se incorporan
+  manualmente con database/migracion_t3_logistica.sql.
+  Fuentes: database/comedor_solidario.sql y migracion_t3_logistica.sql.
+endlegend
+@enduml

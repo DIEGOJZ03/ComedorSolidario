@@ -26,7 +26,7 @@ public class PerfilServlet extends BaseServlet {
             Usuario u = new Usuario(usuarioId(r));
             u.setNombre(texto(r, "nombre", 80, true));
             u.setApellido(texto(r, "apellido", 80, true));
-            u.setTelefono(texto(r, "telefono", 20, false));
+            u.setTelefono(telefono(r.getParameter("telefono")));
             new UsuarioDAO().actualizarPerfil(u);
             r.getSession().setAttribute("usuarioNombre", u.getNombre());
             ir(r, s, "/donante/perfil", "Perfil actualizado.");

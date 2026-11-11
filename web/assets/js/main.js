@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!modalElement || !window.bootstrap) return;
     const modal = new bootstrap.Modal(modalElement);
     let pendingForm = null;
+    let pendingSubmitter = null;
     document.querySelectorAll('form[data-confirm]').forEach(form => {
         form.addEventListener('submit', event => {
             if (form.dataset.confirmed === 'true') return;
             event.preventDefault();
             pendingForm = form;
+            pendingSubmitter = event.submitter;
             document.getElementById('confirmarTitulo').textContent = form.dataset.confirmTitle || 'Confirmar cambio';
             document.getElementById('confirmarMensaje').textContent = form.dataset.confirmMessage || '¿Deseas cambiar el estado de este registro? Su historial se conservará.';
             document.getElementById('confirmarAccion').textContent = form.dataset.confirmLabel || 'Confirmar';
@@ -18,8 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('confirmarAccion').addEventListener('click', () => {
         if (!pendingForm) return;
         pendingForm.dataset.confirmed = 'true';
-        pendingForm.requestSubmit();
+        pendingForm.requestSubmit(pendingSubmitter || undefined);
         pendingForm = null;
+        pendingSubmitter = null;
         modal.hide();
     });
 });

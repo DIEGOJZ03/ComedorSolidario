@@ -16,6 +16,7 @@ public class AdminDashboardServlet extends BaseServlet {
     protected void get(HttpServletRequest r, HttpServletResponse s)
             throws ServletException, IOException, SQLException {
         r.setAttribute("resumen", new DonacionDAO().resumen(null));
+        r.setAttribute("alertasConfianza", new com.comedorsolidario.service.logistica.LogisticaService().alertas());
         r.setAttribute("totalComedores", new ComedorDAO().total(false));
         r.setAttribute("totalDonadores", new UsuarioDAO().totalDonadores());
         vista(r, s, "admin/dashboard.jsp");

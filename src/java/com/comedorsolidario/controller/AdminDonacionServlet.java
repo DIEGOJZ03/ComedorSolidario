@@ -27,7 +27,7 @@ public class AdminDonacionServlet extends BaseServlet {
             if(ruta.endsWith("/detalle"))vista(r,s,"admin/donaciones/detalle.jsp");else formulario(r,s);
         } else {
             String estado=texto(r,"estado",15,false);
-            if(!estado.isEmpty())opcion(estado,"PENDIENTE","ACEPTADA","ENTREGADA");
+            if(!estado.isEmpty())opcion(estado,"PENDIENTE","ACEPTADA","ENTREGADA","PROGRAMADA","RECHAZADA","CANCELADA","INCUMPLIDA");
             r.setAttribute("donaciones",dao.listarAdministracion(estado));vista(r,s,"admin/donaciones/listar.jsp");
         }
     }

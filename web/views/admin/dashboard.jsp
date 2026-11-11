@@ -4,6 +4,7 @@
 <c:set var="titulo" value="Administración"/>
 <%@ include file="/views/common/header.jspf" %>
 <div class="dashboard-page">
+    <c:if test="${not empty alertasConfianza}"><div class="alert alert-warning" role="alert">Hay donadores con incumplimientos reiterados. <a href="${ctx}/admin/logistica/alertas">Revisar historial y decidir</a>. No se suspenden cuentas automáticamente.</div></c:if>
     <section class="dashboard-welcome"><div><p class="eyebrow">Panel de administración</p><h1>La solidaridad,<br><em>bien organizada.</em></h1><p>Hola, <c:out value="${sessionScope.usuarioNombre}"/>. Aquí tienes una vista de tu comunidad.</p></div><a class="btn btn-lime" href="${ctx}/admin/donaciones/formulario">Registrar donación <ui:icono nombre="arrow"/></a></section>
     <div class="dashboard-metrics">
 <article class="metric-card"><span class="icon-tile"><ui:icono nombre="home"/></span><p>Comedores registrados</p><strong>${totalComedores}</strong><small>Activos e inactivos</small></article><article class="metric-card"><span class="icon-tile"><ui:icono nombre="users"/></span><p>Donadores registrados</p><strong>${totalDonadores}</strong><small>Cuentas con rol de donador</small></article><article class="metric-card"><span class="icon-tile"><ui:icono nombre="heart"/></span><p>Donaciones vigentes</p><strong>${resumen.TOTAL}</strong><small>Excluye donaciones desactivadas</small></article>

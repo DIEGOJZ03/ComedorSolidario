@@ -66,6 +66,11 @@ class Comedor {
   + setFechaRegistro(fechaRegistro : LocalDateTime) : void
 }
 class Donacion {
+  - modalidad : String
+  - puntoAcopioId : Integer
+  - puntoAcopioNombre : String
+  - motivo : String
+  - estadoRecojo : String
   - activo : boolean
   - id : int
   - donanteId : int
@@ -79,34 +84,43 @@ class Donacion {
   - fechaEntrega : LocalDateTime
   - comedorNombre : String
   - donanteNombre : String
+  + getModalidad() : String
+  + setModalidad(String v) : void
+  + getPuntoAcopioId() : Integer
+  + setPuntoAcopioId(Integer v) : void
+  + getPuntoAcopioNombre() : String
+  + setPuntoAcopioNombre(String v) : void
+  + getMotivo() : String
+  + setMotivo(String v) : void
+  + getEstadoRecojo() : String
+  + setEstadoRecojo(String v) : void
   + isActivo() : boolean
-  + setActivo(activo : boolean) : void
-  + Donacion()
-  + Donacion(id : int)
+  + setActivo(boolean activo) : void
   + getId() : int
-  + setId(id : int) : void
+  + setId(int id) : void
   + getDonanteId() : int
-  + setDonanteId(donanteId : int) : void
+  + setDonanteId(int donanteId) : void
   + getComedorId() : int
-  + setComedorId(comedorId : int) : void
+  + setComedorId(int comedorId) : void
   + getTipo() : String
-  + setTipo(tipo : String) : void
+  + setTipo(String tipo) : void
   + getCantidad() : BigDecimal
-  + setCantidad(cantidad : BigDecimal) : void
+  + setCantidad(BigDecimal cantidad) : void
   + getUnidad() : String
-  + setUnidad(unidad : String) : void
+  + setUnidad(String unidad) : void
   + getDescripcion() : String
-  + setDescripcion(descripcion : String) : void
+  + setDescripcion(String descripcion) : void
   + getEstado() : String
-  + setEstado(estado : String) : void
+  + setEstado(String estado) : void
   + getFechaRegistro() : LocalDateTime
-  + setFechaRegistro(fechaRegistro : LocalDateTime) : void
+  + setFechaRegistro(LocalDateTime fechaRegistro) : void
   + getFechaEntrega() : LocalDateTime
-  + setFechaEntrega(fechaEntrega : LocalDateTime) : void
+  + setFechaEntrega(LocalDateTime fechaEntrega) : void
   + getComedorNombre() : String
-  + setComedorNombre(comedorNombre : String) : void
+  + setComedorNombre(String comedorNombre) : void
   + getDonanteNombre() : String
-  + setDonanteNombre(donanteNombre : String) : void
+  + setDonanteNombre(String donanteNombre) : void
+  + Donacion()
 }
 class Necesidad {
   - productoId : Integer
@@ -218,5 +232,173 @@ end note
 note right of Campania
   Tabla campanias. Fechas LocalDate / DATE.
   fechaFin >= fechaInicio.
+end note
+
+package "Logistica T3" {
+class PuntoAcopio {
+  - id : int
+  - nombre : String
+  - direccion : String
+  - provincia : String
+  - distrito : String
+  - zona : String
+  - referencia : String
+  - horarios : String
+  - responsable : String
+  - telefono : String
+  - estado : String
+  + getId() : int
+  + setId(int value) : void
+  + getNombre() : String
+  + setNombre(String value) : void
+  + getDireccion() : String
+  + setDireccion(String value) : void
+  + getProvincia() : String
+  + setProvincia(String value) : void
+  + getDistrito() : String
+  + setDistrito(String value) : void
+  + getZona() : String
+  + setZona(String value) : void
+  + getReferencia() : String
+  + setReferencia(String value) : void
+  + getHorarios() : String
+  + setHorarios(String value) : void
+  + getResponsable() : String
+  + setResponsable(String value) : void
+  + getTelefono() : String
+  + setTelefono(String value) : void
+  + getEstado() : String
+  + setEstado(String value) : void
+  + PuntoAcopio()
+}
+class SolicitudRecojo {
+  - id : int
+  - donacionId : int
+  - direccion : String
+  - provincia : String
+  - distrito : String
+  - zona : String
+  - referencia : String
+  - horarioPreferido : String
+  - telefono : String
+  - horarioProgramado : String
+  - responsable : String
+  - observaciones : String
+  - estado : String
+  - donador : String
+  - email : String
+  - descripcion : String
+  - comedor : String
+  - fechaPreferida : LocalDate
+  - fechaProgramada : LocalDate
+  + getId() : int
+  + setId(int value) : void
+  + getDonacionId() : int
+  + setDonacionId(int value) : void
+  + getDireccion() : String
+  + setDireccion(String value) : void
+  + getProvincia() : String
+  + setProvincia(String value) : void
+  + getDistrito() : String
+  + setDistrito(String value) : void
+  + getZona() : String
+  + setZona(String value) : void
+  + getReferencia() : String
+  + setReferencia(String value) : void
+  + getHorarioPreferido() : String
+  + setHorarioPreferido(String value) : void
+  + getTelefono() : String
+  + setTelefono(String value) : void
+  + getHorarioProgramado() : String
+  + setHorarioProgramado(String value) : void
+  + getResponsable() : String
+  + setResponsable(String value) : void
+  + getObservaciones() : String
+  + setObservaciones(String value) : void
+  + getEstado() : String
+  + setEstado(String value) : void
+  + getDonador() : String
+  + setDonador(String value) : void
+  + getEmail() : String
+  + setEmail(String value) : void
+  + getDescripcion() : String
+  + setDescripcion(String value) : void
+  + getComedor() : String
+  + setComedor(String value) : void
+  + getFechaPreferida() : LocalDate
+  + setFechaPreferida(LocalDate value) : void
+  + getFechaProgramada() : LocalDate
+  + setFechaProgramada(LocalDate value) : void
+  + SolicitudRecojo()
+}
+class RutaRecojo {
+  - id : int
+  - fecha : LocalDate
+  - distrito : String
+  - horario : String
+  - responsable : String
+  - observaciones : String
+  - estado : String
+  + getId() : int
+  + setId(int value) : void
+  + getFecha() : LocalDate
+  + setFecha(LocalDate value) : void
+  + getDistrito() : String
+  + setDistrito(String value) : void
+  + getHorario() : String
+  + setHorario(String value) : void
+  + getResponsable() : String
+  + setResponsable(String value) : void
+  + getObservaciones() : String
+  + setObservaciones(String value) : void
+  + getEstado() : String
+  + setEstado(String value) : void
+  + RutaRecojo()
+}
+class DetalleRutaRecojo {
+  - rutaId : int
+  - solicitudId : int
+  - orden : int
+  - direccion : String
+  - distrito : String
+  - horario : String
+  - responsable : String
+  - estado : String
+  - donador : String
+  + getRutaId() : int
+  + setRutaId(int value) : void
+  + getSolicitudId() : int
+  + setSolicitudId(int value) : void
+  + getOrden() : int
+  + setOrden(int value) : void
+  + getDireccion() : String
+  + setDireccion(String value) : void
+  + getDistrito() : String
+  + setDistrito(String value) : void
+  + getHorario() : String
+  + setHorario(String value) : void
+  + getResponsable() : String
+  + setResponsable(String value) : void
+  + getEstado() : String
+  + setEstado(String value) : void
+  + getDonador() : String
+  + setDonador(String value) : void
+  + DetalleRutaRecojo()
+}
+}
+PuntoAcopio "0..1" <-- "0..*" Donacion : puntoAcopioId
+Donacion "1" <-- "0..1" SolicitudRecojo : donacionId
+RutaRecojo "1" <-- "0..*" DetalleRutaRecojo : rutaId
+SolicitudRecojo "1" <-- "0..*" DetalleRutaRecojo : solicitudId
+note bottom of DetalleRutaRecojo
+  Una solicitud solo puede pertenecer a una ruta activa.
+  Índice UNIQUE sobre solicitud_activa en MySQL.
+  Orden manual; sin GPS ni cálculo de distancia.
+end note
+note bottom of SolicitudRecojo
+  SOLICITADO -> PROGRAMADO -> RECOGIDO -> COMPLETADO
+  Cierres previos al recojo: RECHAZADO, CANCELADO, INCUMPLIDO.
+  Solo COMPLETADO actualiza Donacion a ENTREGADA.
+  Responsable es texto; no hay rol de repartidor.
 end note
 @enduml

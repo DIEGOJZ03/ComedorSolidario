@@ -1,0 +1,5 @@
+package com.comedorsolidario.dao;
+import com.comedorsolidario.model.DetalleRutaRecojo;import java.sql.*;import java.util.*;
+public class DetalleRutaRecojoDAO extends JdbcDAO {
+ public List<DetalleRutaRecojo> listar(int ruta) throws SQLException {return consultar("SELECT p.*,s.direccion,s.distrito,s.horario_programado,s.responsable,s.estado,CONCAT(u.nombre,' ',u.apellido) donador FROM detalle_ruta_recojo p JOIN solicitudes_recojo s ON s.id=p.solicitud_id JOIN donaciones d ON d.id=s.donacion_id JOIN usuarios u ON u.id=d.donante_id WHERE p.ruta_id=? ORDER BY p.orden,p.solicitud_id",r->{DetalleRutaRecojo x=new DetalleRutaRecojo();x.setRutaId(r.getInt("ruta_id"));x.setSolicitudId(r.getInt("solicitud_id"));x.setOrden(r.getInt("orden"));x.setDireccion(r.getString("direccion"));x.setDistrito(r.getString("distrito"));x.setHorario(r.getString("horario_programado"));x.setResponsable(r.getString("responsable"));x.setEstado(r.getString("estado"));x.setDonador(r.getString("donador"));return x;},ruta);}
+}

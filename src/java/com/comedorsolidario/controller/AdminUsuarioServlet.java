@@ -33,15 +33,15 @@ public class AdminUsuarioServlet extends BaseServlet {
             }
             return;
         }
-        if("estado".equals(accion)){dao.cambiarEstado(id(r.getParameter("id")),opcion(r.getParameter("estado"),"ACTIVO","INACTIVO"));ir(r,s,"/admin/usuarios","Estado actualizado.");return;}
+        if("estado".equals(accion)){new com.comedorsolidario.service.logistica.LogisticaService().cuenta(id(r.getParameter("id")),opcion(r.getParameter("estado"),"ACTIVO","INACTIVO"),texto(r,"motivo",1000,true),usuarioId(r));ir(r,s,"/admin/usuarios","Estado actualizado.");return;}
         Usuario u=new Usuario();
         try {
             if(r.getParameter("id")!=null && !"0".equals(r.getParameter("id")))u.setId(id(r.getParameter("id")));
-            u.setNombre(texto(r,"nombre",80,true));u.setApellido(texto(r,"apellido",80,true));u.setEmail(email(r));u.setTelefono(texto(r,"telefono",20,false));u.setEstado(opcion(r.getParameter("estado"),"ACTIVO","INACTIVO"));
+            u.setNombre(texto(r,"nombre",80,true));u.setApellido(texto(r,"apellido",80,true));u.setEmail(email(r));u.setTelefono(telefono(r.getParameter("telefono")));u.setEstado(opcion(r.getParameter("estado"),"ACTIVO","INACTIVO"));
             if(u.getId()==0)u.setPasswordHash(PasswordUtil.hash(password(r)));
             Usuario existente=dao.buscarEmail(u.getEmail());
             if(existente!=null && existente.getId()!=u.getId())throw new IllegalArgumentException("El correo ya está registrado.");
-            dao.guardarAdministrado(u);ir(r,s,"/admin/usuarios","Donador guardado correctamente.");
+            new com.comedorsolidario.service.logistica.LogisticaService().guardarDonador(u,texto(r,"motivo",1000,false),usuarioId(r));ir(r,s,"/admin/usuarios","Donador guardado correctamente.");
         }catch(IllegalArgumentException e){s.setStatus(400);r.setAttribute("error",e.getMessage());r.setAttribute("item",u);vista(r,s,"admin/usuarios/formulario.jsp");}
         catch(java.sql.SQLIntegrityConstraintViolationException e){s.setStatus(400);r.setAttribute("error","El correo ya está registrado.");r.setAttribute("item",u);vista(r,s,"admin/usuarios/formulario.jsp");}
     }

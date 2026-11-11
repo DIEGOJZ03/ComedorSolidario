@@ -20,7 +20,7 @@
     </div>
     <div class="col-md-6">
         <label class="form-label" for="telefono">Teléfono</label>
-        <input class="form-control" id="telefono" name="telefono" type="tel" maxlength="20" value='<c:out value="${pageContext.request.method eq 'POST' ? param.telefono : usuario.telefono}"/>'>
+        <input class="form-control" id="telefono" name="telefono" required title="7 a 15 dígitos; se admiten espacios, guiones y prefijo +" type="tel" maxlength="20" value='<c:out value="${pageContext.request.method eq 'POST' ? param.telefono : usuario.telefono}"/>'>
     </div>
     <div class="col-12 d-flex gap-2 mt-4">
         <button class="btn btn-primary" type="submit">Guardar perfil</button>

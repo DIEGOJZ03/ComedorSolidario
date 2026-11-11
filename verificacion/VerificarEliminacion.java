@@ -69,13 +69,8 @@ class VerificarEliminacion {
         try { producto.eliminar(17); throw new AssertionError("Debe propagar fallo de conexión"); }
         catch (SQLException e) { check(e == failure, "Conservar excepción SQL original"); }
         failure = null;
-        donacion.cambiarVigencia(17, false);
-        check(sql.equals("UPDATE donaciones SET activo=? WHERE id=?"), "Desactivar no debe borrar");
-        check(Arrays.equals(params, new Object[]{false,17}), "Desactivación parametrizada");
-        donacion.cambiarVigencia(17, true);
-        check(Arrays.equals(params, new Object[]{true,17}), "Reactivación parametrizada");
-        rows = 0;
-        reject(() -> donacion.cambiarVigencia(17, true), "no existe");
+        // T3: la vigencia ahora comprueba el cupo en una transacción real.
+        // Sus casos se ejecutan contra MySQL aislado en VerificarLogistica.java.
         System.out.println("OK: " + checks + " aserciones; sin conexión ni cambios a MySQL.");
     }
 }

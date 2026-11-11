@@ -30,7 +30,7 @@
                                   data-confirm-label="${item.estado == 'ACTIVO' ? 'Desactivar' : 'Reactivar'}"
                                   data-confirm-message="${item.estado == 'ACTIVO' ? 'El registro quedará inactivo. Se conservarán sus datos y podrás reactivarlo.' : 'El registro volverá a estar activo con sus datos conservados.'}">
                                 <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                                <input type="hidden" name="accion" value="estado">
+                                <input type="hidden" name="accion" value="estado"><label>Motivo de la decisión<input class="form-control" name="motivo" maxlength="1000" required></label>
                                 <input type="hidden" name="id" value="${item.id}">
                                 <input type="hidden" name="estado" value="${item.estado == 'ACTIVO' ? 'INACTIVO' : 'ACTIVO'}">
                                 <button class="btn btn-sm btn-outline-secondary" type="submit">${item.estado == 'ACTIVO' ? 'Desactivar' : 'Reactivar'}</button>
