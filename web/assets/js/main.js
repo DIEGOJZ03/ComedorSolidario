@@ -124,22 +124,116 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Validación de teléfonos celulares en Perú (9 dígitos que empiezan con 9) y límites de cantidad.
+// Validación de teléfonos celulares en Perú (9 dígitos que empiezan con 9), productos y límites de cantidad.
 window.configurarValidacionBloqueCantidad = (scope) => {
     const tipo = scope.querySelector('[data-tipo-cantidad]');
     const unidad = scope.querySelector('[data-unidad-cantidad]');
     const cantidad = scope.querySelector('[data-input-cantidad]');
     const labelCantidad = scope.querySelector('[data-label-cantidad]');
+    const contenedorProducto = scope.querySelector('[data-contenedor-producto]');
+    const productoInput = scope.querySelector('[data-producto-input]');
+    const productoIdHidden = scope.querySelector('[data-producto-id-hidden]');
+    const seccionOtro = scope.querySelector('[data-seccion-otro-producto]');
+    const inputOtro = scope.querySelector('[data-input-otro-producto]');
+    const ayudaUnidad = scope.querySelector('[data-ayuda-unidad]');
+    const datalist = scope.querySelector('datalist');
     if (!cantidad) return;
 
-    const actualizarMax = (origen) => {
-        if (origen === 'tipo' && tipo && unidad && unidad.tagName === 'SELECT') {
-            if (tipo.value === 'DINERO') unidad.value = 'soles';
-            else if (unidad.value === 'soles') unidad.value = 'kg';
-        } else if (origen === 'unidad' && tipo && unidad) {
-            if (unidad.value.trim().toLowerCase() === 'soles') tipo.value = 'DINERO';
-            else if (tipo.value === 'DINERO') tipo.value = 'ALIMENTOS';
+    const bloquearOpcionesUnidad = (unidadFija, permitirFisicas) => {
+        if (!unidad || unidad.tagName !== 'SELECT') return;
+        Array.from(unidad.options).forEach(opt => {
+            if (unidadFija) {
+                opt.disabled = opt.value !== unidadFija;
+            } else if (permitirFisicas) {
+                opt.disabled = opt.value === 'soles';
+            } else {
+                opt.disabled = false;
+            }
+        });
+    };
+
+    const resolverProducto = () => {
+        if (!productoInput || !datalist) return null;
+        const texto = productoInput.value.trim().toLowerCase();
+        if (!texto) return null;
+        const options = Array.from(datalist.options);
+        // Búsqueda exacta o coincidencia
+        const opt = options.find(o => o.value.toLowerCase() === texto);
+        if (opt) {
+            return {
+                id: opt.dataset.id,
+                unidad: opt.dataset.unidad,
+                nombre: opt.value
+            };
         }
+        return null;
+    };
+
+    const actualizarMax = (origen) => {
+        if (productoInput && tipo) {
+            const esDineroTipo = tipo.value === 'DINERO';
+            if (contenedorProducto) {
+                contenedorProducto.hidden = esDineroTipo;
+            }
+            productoInput.disabled = esDineroTipo;
+            productoInput.required = !esDineroTipo;
+
+            if (origen === 'tipo' && tipo.value === 'OTROS') {
+                if (!productoInput.value.toLowerCase().includes('otro')) {
+                    productoInput.value = 'Otros (especificar otro producto)';
+                }
+            }
+
+            const match = resolverProducto();
+            let esOtro = !esDineroTipo && (
+                tipo.value === 'OTROS' ||
+                (match && match.id === 'OTRO') ||
+                productoInput.value.toLowerCase().includes('otro')
+            );
+
+            if (match && match.id) {
+                if (productoIdHidden) productoIdHidden.value = match.id;
+            } else if (esOtro) {
+                if (productoIdHidden) productoIdHidden.value = 'OTRO';
+            } else {
+                if (productoIdHidden) productoIdHidden.value = '';
+            }
+
+            if (seccionOtro) {
+                seccionOtro.hidden = !esOtro;
+            }
+            if (inputOtro) {
+                inputOtro.disabled = !esOtro;
+                inputOtro.required = esOtro;
+            }
+
+            if (esDineroTipo) {
+                unidad.value = 'soles';
+                bloquearOpcionesUnidad('soles', false);
+                if (ayudaUnidad) ayudaUnidad.textContent = 'Para donaciones de dinero la unidad es Soles.';
+            } else if (esOtro) {
+                if (unidad.value === 'soles') unidad.value = 'unidades';
+                bloquearOpcionesUnidad(null, true);
+                if (ayudaUnidad) ayudaUnidad.textContent = 'Sección Otros: selecciona la unidad física para el producto que escribiste.';
+            } else if (match && match.unidad) {
+                unidad.value = match.unidad;
+                bloquearOpcionesUnidad(match.unidad, false);
+                if (ayudaUnidad) ayudaUnidad.textContent = 'Unidad asignada automáticamente (' + match.unidad + ').';
+            } else {
+                if (unidad.value === 'soles') unidad.value = 'kg';
+                bloquearOpcionesUnidad(null, true);
+                if (ayudaUnidad) ayudaUnidad.textContent = 'Escribe o elige un producto para autocompletar su unidad.';
+            }
+        } else {
+            if (origen === 'tipo' && tipo && unidad && unidad.tagName === 'SELECT') {
+                if (tipo.value === 'DINERO') unidad.value = 'soles';
+                else if (unidad.value === 'soles') unidad.value = 'kg';
+            } else if (origen === 'unidad' && tipo && unidad) {
+                if (unidad.value.trim().toLowerCase() === 'soles') tipo.value = 'DINERO';
+                else if (tipo.value === 'DINERO') tipo.value = 'ALIMENTOS';
+            }
+        }
+
         const esDinero = (tipo && tipo.value === 'DINERO') || (unidad && unidad.value.trim().toLowerCase() === 'soles');
         const maxVal = esDinero ? 5000 : 500;
         cantidad.max = String(maxVal);
@@ -159,6 +253,10 @@ window.configurarValidacionBloqueCantidad = (scope) => {
     };
 
     if (tipo) tipo.addEventListener('change', () => actualizarMax('tipo'));
+    if (productoInput) {
+        productoInput.addEventListener('input', () => actualizarMax('producto'));
+        productoInput.addEventListener('change', () => actualizarMax('producto'));
+    }
     if (unidad) {
         unidad.addEventListener('change', () => actualizarMax('unidad'));
         unidad.addEventListener('input', () => actualizarMax('unidad'));
@@ -166,6 +264,24 @@ window.configurarValidacionBloqueCantidad = (scope) => {
     cantidad.addEventListener('input', () => actualizarMax('cantidad'));
     actualizarMax();
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+    const prodNecesidad = document.querySelector('[data-producto-necesidad]');
+    if (prodNecesidad) {
+        const inputNombre = document.getElementById('nombre');
+        const selectUnidad = document.getElementById('unidad');
+        prodNecesidad.addEventListener('change', () => {
+            const opt = prodNecesidad.selectedOptions[0];
+            if (opt && opt.value) {
+                if (inputNombre && opt.dataset.nombre) inputNombre.value = opt.dataset.nombre;
+                if (selectUnidad && opt.dataset.unidad) {
+                    selectUnidad.value = opt.dataset.unidad;
+                    selectUnidad.dispatchEvent(new Event('change'));
+                }
+            }
+        });
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="telefono"]').forEach(input => {

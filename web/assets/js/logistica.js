@@ -59,11 +59,27 @@
         });
 
         const selectTipo = clon.querySelector('[data-tipo-cantidad]');
+        const inputProducto = clon.querySelector('[data-producto-input]');
+        const hiddenProducto = clon.querySelector('[data-producto-id-hidden]');
+        const datalist = clon.querySelector('datalist');
+        const inputOtro = clon.querySelector('[data-input-otro-producto]');
         const selectUnidad = clon.querySelector('[data-unidad-cantidad]');
         const inputCantidad = clon.querySelector('[data-input-cantidad]');
         const inputDescripcion = clon.querySelector('textarea[name="descripcion"]');
 
+        if (datalist && inputProducto) {
+            const nuevoIdList = 'listaProductosCatalogo' + sufijo;
+            datalist.id = nuevoIdList;
+            inputProducto.setAttribute('list', nuevoIdList);
+        }
+
         if (selectTipo) selectTipo.value = 'ALIMENTOS';
+        if (inputProducto) inputProducto.value = '';
+        if (hiddenProducto) hiddenProducto.value = '';
+        if (inputOtro) {
+            inputOtro.value = '';
+            inputOtro.setCustomValidity('');
+        }
         if (selectUnidad) selectUnidad.value = 'kg';
         if (inputCantidad) {
             inputCantidad.value = '';

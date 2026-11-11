@@ -34,5 +34,5 @@
 <div class="col-md-6"><label class="form-label" for="responsable">Responsable</label><input class="form-control" id="responsable" name="responsable" type="text" maxlength="120" required value='<c:out value="${punto.responsable}"/>'></div>
 <div class="col-md-6"><label class="form-label" for="telefono">Teléfono celular (9 dígitos)</label><input class="form-control" id="telefono" name="telefono" type="tel" pattern="9[0-9]{8}" minlength="9" maxlength="9" inputmode="numeric" placeholder="987654321" title="Escribe un número celular válido de 9 dígitos que empiece con 9 (ej. 987654321)" required value='<c:out value="${punto.telefono}"/>'></div>
 <div class="col-md-6"><label class="form-label" for="estado">Estado</label><select id="estado" name="estado" class="form-select"><option>ACTIVO</option><option ${punto.estado == 'INACTIVO' ? 'selected' : ''}>INACTIVO</option></select></div>
-<div><button class="btn btn-primary">Guardar punto</button> <a href="${ctx}/admin/logistica/puntos">Nuevo / cancelar edición</a></div></form></section></c:if>
+<div class="col-12 d-flex gap-2 mt-4"><button class="btn btn-primary" type="submit">Guardar punto</button> <a class="btn btn-outline-secondary" href="${ctx}/admin/logistica/puntos">Nuevo / cancelar edición</a></div></form></section></c:if>
 <%@ include file="/views/common/footer.jspf" %>

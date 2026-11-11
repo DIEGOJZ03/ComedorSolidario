@@ -364,6 +364,17 @@ CREATE TABLE productos (
  unidad VARCHAR(30) NOT NULL,
  estado ENUM('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO'
 ) ENGINE=InnoDB;
+INSERT INTO productos (nombre, descripcion, unidad, estado) VALUES
+ ('Arroz', 'Arroz blanco o superior en sacos o bolsas selladas', 'kg', 'ACTIVO'),
+ ('Aceite vegetal', 'Aceite vegetal comestible en botellas o bidones', 'litros', 'ACTIVO'),
+ ('Azúcar', 'Azúcar rubia o blanca en bolsas selladas', 'kg', 'ACTIVO'),
+ ('Menestras (lentejas / frejoles)', 'Menestras secas seleccionadas y selladas', 'kg', 'ACTIVO'),
+ ('Fideos', 'Fideos largos o cortos en paquetes sellados', 'kg', 'ACTIVO'),
+ ('Avena', 'Hojuelas de avena en bolsas o paquetes', 'kg', 'ACTIVO'),
+ ('Conservas de pescado', 'Latas de atún, jurel o caballa en buen estado', 'unidades', 'ACTIVO'),
+ ('Leche evaporada', 'Latas o cajas de leche evaporada', 'unidades', 'ACTIVO'),
+ ('Agua potable envasada', 'Bidones o botellas de agua para consumo', 'litros', 'ACTIVO'),
+ ('Ollas y utensilios de cocina', 'Ollas, cucharones, platos o cubiertos en buen estado', 'unidades', 'ACTIVO');
 CREATE TABLE campanias (
  id INT AUTO_INCREMENT PRIMARY KEY,
  comedor_id INT NOT NULL,

@@ -39,8 +39,27 @@
                                 <option value="OTROS" ${(param.tipo) == 'OTROS' ? 'selected' : ''}>Otros</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="unidad">Unidad</label>
+                        <div class="col-md-8" data-contenedor-producto>
+                            <label class="form-label" for="productoNombreInput">Buscar o seleccionar producto</label>
+                            <input class="form-control" list="listaProductosCatalogo" id="productoNombreInput" name="productoNombreInput" data-producto-input placeholder="Escribe para buscar (ej. Arroz, Aceite, Leche...) o elige de la lista..." autocomplete="off" value='<c:out value="${param.productoNombreInput}"/>'>
+                            <input type="hidden" name="productoSeleccionado" data-producto-id-hidden value='<c:out value="${param.productoSeleccionado}"/>'>
+                            <datalist id="listaProductosCatalogo">
+                                <c:forEach var="prod" items="${productos}">
+                                    <option value="${prod.nombre}" data-id="${prod.id}" data-unidad="${prod.unidad}"></option>
+                                </c:forEach>
+                                <option value="Otros (especificar otro producto)" data-id="OTRO" data-unidad=""></option>
+                            </datalist>
+                            <small class="form-text text-secondary">Puedes escribir las primeras letras para autocompletar.</small>
+                        </div>
+                        <div class="col-md-12" data-seccion-otro-producto hidden>
+                            <div class="p-3 rounded border bg-light">
+                                <label class="form-label" for="otroProducto">Nombre del producto o artículo (Sección Otros)</label>
+                                <input class="form-control" id="otroProducto" name="otroProducto" type="text" maxlength="100" data-input-otro-producto placeholder="Escribe qué producto deseas donar y luego elige su unidad abajo..." value='<c:out value="${param.otroProducto}"/>'>
+                                <small class="text-secondary">Al elegir "Otros", puedes escribir libremente el producto y seleccionar su unidad de medida.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="unidad">Unidad de medida</label>
                             <select class="form-select" id="unidad" name="unidad" data-unidad-cantidad required>
                                 <option value="kg" ${(param.unidad) == 'kg' ? 'selected' : ''}>Kg</option>
                                 <option value="litros" ${(param.unidad) == 'litros' ? 'selected' : ''}>Litros</option>
@@ -48,14 +67,15 @@
                                 <option value="cajas" ${(param.unidad) == 'cajas' ? 'selected' : ''}>Cajas</option>
                                 <option value="soles" ${(param.unidad) == 'soles' ? 'selected' : ''}>Soles</option>
                             </select>
+                            <small class="form-text text-secondary" data-ayuda-unidad>Se autocompleta con el producto seleccionado.</small>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label" for="cantidad" data-label-cantidad>Cantidad (máx. ${param.unidad == 'soles' ? '5,000' : '500'})</label>
                             <input class="form-control" id="cantidad" name="cantidad" type="number" data-input-cantidad min="0.01" max="${param.unidad == 'soles' ? '5000' : '500'}" step="0.01" required value='<c:out value="${param.cantidad}"/>'>
                         </div>
                         <div class="col-12">
-                            <label class="form-label" for="descripcion">Describe tu aporte</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" maxlength="1000" required><c:out value="${param.descripcion}"/></textarea>
+                            <label class="form-label" for="descripcion">Detalles adicionales de tu aporte (opcional)</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="2" maxlength="900" placeholder="Ej. Marca, estado del empaque, fecha de vencimiento aproximada..."><c:out value="${param.descripcion}"/></textarea>
                         </div>
                     </div>
                 </div>

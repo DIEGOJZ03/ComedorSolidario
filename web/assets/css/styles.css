@@ -66,10 +66,10 @@ dd { overflow-wrap:anywhere; }
    ═══════════════════════════════════════════════════════════════ */
 
 /* Navbar */
-.navbar { padding:1rem 0; }
+.navbar { padding:.75rem 0; }
 .navbar-brand { font-size:1.05rem; color:var(--ink); }
 .navbar-brand strong { font-weight:750; }
-.nav-link { font-size:.92rem; }
+.nav-link { font-size:.9rem; }
 
 /* Botones */
 .btn {

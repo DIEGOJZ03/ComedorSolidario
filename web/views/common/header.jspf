@@ -8,8 +8,8 @@
         <title><c:out value="${titulo}"/> | Comedor Solidario</title>
         <link rel="icon" type="image/svg+xml" href="${ctx}/assets/img/logo.svg">
         <link rel="stylesheet" href="${ctx}/assets/vendor/bootstrap/bootstrap.min.css">
-        <link rel="stylesheet" href="${ctx}/assets/css/styles.css?v=20261111">
-        <link rel="stylesheet" href="${ctx}/assets/css/refresh.css?v=20261111">
+        <link rel="stylesheet" href="${ctx}/assets/css/styles.css?v=20261111-2">
+        <link rel="stylesheet" href="${ctx}/assets/css/refresh.css?v=20261111-2">
     </head>
     <body>
         <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -53,7 +53,13 @@
                                                 <a class="nav-link" href="${ctx}/donante/donaciones">Mis donaciones</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="${ctx}/donante/perfil">Mi perfil</a></li><li class="nav-item"><a class="nav-link" href="${ctx}/donante/logistica/recojos">Mis recojos</a></li><li class="nav-item"><a class="nav-link" href="${ctx}/donante/logistica/historial">Historial</a>
+                                                <a class="nav-link" href="${ctx}/donante/perfil">Mi perfil</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${ctx}/donante/logistica/recojos">Mis recojos</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${ctx}/donante/logistica/historial">Historial</a>
                                             </li>
                                         </c:otherwise>
                                     </c:choose>

@@ -28,6 +28,11 @@ public class AdminProductoServlet extends BaseServlet {
         if(r.getServletPath().equals("/admin/productos")) {
             List<Necesidad> necesidades = new NecesidadDAO().listar(null, true);
             r.setAttribute("catalogo", new ResumenProductosService().resumir(necesidades));
+            r.setAttribute("items", dao.listar());
+            if (r.getParameter("editarId") != null) {
+                Producto editando = dao.buscar(id(r.getParameter("editarId")));
+                if (editando != null) r.setAttribute("item", editando);
+            }
             vista(r,s,"admin/productos/listar.jsp");
             return;
         }
@@ -60,10 +65,22 @@ public class AdminProductoServlet extends BaseServlet {
             if(r.getParameter("id")!=null && !"0".equals(r.getParameter("id")))o.setId(id(r.getParameter("id")));
             o.setNombre(texto(r,"nombre",100,true));
             o.setDescripcion(texto(r,"descripcion",1000,true));
-            o.setUnidad(texto(r,"unidad",30,true));
+            o.setUnidad(opcion(r.getParameter("unidad"),"kg","litros","unidades","cajas"));
             o.setEstado(opcion(r.getParameter("estado"),"ACTIVO","INACTIVO"));
             
-            dao.guardar(o);ir(r,s,"/admin/productos","Registro guardado correctamente.");
-        }catch(IllegalArgumentException e){s.setStatus(400);r.setAttribute("error",e.getMessage());r.setAttribute("item",o);formulario(r,s);}
+            dao.guardar(o);ir(r,s,"/admin/productos","Producto guardado correctamente en el catálogo.");
+        }catch(IllegalArgumentException e){
+            s.setStatus(400);
+            r.setAttribute("error",e.getMessage());
+            r.setAttribute("item",o);
+            if ("listar".equals(r.getParameter("origen"))) {
+                List<Necesidad> necesidades = new NecesidadDAO().listar(null, true);
+                r.setAttribute("catalogo", new ResumenProductosService().resumir(necesidades));
+                r.setAttribute("items", dao.listar());
+                vista(r,s,"admin/productos/listar.jsp");
+            } else {
+                formulario(r,s);
+            }
+        }
     }
 }
