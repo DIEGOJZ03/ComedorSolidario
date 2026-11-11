@@ -26,12 +26,12 @@
         <input class="form-control" id="nombre" name="nombre" type="text" maxlength="100" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.nombre : necesidad.nombre}"/>'>
     </div>
     <div class="col-md-6">
-        <label class="form-label" for="cantidadNecesaria">Cantidad necesaria</label>
-        <input class="form-control" id="cantidadNecesaria" name="cantidadNecesaria" type="number" min="0.01" max="9999999999.99" step="0.01" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.cantidadNecesaria : necesidad.cantidadNecesaria}"/>'>
+        <label class="form-label" for="cantidadNecesaria">Cantidad necesaria (máx. 500 físico / 5,000 soles)</label>
+        <input class="form-control" id="cantidadNecesaria" name="cantidadNecesaria" type="number" data-input-cantidad min="0.01" max="${(pageContext.request.method eq 'POST' ? param.unidad : necesidad.unidad) == 'soles' ? '5000' : '500'}" step="0.01" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.cantidadNecesaria : necesidad.cantidadNecesaria}"/>'>
     </div>
     <div class="col-md-6">
         <label class="form-label" for="unidad">Unidad</label>
-        <select class="form-select" id="unidad" name="unidad" required>
+        <select class="form-select" id="unidad" name="unidad" data-unidad-cantidad required>
             <option value="kg" ${(pageContext.request.method eq 'POST' ? param.unidad : necesidad.unidad) == 'kg' ? 'selected' : ''}>Kg</option>
             <option value="litros" ${(pageContext.request.method eq 'POST' ? param.unidad : necesidad.unidad) == 'litros' ? 'selected' : ''}>Litros</option>
             <option value="unidades" ${(pageContext.request.method eq 'POST' ? param.unidad : necesidad.unidad) == 'unidades' ? 'selected' : ''}>Unidades</option>

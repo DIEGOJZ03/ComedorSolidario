@@ -106,3 +106,85 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizar(distrito.value);
     provincia.addEventListener('change', () => actualizar());
 });
+
+// Botón de ojo para mostrar/ocultar contraseña en contenedores .password-wrapper.
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-toggle-password]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const wrapper = btn.closest('.password-wrapper');
+            const input = wrapper ? wrapper.querySelector('input') : null;
+            if (!input) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            btn.classList.toggle('is-visible', !showing);
+            const label = showing ? 'Mostrar contraseña' : 'Ocultar contraseña';
+            btn.setAttribute('aria-label', label);
+            btn.setAttribute('title', label);
+        });
+    });
+});
+
+// Validación de teléfonos celulares en Perú (9 dígitos que empiezan con 9) y límites de cantidad.
+window.configurarValidacionBloqueCantidad = (scope) => {
+    const tipo = scope.querySelector('[data-tipo-cantidad]');
+    const unidad = scope.querySelector('[data-unidad-cantidad]');
+    const cantidad = scope.querySelector('[data-input-cantidad]');
+    const labelCantidad = scope.querySelector('[data-label-cantidad]');
+    if (!cantidad) return;
+
+    const actualizarMax = (origen) => {
+        if (origen === 'tipo' && tipo && unidad && unidad.tagName === 'SELECT') {
+            if (tipo.value === 'DINERO') unidad.value = 'soles';
+            else if (unidad.value === 'soles') unidad.value = 'kg';
+        } else if (origen === 'unidad' && tipo && unidad) {
+            if (unidad.value.trim().toLowerCase() === 'soles') tipo.value = 'DINERO';
+            else if (tipo.value === 'DINERO') tipo.value = 'ALIMENTOS';
+        }
+        const esDinero = (tipo && tipo.value === 'DINERO') || (unidad && unidad.value.trim().toLowerCase() === 'soles');
+        const maxVal = esDinero ? 5000 : 500;
+        cantidad.max = String(maxVal);
+        if (labelCantidad) {
+            labelCantidad.textContent = esDinero ? 'Cantidad (máx. 5,000 soles)' : 'Cantidad (máx. 500)';
+        }
+        const val = parseFloat(cantidad.value);
+        if (!Number.isNaN(val) && val > maxVal) {
+            cantidad.setCustomValidity(
+                esDinero
+                    ? 'Para dinero en soles, el monto máximo permitido es 5,000.'
+                    : 'Para unidades físicas, la cantidad máxima permitida es 500.'
+            );
+        } else {
+            cantidad.setCustomValidity('');
+        }
+    };
+
+    if (tipo) tipo.addEventListener('change', () => actualizarMax('tipo'));
+    if (unidad) {
+        unidad.addEventListener('change', () => actualizarMax('unidad'));
+        unidad.addEventListener('input', () => actualizarMax('unidad'));
+    }
+    cantidad.addEventListener('input', () => actualizarMax('cantidad'));
+    actualizarMax();
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[name="telefono"]').forEach(input => {
+        const validarTelefono = () => {
+            const limpio = input.value.replace(/\D/g, '').slice(0, 9);
+            if (input.value !== limpio) input.value = limpio;
+            if (limpio.length > 0 && !/^9\d{8}$/.test(limpio)) {
+                input.setCustomValidity('Ingresa un celular válido de 9 dígitos que empiece con 9 (ej. 987654321).');
+            } else {
+                input.setCustomValidity('');
+            }
+        };
+        input.addEventListener('input', validarTelefono);
+    });
+
+    const bloques = document.querySelectorAll('[data-donacion-item]');
+    if (bloques.length > 0) {
+        bloques.forEach(b => window.configurarValidacionBloqueCantidad(b));
+    } else {
+        document.querySelectorAll('form').forEach(f => window.configurarValidacionBloqueCantidad(f));
+    }
+});

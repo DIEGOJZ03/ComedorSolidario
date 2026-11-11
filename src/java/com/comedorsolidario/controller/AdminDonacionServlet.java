@@ -66,9 +66,11 @@ public class AdminDonacionServlet extends BaseServlet {
             if(r.getParameter("id")!=null && !"0".equals(r.getParameter("id")))d.setId(id(r.getParameter("id")));
             d.setDonanteId(id(r.getParameter("donanteId")));d.setComedorId(id(r.getParameter("comedorId")));
             d.setTipo(opcion(r.getParameter("tipo"),"ALIMENTOS","UTENSILIOS","DINERO","OTROS"));
-            d.setCantidad(cantidad(r.getParameter("cantidad")));d.setUnidad(opcion(r.getParameter("unidad"),"kg","litros","unidades","cajas","soles"));
+            d.setUnidad(opcion(r.getParameter("unidad"),"kg","litros","unidades","cajas","soles"));
             if (("DINERO".equals(d.getTipo())) != ("soles".equals(d.getUnidad())))
-                throw new IllegalArgumentException("Para dinero utiliza soles; para otros aportes elige una unidad física.");d.setDescripcion(texto(r,"descripcion",1000,true));
+                throw new IllegalArgumentException("Para dinero utiliza soles; para otros aportes elige una unidad física.");
+            d.setCantidad(cantidad(r.getParameter("cantidad"), d.getUnidad()));
+            d.setDescripcion(texto(r,"descripcion",1000,true));
             if(d.getId()==0)dao.registrar(d);else dao.actualizar(d);
             ir(r,s,"/admin/donaciones","Donación guardada a nombre del donador seleccionado.");
         } catch(IllegalArgumentException e){s.setStatus(400);r.setAttribute("error",e.getMessage());r.setAttribute("item",d);formulario(r,s);}

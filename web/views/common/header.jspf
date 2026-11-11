@@ -8,8 +8,8 @@
         <title><c:out value="${titulo}"/> | Comedor Solidario</title>
         <link rel="icon" type="image/svg+xml" href="${ctx}/assets/img/logo.svg">
         <link rel="stylesheet" href="${ctx}/assets/vendor/bootstrap/bootstrap.min.css">
-        <link rel="stylesheet" href="${ctx}/assets/css/styles.css">
-        <link rel="stylesheet" href="${ctx}/assets/css/refresh.css?v=20261021-2">
+        <link rel="stylesheet" href="${ctx}/assets/css/styles.css?v=20261111">
+        <link rel="stylesheet" href="${ctx}/assets/css/refresh.css?v=20261111">
     </head>
     <body>
         <a class="skip-link" href="#contenido">Saltar al contenido</a>

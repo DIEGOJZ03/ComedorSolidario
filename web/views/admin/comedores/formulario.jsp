@@ -53,8 +53,8 @@
         <input class="form-control" id="responsable" name="responsable" type="text" maxlength="120" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.responsable : comedor.responsable}"/>'>
     </div>
     <div class="col-md-6">
-        <label class="form-label" for="telefono">Teléfono</label>
-        <input class="form-control" id="telefono" name="telefono" type="text" maxlength="20" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.telefono : comedor.telefono}"/>'>
+        <label class="form-label" for="telefono">Teléfono celular (9 dígitos)</label>
+        <input class="form-control" id="telefono" name="telefono" type="tel" pattern="9[0-9]{8}" minlength="9" maxlength="9" inputmode="numeric" placeholder="987654321" title="Escribe un número celular válido de 9 dígitos que empiece con 9 (ej. 987654321)" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.telefono : comedor.telefono}"/>'>
     </div>
     <div class="col-md-6">
         <label class="form-label" for="estado">Estado</label>

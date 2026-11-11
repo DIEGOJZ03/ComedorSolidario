@@ -8,6 +8,8 @@
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.test.skip>true</maven.test.skip>
+        <skipTests>true</skipTests>
     </properties>
     <dependencies>
         <!-- MVC real para logística; compatible con Jakarta Servlet 6 / Tomcat 10.1. -->

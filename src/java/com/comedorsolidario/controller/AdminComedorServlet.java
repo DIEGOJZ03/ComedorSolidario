@@ -80,7 +80,7 @@ public class AdminComedorServlet extends BaseServlet {
             c.setProvincia(UbicacionComedor.provincia(texto(r, "provincia", 100, true)));
             c.setDistrito(UbicacionComedor.distrito(c.getProvincia(), texto(r, "distrito", 100, true)));
             c.setResponsable(texto(r, "responsable", 120, true));
-            c.setTelefono(texto(r, "telefono", 20, true));
+            c.setTelefono(telefono(r.getParameter("telefono")));
             c.setEstado(opcion(r.getParameter("estado"), "ACTIVO", "INACTIVO"));
             Part foto = r.getContentType() != null && r.getContentType().startsWith("multipart/form-data")
                     ? r.getPart("foto") : null;

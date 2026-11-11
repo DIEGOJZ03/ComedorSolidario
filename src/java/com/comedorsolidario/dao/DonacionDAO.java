@@ -65,7 +65,7 @@ public class DonacionDAO extends JdbcDAO {
         for(String k:List.of("nombre","apellido","email"))if(u.get(k)==null || u.get(k).toString().isBlank())throw new IllegalArgumentException("Completa los datos del perfil antes de donar.");
         com.comedorsolidario.util.ValidacionUtil.telefono((String)u.get("telefono"));
         int n=filas(c,"SELECT id FROM donaciones WHERE donante_id=? AND id<>? AND activo=TRUE AND estado IN ('PENDIENTE','ACEPTADA','PROGRAMADA') FOR UPDATE",usuario,excluir).size();
-        if(n>=2)throw new IllegalArgumentException("Ya tienes 2 donaciones activas. Completa tus donaciones pendientes antes de registrar otra.");
+        if(n>=10)throw new IllegalArgumentException("Ya tienes 10 donaciones activas. Completa tus donaciones pendientes antes de registrar otra.");
     }
     public List<Donacion> historial(int usuario) throws SQLException {return consultar(SELECT+" WHERE d.donante_id=? ORDER BY d.id DESC",this::map,usuario);}
     public void actualizar(Donacion d) throws SQLException {

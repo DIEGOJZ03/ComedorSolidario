@@ -40,10 +40,13 @@ public final class ValidacionUtil {
     }
 
     public static String telefono(String valor) {
-        String t=valor==null?"":valor.trim().replaceAll("[ ()-]", "");
-        if(!t.matches("\\+?[0-9]{7,15}")) throw new IllegalArgumentException("Escribe un teléfono válido de 7 a 15 dígitos (puede iniciar con +).");
+        String t = valor == null ? "" : valor.trim().replaceAll("[ ()-]", "");
+        if (!t.matches("9[0-9]{8}"))
+            throw new IllegalArgumentException(
+                    "Escribe un teléfono celular válido de 9 dígitos que empiece con 9 (ej. 987654321).");
         return t;
     }
+
     public static String password(HttpServletRequest r) {
         String valor = r.getParameter("password");
         if (valor == null || valor.length() < 8 || valor.length() > 128)
@@ -53,15 +56,23 @@ public final class ValidacionUtil {
     }
 
     public static BigDecimal cantidad(String valor) {
+        return cantidad(valor, "unidades");
+    }
+
+    public static BigDecimal cantidad(String valor, String unidad) {
+        boolean esDinero = "soles".equalsIgnoreCase(unidad) || "DINERO".equalsIgnoreCase(unidad);
+        BigDecimal max = esDinero ? new BigDecimal("5000.00") : new BigDecimal("500.00");
         try {
             BigDecimal n = new BigDecimal(valor);
             if (n.signum() > 0
-                    && n.compareTo(new BigDecimal("9999999999.99")) <= 0
+                    && n.compareTo(max) <= 0
                     && n.scale() <= 2) return n;
         } catch (RuntimeException ignored) {
         }
         throw new IllegalArgumentException(
-                "La cantidad debe ser mayor que cero y tener como máximo dos decimales.");
+                esDinero
+                        ? "Para dinero (soles), la cantidad debe ser mayor que cero, máximo 5,000 y con hasta dos decimales."
+                        : "La cantidad para unidades físicas debe ser mayor que cero, máximo 500 y con hasta dos decimales.");
     }
 
     public static String opcion(String valor, String... permitidas) {

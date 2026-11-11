@@ -232,9 +232,60 @@ dd { overflow-wrap:anywhere; }
 .stat-card strong { font-size:2.4rem; }
 
 /* ═══════════════════════════════════════════════════════════════
-   6. AUTENTICACIÓN
+   6. AUTENTICACIÓN Y CONTROLES DE FORMULARIO
    ═══════════════════════════════════════════════════════════════ */
 .auth-shell { max-width:760px; margin:2rem auto; }
+
+.password-wrapper {
+    position:relative;
+    display:flex;
+    align-items:center;
+}
+.password-wrapper .form-control {
+    padding-right:2.85rem;
+}
+.btn-password-toggle {
+    position:absolute;
+    right:.5rem;
+    top:50%;
+    transform:translateY(-50%);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:2.1rem;
+    height:2.1rem;
+    padding:0;
+    border:0;
+    border-radius:.45rem;
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    transition:color .15s ease, background-color .15s ease;
+}
+.btn-password-toggle:hover,
+.btn-password-toggle:focus-visible {
+    color:var(--brand);
+    background:rgba(29, 76, 57, .08);
+}
+.btn-password-toggle .icon-eye-off {
+    display:none;
+}
+.btn-password-toggle.is-visible .icon-eye {
+    display:none;
+}
+.btn-password-toggle.is-visible .icon-eye-off {
+    display:block;
+}
+
+.donacion-bloque + .donacion-bloque {
+    margin-top:1rem;
+}
+.donacion-bloque--multiple {
+    padding:1.25rem;
+    border:1px solid var(--line);
+    border-radius:.85rem;
+    background:var(--paper);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    7. ADMIN

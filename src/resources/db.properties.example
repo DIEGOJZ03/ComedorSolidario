@@ -1,4 +1,4 @@
-# Copiar como db.properties y completar. Alternativa: variables de entorno.
+# Copiar como db.properties
 db.url=jdbc:mysql://localhost:3306/comedor_solidario
 db.user=admin
 db.password=UPENINOS

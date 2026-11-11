@@ -11,10 +11,21 @@ import static com.comedorsolidario.dao.JdbcDAO.*;
 /** Persistencia transaccional de logística; todas las sentencias usan parámetros y la conexión existente. */
 public class LogisticaDAO {
     public void registrar(Donacion d,SolicitudRecojo s) throws SQLException {
+        registrarMultiples(List.of(d), s);
+    }
+    public void registrarMultiples(List<Donacion> donaciones, SolicitudRecojo s) throws SQLException {
         transaccion(c->{
-            if ("RECOJO".equals(d.getModalidad()) != (s!=null)) throw new IllegalArgumentException("Completa los datos del recojo.");
-            new DonacionDAO().registrar(c,d);
-            if(s!=null) {s.setDonacionId(d.getId());new SolicitudRecojoDAO().registrar(c,s);}
+            if (donaciones == null || donaciones.isEmpty()) throw new IllegalArgumentException("Registra al menos una donación.");
+            DonacionDAO dao = new DonacionDAO();
+            SolicitudRecojoDAO recojoDao = new SolicitudRecojoDAO();
+            for (Donacion d : donaciones) {
+                if ("RECOJO".equals(d.getModalidad()) != (s != null)) throw new IllegalArgumentException("Completa los datos del recojo.");
+                dao.registrar(c, d);
+                if (s != null) {
+                    s.setDonacionId(d.getId());
+                    recojoDao.registrar(c, s);
+                }
+            }
             return null;
         });
     }

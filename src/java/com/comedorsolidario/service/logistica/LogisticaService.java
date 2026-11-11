@@ -24,6 +24,7 @@ public class LogisticaService {
         };
     }
     public void registrar(Donacion d,SolicitudRecojo s) throws SQLException { dao.registrar(d,s); }
+    public void registrarMultiples(List<Donacion> donaciones, SolicitudRecojo s) throws SQLException { dao.registrarMultiples(donaciones, s); }
     public void recojo(int id,String accion,LocalDate fecha,String horario,String responsable,String nota,int admin) throws SQLException { dao.recojo(id,accion,fecha,horario,responsable,nota,admin); }
     public void cerrarDonacion(int id,String estado,String motivo,int admin) throws SQLException { dao.cerrarDonacion(id,estado,motivo,admin); }
     public List<Map<String,Object>> comportamiento(int usuario) throws SQLException { return dao.comportamiento(usuario); }

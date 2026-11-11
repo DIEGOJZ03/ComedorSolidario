@@ -90,9 +90,9 @@ public class NecesidadServlet extends BaseServlet {
             }
             n.setNombre(texto(r, "nombre", 100, true));
             n.setDescripcion(texto(r, "descripcion", 1000, true));
-            n.setCantidadNecesaria(cantidad(r.getParameter("cantidadNecesaria")));
             n.setUnidad(
                     opcion(r.getParameter("unidad"), "kg", "litros", "unidades", "cajas", "soles"));
+            n.setCantidadNecesaria(cantidad(r.getParameter("cantidadNecesaria"), n.getUnidad()));
             n.setPrioridad(opcion(r.getParameter("prioridad"), "ALTA", "MEDIA", "BAJA"));
             n.setEstado(opcion(r.getParameter("estado"), "ACTIVA", "INACTIVA"));
             dao.guardar(n);

@@ -19,8 +19,8 @@
         <input class="form-control" id="apellido" name="apellido" type="text" maxlength="80" required value='<c:out value="${pageContext.request.method eq 'POST' ? param.apellido : usuario.apellido}"/>'>
     </div>
     <div class="col-md-6">
-        <label class="form-label" for="telefono">Teléfono</label>
-        <input class="form-control" id="telefono" name="telefono" required title="7 a 15 dígitos; se admiten espacios, guiones y prefijo +" type="tel" maxlength="20" value='<c:out value="${pageContext.request.method eq 'POST' ? param.telefono : usuario.telefono}"/>'>
+        <label class="form-label" for="telefono">Teléfono celular (9 dígitos)</label>
+        <input class="form-control" id="telefono" name="telefono" required pattern="9[0-9]{8}" minlength="9" maxlength="9" inputmode="numeric" placeholder="987654321" title="Escribe un número celular válido de 9 dígitos que empiece con 9 (ej. 987654321)" type="tel" value='<c:out value="${pageContext.request.method eq 'POST' ? param.telefono : usuario.telefono}"/>'>
     </div>
     <div class="col-12 d-flex gap-2 mt-4">
         <button class="btn btn-primary" type="submit">Guardar perfil</button>
